@@ -70,7 +70,7 @@
                                 <input type="date" name="join_date" id="join_date"
                                        class="form-control form-control-lg form-control-solid date"
                                        placeholder="Tanggal Masuk" value="{{ $user->join_date ?? '' }}"
-                                       @change="formatDate()" x-model="joinDate"/>
+                                       @change="formatDate()"/>
                             </div>
                         </div>
 
@@ -176,7 +176,7 @@
                 buttonLoading: false,
                 roles: null,
                 branchCode: "{{ $user->branch?->code ?? null }}",
-                joinDate: null,
+                joinDate: '',
                 users: null,
                 id: "{{ $user->id ?? null }}",
                 absentId: "{{ $user->absent_id ?? null }}",
@@ -192,9 +192,11 @@
                     await this.getRoleData();
                     await this.getUserData();
 
-                    this.joinDate = "{{ $user->join_date ?? null }}"
-                    this.formatDate(this.joinDate);
-                    this.branchCode = "{{ $user->branch?->code ?? null }}"
+                    if (this.id) {
+                        this.joinDate = "{{ $user->join_date ?? null }}"
+                        this.formatDate(this.joinDate);
+                        this.branchCode = "{{ $user->branch?->code ?? null }}"
+                    }
                 },
                 placementChange() {
                     if (this.userPlacement === 'Pusat') {

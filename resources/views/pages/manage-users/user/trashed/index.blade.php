@@ -34,18 +34,13 @@
                 </div>
                 <div class="card-body pt-0">
                     <div class="col-12 ">
-                        <form id="form-delete" @submit.prevent="destroy()">
+                        <form id="form-restore" @submit.prevent="restore()">
                             <input type="hidden" :name="`id[]`"
                                    :value="selectedCheckBox.filter((val) => val !== 'on')">
-                            <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                            <button type="submit" class="btn btn-light-info btn-sm mt-5"
                                     x-show="selectedCheckBox.length > 0"
                                     x-transition x-cloak>
-                                <i class="ki-duotone ki-trash-square fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                </i>
+                                <x-icons.unarchive/>
                                 Hapus
                             </button>
                         </form>
@@ -112,6 +107,10 @@
                                     <td>
                                         <p x-text="user.nik"></p>
                                         <p x-text="user.email"></p>
+                                        <p>
+                                            ID Absen : <span class="badge badge-light-info"
+                                                             x-text="user.absent_id"></span>
+                                        </p>
                                     </td>
                                     <td class="d-flex align-items-center">
                                         <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
@@ -136,14 +135,6 @@
                                     </td>
                                     <td class="text-center" x-text="user.join_date"></td>
                                     <td x-text="user.last_login"></td>
-                                    <td class="text-center">
-                                        <template x-if="editPermission">
-                                            <a :href="`/manage-users/users/edit/${user.id}`"
-                                               class="btn btn-light btn-active-primary btn-sm">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                        </template>
-                                    </td>
                                 </tr>
                                 </tbody>
                             </template>
@@ -167,6 +158,7 @@
             </div>
         </div>
     </div>
+    @include('components.toast')
 @endsection
 @push('script')
     <script>
@@ -175,8 +167,33 @@
                 users: [],
                 isLoading: false,
                 search: '',
+                formRestore: document.getElementById('form-restore'),
                 async init() {
                     await this.getTrashedData();
+                },
+                async paginate(url) {
+                    try {
+                        if (url) {
+                            this.users = [];
+                            this.isLoading = true;
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                    month: document.getElementById('month')?.value,
+                                    year: document.getElementById('year')?.value,
+                                    branch_id: $(".main-branches-select2")?.val(),
+                                    company_id: $(".companies-select2")?.val(),
+                                    active: document.getElementById('active')?.value,
+                                    role_id: $('#role_id').val(),
+                                }
+                            });
+                            this.users = resp.data
+                        }
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async getTrashedData() {
                     this.isLoading = true;
@@ -187,6 +204,30 @@
                         console.log(e);
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
                     }
                 },
                 async searchData() {
@@ -203,7 +244,39 @@
                     } finally {
                         this.isLoading = false;
                     }
-                }
+                },
+                openImage(imagePath) {
+                    const lightbox = new FsLightbox();
+                    console.log(lightbox);
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('') }}" + placeholders
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "{{ Storage::url('') }}" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
+                    }
+                },
+                getImageURL(imagePath) {
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        return "{{ asset('') }}" + placeholders;
+                    }
+                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
+                },
+                async restore() {
+                    showConfirmModal("Anda yakin?", "Data akan dikembalikan ke karyawan aktif, pastikan tidak ada ID absen & email yang duplikat.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.post(`/manage-users/users/trashed/restore`, new FormData(this.formRestore));
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
             }
         }
     </script>

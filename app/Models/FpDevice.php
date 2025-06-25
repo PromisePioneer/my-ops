@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Master\Common\Branch;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -15,35 +14,37 @@ class FpDevice extends Model
 {
 
     use Searchable;
+
     protected $table = 'fp_devices';
 
     protected $fillable = [
         'branch_id',
-        'name',
         'ip_address',
         'serial_number',
         'online',
     ];
 
 
-    public function toSearchableArray(): array
-    {
-        $this->loadMissing('branch');
-        return [
-            'serial_number' => $this->serial_number,
-            'name' => $this->name,
-            'ip_address' => $this->ip_address
-        ];
-    }
-
-    public function makeSearchableUsing(Collection $models): Collection
-    {
-        return $models->load('branch');
-    }
 
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+
+    public function searchableAs(): string
+    {
+        return 'fp_devices_branch_id_foreign';
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'ip_address' => $this->ip_address,
+            'serial_number' => $this->serial_number,
+            'branch_id' => (string)$this->branch_id,
+            'created_at' => (string)$this->created_at
+        ];
     }
 
 

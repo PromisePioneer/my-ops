@@ -62,7 +62,9 @@ class User extends Authenticatable
         $this->loadMissing('attendancesSummary');
         return [
             'name' => $this->name,
-            'nip' => $this->nip
+            'nip' => $this->nip,
+            'email' => $this->email,
+            'absent_id' => $this->absent_id
         ];
     }
 

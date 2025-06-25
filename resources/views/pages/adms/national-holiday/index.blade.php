@@ -14,8 +14,8 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-light-primary btn-sm" @click="generateHoliday()">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
@@ -38,26 +38,10 @@
                                 <th>Tanggal</th>
                             </thead>
                             <template x-if="isLoading">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="3">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.loading colspan="3"/>
                             </template>
                             <template x-if="!isLoading && nationalHolidays.data?.length === 0">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="3">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.empty colspan="3"/>
                             </template>
                             <template x-for="(holiday, index) in nationalHolidays?.data" :key="holiday.id">
                                 <tbody class="fw-bold">

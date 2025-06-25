@@ -1,5 +1,6 @@
 ﻿@extends('layouts.template')
-@section('page-title', 'Data User')
+@section('page-title', 'Data Karyawan')
+@section('breadcrumbs', 'Manajemen Karyawan - Data Karyawan - Karyawan Tidak Aktif')
 @section('content')
     <div x-data="userData()">
         @include('pages.manage-users.user.modal.import')
@@ -31,15 +32,19 @@
                                  'Filter Data Karyawan Berdasarkan Bulan',
                                  'Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif',
                                 ])
-                                    <button id="kt_drawer_example_basic_button" class="btn btn-light btn-active-info btn-sm mx-1">
+                                    <button id="kt_drawer_example_basic_button"
+                                            class="btn btn-light btn-active-info btn-sm mx-1">
                                         <x-icons.filter/>
                                         Filter
                                 </button>
                                 @endcanany
-                                <a href="{{ url('/manage-users/users/trashed') }}" class="btn btn-light btn-active-info btn-sm mx-1">
-                                    <x-icons.archived />
+                                @can('Lihat Menu Arsip Karyawan')
+                                    <a href="{{ url('/manage-users/users/trashed') }}"
+                                       class="btn btn-light btn-active-info btn-sm mx-1">
+                                        <x-icons.archived/>
                                     Arsip
                                 </a>
+                                @endcan
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex align-items-center position-relative my-1"
@@ -69,12 +74,7 @@
                                 <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                         x-show="selectedCheckBox.length > 0"
                                         x-transition x-cloak>
-                                    <i class="ki-duotone ki-trash-square fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
+                                    <x-icons.trash/>
                                     Hapus
                                 </button>
                             </form>
@@ -106,26 +106,10 @@
                                 </tr>
                                 </thead>
                                 <template x-if="isLoading">
-                                    <tbody class="fw-bold text-gray-600">
-                                    <tr>
-                                        <td colspan="7">
-                                            <div style="text-align: center;">
-                                                <div class="spinner-border" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
+                                    <x-table.loading colspan="6"/>
                                 </template>
                                 <template x-if="!isLoading && users.data?.length === 0">
-                                    <tbody class="fw-bold">
-                                    <tr>
-                                        <td colspan="7">
-                                            <center>Data Tidak Ditemukan</center>
-                                        </td>
-                                    </tr>
-                                    </tbody>
+                                    <x-table.empty colspan="6"/>
                                 </template>
                                 <template x-for="user in users.data" :key="user.id">
                                     <tbody class="fw-bold">
@@ -141,6 +125,10 @@
                                         <td>
                                             <p x-text="user.nik"></p>
                                             <p x-text="user.email"></p>
+                                            <p>
+                                                ID Absen : <span class="badge badge-light-info"
+                                                                 x-text="user.absent_id"></span>
+                                            </p>
                                         </td>
                                         <td class="d-flex align-items-center">
                                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
@@ -197,6 +185,8 @@
             </div>
         </div>
         @include('components.toast')
+        @include('components.select2.script')
+        @include('components.image.handle-image')
     </div>
 @endsection
 @push('script')
@@ -221,29 +211,11 @@
                 formImport: document.getElementById('form-import'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    await this.getCompanies();
-                    await this.getMainBranches();
+                    await select2('.companies-select2', 'Pilih Perusahaan', '/select2/companies-data');
+                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
+                    await select2('.roles-select2', 'Pilih Jabatan', '/select2/roles-data');
                     await this.getUserData();
                     await this.getMonth();
-                    await this.getRoles();
-                },
-                async reload() {
-                    this.users = [];
-                    await this.init()
-                },
-                openImage(imagePath) {
-                    const lightbox = new FsLightbox();
-                    console.log(lightbox);
-                    if (imagePath === null) {
-                        const placeholders = 'assets/media/avatars/blank.png'
-                        const image = "{{ asset('') }}" + placeholders
-                        lightbox.props.sources = [image, image];
-                        lightbox.open();
-                    } else {
-                        const image = "{{ Storage::url('') }}" + imagePath;
-                        lightbox.props.sources = [image];
-                        lightbox.open();
-                    }
                 },
                 getMonth() {
                     this.months.push(
@@ -260,20 +232,6 @@
                         {name: "November", number: '11'},
                         {name: "Desember", number: '12'},
                     )
-                },
-                async getCompanies() {
-                    $(".companies-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Perusahaan",
-                        ajax: {
-                            url: '/select2/companies-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true,
-                        },
-                    });
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -376,39 +334,12 @@
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/manage-users/users/destroy`, new FormData(this.formDelete));
-                            await showAlert('success', 'Data sukses dihapus');
+                            await showAlert('success', 'Data sukses diarsipkan');
+                            this.selectedCheckBox = [];
                             await this.init();
                         } catch (error) {
                             await showAlert('error', 'Terjadi kesalahan');
                         }
-                    });
-                },
-                async getMainBranches() {
-                    $(".main-branches-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/select2/main-branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true,
-                        },
-                    });
-                },
-                async getRoles() {
-                    $(".roles-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Jabatan",
-                        ajax: {
-                            url: '/select2/roles-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true,
-                        },
                     });
                 },
                 async importData() {
@@ -425,25 +356,6 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                },
-                async changeActiveStatus(id) {
-                    this.buttonLoading = true;
-                    showConfirmModal("Anda yakin?", "Ganti Status Aktif?", "Ya, Ganti!", async () => {
-                        try {
-                            await axios.post(`/manage-users/users/change-status/${id}`);
-                            await showAlert('success', 'Data sukses diaktifkan');
-                            await this.init();
-                        } catch (error) {
-                            await showAlert('error', 'Terjadi kesalahan');
-                        }
-                    });
-                },
-                getImageURL(imagePath) {
-                    if (imagePath === null) {
-                        const placeholders = 'assets/media/avatars/blank.png'
-                        return "{{ asset('') }}" + placeholders;
-                    }
-                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
                 },
             }
         }

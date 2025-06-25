@@ -2,6 +2,7 @@
 
 namespace App\Support\User\ContractManagement;
 
+use AllowDynamicProperties;
 use App\Models\ContractManagement;
 use App\Models\User;
 use Carbon\Carbon;
@@ -10,7 +11,7 @@ use Illuminate\Http\Request;
 use function App\Helper\convertToRoman;
 use function App\Helper\formatDate;
 
-class ContractManagementService
+#[AllowDynamicProperties] class ContractManagementService
 {
     private static int $perPage = 10;
 

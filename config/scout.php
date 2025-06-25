@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\FpDevice;
+
 return [
 
     /*
@@ -181,28 +183,35 @@ return [
         ],
         // 'max_total_results' => env('TYPESENSE_MAX_TOTAL_RESULTS', 1000),
         'model-settings' => [
-            // User::class => [
-            //     'collection-schema' => [
-            //         'fields' => [
-            //             [
-            //                 'name' => 'id',
-            //                 'type' => 'string',
-            //             ],
-            //             [
-            //                 'name' => 'name',
-            //                 'type' => 'string',
-            //             ],
-            //             [
-            //                 'name' => 'created_at',
-            //                 'type' => 'int64',
-            //             ],
-            //         ],
-            //         'default_sorting_field' => 'created_at',
-            //     ],
-            //     'search-parameters' => [
-            //         'query_by' => 'name'
-            //     ],
-            // ],
+            FpDevice::class => [
+                'collection-schema' => [
+                    'fields' => [
+                        [
+                            'name' => 'id',
+                            'type' => 'string',
+                        ],
+                        [
+                            'name' => 'serial_number',
+                            'type' => 'string',
+                        ],
+                        [
+                            'name' => 'ip_address',
+                            'type' => 'string',
+                        ],
+                        [
+                            "name" => "branch_id",
+                            "type" => "string",
+                        ],
+                        [
+                            'name' => 'created_at',
+                            'type' => 'string',
+                        ],
+                    ],
+                ],
+                'search-parameters' => [
+                    'query_by' => 'serial_number',
+                ],
+            ],
         ],
     ],
 

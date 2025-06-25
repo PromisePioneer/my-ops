@@ -606,13 +606,6 @@
                                     SK Karyawan
                                 </x-dropdown-menu-item>
                             @endcan
-                            @can('Lihat Menu SK')
-                                <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'role-hierarchy'"
-                                        href="{{ url('manage-users/role-hierarchy') }}">
-                                    Struktur Jabatan
-                                </x-dropdown-menu-item>
-                            @endcan
                         @endslot
                     </x-dropdown-menu>
                 @endcanany

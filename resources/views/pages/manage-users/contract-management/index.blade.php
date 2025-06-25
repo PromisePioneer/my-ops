@@ -2,55 +2,19 @@
 @section('content')
 
     <div x-data="contractData()">
-        <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
-                <div class="card card-flush">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h3 class="mb-0">Filter Data</h3>
-                        </div>
+        @include('pages.manage-users.contract-management.drawer.filter')
+        <div class="flex-lg-row-fluid ms-lg-10">
+            <div class="card card-flush mb-6 mb-xl-9">
+                <div class="card-header pt-5">
+                    <div class="card-title">
+                        <button id="kt_drawer_example_basic_button" class="btn btn-light-info btn-sm">
+                            <x-icons.filter/>
+                            Filter
+                        </button>
                     </div>
-                    <form id="form-filter" @submit.prevent="filter()">
-                        <div class="card-body pt-0">
-                            <div class="d-flex flex-column text-gray-600">
-                                <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid main-branches-select2"
-                                            name="branch_id" id="branch_id">
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <input type="number" name="year" id="year" class="form-control form-control-solid"
-                                           placeholder="Filter Berdasarkan Tahun">
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid"
-                                            name="month" id="month" data-control="select2"
-                                            data-placeholder="Pilih Bulan">
-                                        <option></option>
-                                        <template x-for="month in months" :key="index">
-                                            <option :value="month.number" x-text="month.name"></option>
-                                        </template>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer pt-4 text-end">
-                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
-                                Filter
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="flex-lg-row-fluid ms-lg-10">
-                <div class="card card-flush mb-6 mb-xl-9">
-                    <div class="card-header pt-5">
-                        <div class="card-title">
-                            <h3>Data Karyawan Kontrak</h3>
-                        </div>
-                        <div class="card-toolbar">
-                            <div class="d-flex align-items-center position-relative my-1"
-                                 data-kt-view-roles-table-toolbar="base">
+                    <div class="card-toolbar">
+                        <div class="d-flex align-items-center position-relative my-1"
+                             data-kt-view-roles-table-toolbar="base">
                                 <span class="svg-icon svg-icon-1 position-absolute ms-6">
 															<svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                  height="24" viemanagewBox="0 0 24 24" fill="none">
@@ -62,131 +26,105 @@
                                                                       fill="black"></path>
 															</svg>
 														</span>
-                                <input type="text" class="form-control form-control-solid w-250px ps-15"
-                                       x-model="search" @input.debounce="searchData()" placeholder="Cari...">
-                            </div>
+                            <input type="text" class="form-control form-control-solid w-250px ps-15"
+                                   x-model="search" @input.debounce="searchData()" placeholder="Cari...">
                         </div>
                     </div>
-                    <div class="card-body pt-0">
-                        <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                            <div class="table-responsive">
-                                <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 dataTable no-footer"
-                                       id="kt_roles_view_table">
-                                    <thead>
-                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-200px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending"
-                                            style="width: 78.7969px;">
-                                            Nama
-                                        </th>
-                                        <th class="min-w-5px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1" aria-label="User: activate to sort column ascending"
-                                            style="width: 309.844px;">
-                                            Masa Berlaku
-                                        </th>
-                                        <th class="min-w-10px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1"
-                                            aria-label="Joined Date: activate to sort column ascending"
-                                            style="width: 180.359px;">
-                                            Status
-                                        </th>
-                                        <th class="min-w-125px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1"
-                                            aria-label="Joined Date: activate to sort column ascending"
-                                            style="width: 180.359px;">
-                                            Salinan Kontrak
-                                        </th>
-                                        <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
-                                            aria-label="Actions" style="width: 135.25px;">
-                                            Actions
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody class="fw-bold">
-                                    <template x-if="isLoading">
-                                        <tr>
-                                            <td colspan="5">
-                                                <div style="text-align: center;">
-                                                    <div class="spinner-border" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-bordered fs-6 gy-5 mb-0 dataTable no-footer"
+                               id="kt_roles_view_table">
+                            <thead>
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="min-w-200px sorting">
+                                    Nama
+                                </th>
+                                <th class="min-w-5px sorting">
+                                    Masa Berlaku
+                                </th>
+                                <th class="min-w-10px sorting">
+                                    Status
+                                </th>
+                                <th class="min-w-125px sorting">
+                                    Salinan Kontrak
+                                </th>
+                                <th class="min-w-100px sorting_disabled">
+                                    Actions
+                                </th>
+                            </tr>
+                            </thead>
+                            <template x-if="isLoading">
+                                <x-table.loading colspan="5"/>
+                            </template>
+                            <template x-if="!isLoading && contracts.data?.length === 0">
+                                <x-table.empty colspan="5"/>
+                            </template>
+                            <template x-for="(contract, index) in contracts.data" :key="contract.id">
+                                <tbody class="fw-bold text-gray-600">
+                                <tr>
+                                    <td>
+                                        <a :href="`/manage-users/users/detail/${contract.id}`"
+                                           class="text-gray-800 text-hover-primary mb-1">
+                                            <span x-text="contract.name"></span>
+                                        </a>
+                                    </td>
+                                    <td x-text="contract.contract_date"></td>
+                                    <template x-if="contract.expired === false">
+                                        <td>
+                                            <span class="badge bg-danger">Sudah Habis</span>
+                                        </td>
                                     </template>
-                                    <template x-if="!isLoading && contracts.data?.length === 0">
-                                        <tr>
-                                            <td colspan="9">
-                                                <center>Data Tidak Ditemukan</center>
-                                            </td>
-                                        </tr>
+                                    <template x-if="contract.expired === true">
+                                        <td>
+                                            <span class="badge bg-success">Masih Berlaku</span>
+                                        </td>
                                     </template>
-                                    <template x-for="(contract, index) in contracts.data" :key="contract.id">
-                                        <tr>
-                                            <td>
-                                                <a :href="`/manage-users/users/detail/${contract.id}`"
-                                                   class="text-gray-800 text-hover-primary mb-1">
-                                                    <span x-text="contract.name"></span>
-                                                </a>
-                                            </td>
-                                            <td x-text="contract.contract_date"></td>
-                                            <template x-if="contract.expired === false">
-                                                <td>
-                                                    <span class="badge bg-danger">Sudah Habis</span>
-                                                </td>
-                                            </template>
-                                            <template x-if="contract.expired === true">
-                                                <td>
-                                                    <span class="badge bg-success">Masih Berlaku</span>
-                                                </td>
-                                            </template>
-                                            <template x-if="contract.expired === true">
-                                                <td>
-                                                    <a :href="`/manage-users/contract-management/contract-pdf/${contract.id}`"
-                                                       class="btn btn-active-danger btn-light-danger btn-sm">
-                                                        <i class="bi bi-file-pdf-fill"></i>
-                                                    </a>
-                                                </td>
-                                            </template>
-                                            <template x-if="contract.expired === false">
-                                                <td>
-                                                    <button disabled
-                                                            class="btn btn-active-danger btn-light-danger btn-sm">
-                                                        <i class="bi bi-file-pdf-fill"></i>
-                                                    </button>
-                                                </td>
-                                            </template>
-                                            <template x-if="contract.expired === false">
-                                                <td class="text-end">
-                                                    <button class="btn btn-light btn-active-info btn-sm"
-                                                            @click="extendContract(contract.user_id)">
-                                                        Extend
-                                                    </button>
-                                                </td>
-                                            </template>
-                                            <template x-if="contract.expired === true">
-                                                <td class="text-end">
-                                                    <button class="btn btn-light btn-active-info btn-sm" disabled>
-                                                        Extend
-                                                    </button>
-                                                </td>
-                                            </template>
-                                        </tr>
+                                    <template x-if="contract.expired === true">
+                                        <td>
+                                            <a :href="`/manage-users/contract-management/contract-pdf/${contract.id}`"
+                                               class="btn btn-active-danger btn-light-danger btn-sm">
+                                                <i class="bi bi-file-pdf-fill"></i>
+                                            </a>
+                                        </td>
                                     </template>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <ul class="pagination float-end mb-4 mt-4">
-                                <template x-for="pagination in contracts.links">
-                                    <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                                x-html="pagination.label">
-                                        </button>
-                                    </li>
-                                </template>
-                            </ul>
-                        </div>
+                                    <template x-if="contract.expired === false">
+                                        <td>
+                                            <button disabled
+                                                    class="btn btn-active-danger btn-light-danger btn-sm">
+                                                <i class="bi bi-file-pdf-fill"></i>
+                                            </button>
+                                        </td>
+                                    </template>
+                                    <template x-if="contract.expired === false">
+                                        <td class="text-end">
+                                            <button class="btn btn-light btn-active-info btn-sm"
+                                                    @click="extendContract(contract.user_id)">
+                                                Extend
+                                            </button>
+                                        </td>
+                                    </template>
+                                    <template x-if="contract.expired === true">
+                                        <td class="text-end">
+                                            <button class="btn btn-light btn-active-info btn-sm" disabled>
+                                                Extend
+                                            </button>
+                                        </td>
+                                    </template>
+                                </tr>
+                                </tbody>
+                            </template>
+                        </table>
                     </div>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in contracts.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -247,13 +185,6 @@
                         this.isLoading = false;
                     }
                 },
-                async paginationEndPoint(url) {
-                    if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.startIndex = resp.data.from
-                        this.contracts = resp.data
-                    }
-                },
                 getMonth() {
                     this.months.push(
                         {name: "Januari", number: '01'},
@@ -270,21 +201,24 @@
                         {name: "Desember", number: '12'},
                     )
                 },
-                async nextPage() {
-                    if (this.contracts.next_page_url) {
-                        const resp = await axios.get(`${this.contracts.next_page_url}`);
-                        this.startIndex = this.contracts.from
-                        this.contracts = resp.data
+                async paginationEndPoint(url) {
+                    if (url) {
+                        this.branches = [];
+                        this.isLoading = true;
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                }
+                            });
+                            this.contracts = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
                     }
                 },
-                async previousPage() {
-                    if (this.contracts.prev_page_url) {
-                        const resp = await axios.get(`${this.contracts.prev_page_url}`);
-                        this.startIndex = this.contracts.from
-                        this.contracts = resp.data
-                    }
-                },
-
                 async extendContract(id) {
                     showConfirmModal("Anda yakin?", "Perpanjang Kontrak ?", "Ya, Perpanjang!", async () => {
                         try {

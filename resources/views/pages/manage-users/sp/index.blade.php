@@ -83,7 +83,8 @@
                             </div>
                         </div>
                         <div class="card-footer pt-4 text-end">
-                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                            <button type="submit" class="btn btn-light btn-light-info btn-sm">
+                                <x-icons.filter/>
                                 Filter
                             </button>
                         </div>
@@ -95,8 +96,9 @@
                     <div class="card-header pt-5">
                         <div class="card-title">
                             <a href="{{ url('manage-users/sp/create') }}"
-                               class="btn btn-light btn-active-primary btn-sm mx-1">
-                                <i class="bi bi-plus-circle-fill"></i> Tambah
+                               class="btn btn-light btn-light-primary btn-sm mx-1">
+                                <x-icons.add-item/>
+                                Tambah
                             </a>
                         </div>
                         <div class="card-toolbar">
@@ -126,54 +128,32 @@
                                     class="table align-middle table-row-dashed fs-6 gy-5 mb-0 dataTable no-footer table-bordered">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">
+                                        <th class="min-w-50px sorting text-center">
                                             Nomor SP
                                         </th>
-                                        <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">
+                                        <th class="min-w-50px sorting text-center">
                                             Cabang
                                         </th>
-                                        <th class="min-w-150px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1"
-                                            aria-label="User: activate to sort column ascending">
+                                        <th class="min-w-150px sorting text-center">
                                             Karyawan
                                         </th>
-                                        <th class="min-w-125px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1"
-                                            aria-label="Joined Date: activate to sort column ascending">
+                                        <th class="min-w-125px sorting text-center">
                                             Status
                                         </th>
-                                        <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
+                                        <th class="text-center min-w-100px sorting_disabled" rowspan="1" colspan="1"
                                             aria-label="Actions">
                                             Actions
                                         </th>
                                     </tr>
                                     </thead>
                                     <template x-if="isLoading">
-                                        <tbody class="fw-bold text-gray-600">
-                                        <tr>
-                                            <td colspan="5">
-                                                <div style="text-align: center;">
-                                                    <div class="spinner-border" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
+                                        <x-table.loading colspan="5"/>
                                     </template>
                                     <template x-if="!isLoading && spList.data?.length === 0">
-                                        <tbody class="fw-bold text-gray-600">
-                                        <tr>
-                                            <td colspan="9">
-                                                <center>Data Tidak Ditemukan</center>
-                                            </td>
-                                        </tr>
-                                        </tbody>
+                                        <x-table.empty colspan="5"/>
                                     </template>
                                     <template x-for="sp in spList.data" :key="sp.id">
-                                        <tbody class="fw-bold">
+                                        <tbody class="fw-bold text-center">
                                         <tr @click="spDetail(sp.id)" style="cursor: pointer"
                                             :class="{'table-active': spDetails?.id === sp.id}">
                                             <td x-text="sp.sp_number"></td>
@@ -186,11 +166,11 @@
                                             <td class="text-end">
                                                 <a :href="`/manage-users/sp/${sp.id}`"
                                                    class="btn btn-light btn-active-primary btn-sm">
-                                                    <i class="bi bi-pencil-square"></i>
+                                                    <x-icons.edit/>
                                                 </a>
                                                 <button class="btn btn-light btn-active-danger btn-sm"
                                                         @click="destroy(sp.id)">
-                                                    <i class="bi bi-trash"></i>
+                                                    <x-icons.trash/>
                                                 </button>
                                         </tr>
                                         </tbody>

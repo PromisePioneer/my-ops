@@ -1,5 +1,6 @@
 ﻿@extends('layouts.template')
 @section('page-title', 'Hak Akses')
+@section('breadcrumbs', 'Manajemen Karyawan - Hak Akses')
 @section('content')
     <div x-data="permissionsData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -67,26 +68,14 @@
                             <th class="w-50 text-center">Nama</th>
                             <th class="w-50 text-center">Actions</th>
                         </thead>
-                        <tbody class="fw-bold">
                         <template x-if="isLoading">
-                            <tr>
-                                <td colspan="9">
-                                    <div style="text-align: center;">
-                                        <div class="spinner-border" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                            <x-table.loading colspan="3"/>
                         </template>
                         <template x-if="!isLoading && permissions.data?.length === 0">
-                            <tr>
-                                <td colspan="9">
-                                    <center>Data Tidak Ditemukan</center>
-                                </td>
-                            </tr>
+                            <x-table.empty colspan="3"/>
                         </template>
                         <template x-for="(permission,index) in permissions?.data" :key="permission.id">
+                            <tbody class="fw-bold text-gray-600">
                             <tr>
                                 <td>
                                     <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -109,8 +98,8 @@
                                     </template>
                                 </td>
                             </tr>
+                            </tbody>
                         </template>
-                        </tbody>
                     </table>
                     <ul class="pagination float-end mb-4 mt-4">
                         <template x-for="pagination in permissions?.links">
@@ -207,6 +196,7 @@
                         await showAlert('success', 'Data sukses disimpan')
                         this.form.reset();
                         this.modalForm.hide();
+                        await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));

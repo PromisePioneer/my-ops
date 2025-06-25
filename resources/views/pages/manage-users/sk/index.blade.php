@@ -9,8 +9,9 @@
                         <div class="card-title">
                             <button data-bs-toggle="modal"
                                     data-bs-target="#modal-sk" @click="add()"
-                                    class="btn btn-light btn-active-primary btn-sm mx-1">
-                                <i class="bi bi-plus-circle-fill"></i> Tambah
+                                    class="btn btn-light btn-light-primary btn-sm mx-1">
+                                <x-icons.add-item/>
+                                Tambah
                             </button>
                         </div>
                         <div class="card-toolbar">
@@ -63,33 +64,17 @@
                                             aria-label="Joined Date: activate to sort column ascending">
                                             File SK
                                         </th>
-                                        <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
+                                        <th class="text-center min-w-100px sorting_disabled" rowspan="1" colspan="1"
                                             aria-label="Actions">
                                             Actions
                                         </th>
                                     </tr>
                                     </thead>
                                     <template x-if="isLoading">
-                                        <tbody class="fw-bold">
-                                        <tr>
-                                            <td colspan="5">
-                                                <div style="text-align: center;">
-                                                    <div class="spinner-border" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
+                                        <x-table.loading colspan="6"/>
                                     </template>
                                     <template x-if="!isLoading && skData.data?.length === 0">
-                                        <tbody class="fw-bold">
-                                        <tr>
-                                            <td colspan="9">
-                                                <center>Data Tidak Ditemukan</center>
-                                            </td>
-                                        </tr>
-                                        </tbody>
+                                        <x-table.empty colspan="6"/>
                                     </template>
                                     <template x-for="sk in skData.data" :key="sk.id">
                                         <tbody class="fw-bold text-center">
@@ -105,15 +90,15 @@
                                             <td x-text="sk.date"></td>
                                             <td>
                                                 <a :href="`/manage-users/sk/export-pdf/${sk.id}`"
-                                                   class="btn btn-danger btn-sm" target="_blank">
-                                                    <i class="bi bi-file-pdf-fill"></i>
+                                                   class="btn btn-light-danger btn-sm" target="_blank">
+                                                    <x-icons.print/>
                                                 </a>
                                             </td>
-                                            <td class="text-end">
+                                            <td>
                                                 <button data-bs-toggle="modal" data-bs-target="#modal-sk"
                                                         @click="edit(sk.id)"
-                                                        class="btn btn-light btn-active-primary btn-sm mx-1">
-                                                    <i class="bi bi-pencil"></i>
+                                                        class="btn btn-light btn-light-primary btn-sm mx-1">
+                                                    <x-icons.edit/>
                                                 </button>
                                             </td>
                                         </tr>

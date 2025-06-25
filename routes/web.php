@@ -57,7 +57,6 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
 use App\Http\Controllers\HRIS\PermissionController;
-use App\Http\Controllers\HRIS\RoleHierarchyController;
 use App\Http\Controllers\InitialInventoryBalanceController;
 use App\Http\Controllers\ItemCatalogController;
 use App\Http\Controllers\Master\Accounting\AccountCategoryController;
@@ -135,7 +134,6 @@ Route::prefix('/iclock')->group(function () {
     Route::get('/cdata', [IclockController::class, 'handshake']);
     Route::get('test', [IclockController::class, 'test']);
     Route::get('/getrequest', [IclockController::class, 'getRequest']);
-    Route::get('/get-attendance-via-push-sdk', [IclockController::class, 'getAttendanceViaPushSDK']);
 });
 
 
@@ -162,10 +160,6 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
     Route::prefix('/manage-users')->group(function () {
-        Route::prefix('role-hierarchy')->group(function () {
-            Route::get('/', [RoleHierarchyController::class, 'index']);
-            Route::get('/data', [RoleHierarchyController::class, 'data']);
-        });
         Route::prefix('users')->group(function () {
             Route::get('/', [UserController::class, 'index']);
             Route::get('/data', [UserController::class, 'data']);
@@ -185,6 +179,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('trashed', [UserController::class, 'trashed']);
             Route::get('trashed/data', [UserController::class, 'trashedData']);
             Route::get('/trashed/search', [UserController::class, 'trashedSearch']);
+            Route::post('/trashed/restore', [UserController::class, 'restore']);
         });
         Route::prefix('identity-information')->group(function () {
             Route::get('/{user}', [IdentityInformationController::class, 'index']);
@@ -194,7 +189,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{user}', [JobInformationController::class, 'index']);
             Route::post('/{user}', [JobInformationController::class, 'update']);
             Route::get('/view-file/{user}', [JobInformationController::class, 'viewFile']);
-            Route::get('/department/selected/{user}', [JobInformationController::class, 'getSelectedDepartment']);
             Route::get('/contract-file/{user}', [JobInformationController::class, 'contractFile']);
         });
         Route::prefix('educations')->group(function () {
@@ -243,7 +237,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [LeaveAndPermissionController::class, 'store']);
             Route::post('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'confirm']);
             Route::get('/users/data', [LeaveAndPermissionController::class, 'getUserData']);
-            Route::get('/branch/data', [LeaveAndPermissionController::class, 'getBranchData']);
             Route::get('/users/selected/{leaveAndPermission}', [LeaveAndPermissionController::class, 'selectedUserData']);
             Route::get('/filter', [LeaveAndPermissionController::class, 'filter']);
             Route::post('/', [LeaveAndPermissionController::class, 'store']);
@@ -261,7 +254,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/list-of-reason/{sp}', [SpController::class, 'getListOfReason']);
             Route::get('/{sp}', [SpController::class, 'edit']);
             Route::post('/{sp}', [SpController::class, 'update']);
-            Route::get('/confirm/{sp}', [SpController::class, 'confirm']);
             Route::delete('/{sp}', [SpController::class, 'destroy']);
             Route::get('export-pdf/{sp}', [SPController::class, 'exportToPDF']);
             Route::get('/user/current-sp/{user}', [SPController::class, 'getCurrentSp']);
@@ -272,7 +264,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [ContractManagementController::class, 'data']);
             Route::get('/filter', [ContractManagementController::class, 'filter']);
             Route::get('/search', [ContractManagementController::class, 'search']);
-            Route::post('/store', [ContractManagementController::class, 'store']);
             Route::get('/{contractManagement}', [ContractManagementController::class, 'edit']);
             Route::post('/{contractManagement}', [ContractManagementController::class, 'update']);
             Route::delete('/{contractManagement}', [ContractManagementController::class, 'destroy']);
@@ -317,7 +308,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/users/data/{area}', [AreaDetailController::class, 'getUser']);
                 Route::post('/{area}', [AreaDetailController::class, 'assignUser']);
                 Route::get('/search/{area}', [AreaDetailController::class, 'search']);
-                Route::get('users/selected/{area}', [AreaDetailController::class, 'selectedUser']);
                 Route::get('/show/{user}', [AreaDetailController::class, 'show']);
                 Route::post('/save-week-holiday/{user}', [AreaDetailController::class, 'assignWeekHoliday']);
             });
@@ -360,8 +350,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [ContactController::class, 'index']);
                 Route::get('/data', [ContactController::class, 'data']);
                 Route::get('/search', [ContactController::class, 'search']);
-                Route::get('/branch/data', [ContactController::class, 'branchData']);
-                Route::get('filter/branch/data/{branch}', [ContactController::class, 'filterByBranch']);
                 Route::post('/', [ContactController::class, 'store']);
                 Route::get('/edit/{contact}', [ContactController::class, 'edit']);
                 Route::post('/destroy', [ContactController::class, 'destroy']);
@@ -432,7 +420,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/search', [AccountCategoryController::class, 'search']);
                 Route::post('/', [AccountCategoryController::class, 'store']);
                 Route::post('/create-child/{accountCategory}', [AccountCategoryController::class, 'storeChild']);
-                Route::post('/import', [AccountCategoryController::class, 'import']);
                 Route::post('/destroy', [AccountCategoryController::class, 'destroy']);
                 Route::get('/edit/{accountCategory}', [AccountCategoryController::class, 'edit']);
                 Route::post('/update/{accountCategory}', [AccountCategoryController::class, 'update']);
@@ -445,7 +432,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [AccountController::class, 'data']);
                 Route::get('/search', [AccountController::class, 'search']);
                 Route::post('/', [AccountController::class, 'store']);
-                Route::post('/import', [AccountController::class, 'import']);
                 Route::post('/destroy', [AccountController::class, 'destroy']);
                 Route::get('/edit/{account}', [AccountController::class, 'edit']);
                 Route::post('/update/{account}', [AccountController::class, 'update']);
@@ -482,11 +468,9 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/{asset}', [AssetController::class, 'edit']);
                 Route::get('/data', [AssetController::class, 'data']);
                 Route::get('/search', [AssetController::class, 'search']);
-                Route::get('/branch/data', [AssetController::class, 'getBranchData']);
                 Route::get('/debit-account/data', [AssetController::class, 'getDebitAccount']);
                 Route::get('/credit-account/data', [AssetController::class, 'getCreditAccount']);
                 Route::get('/account/selected/{asset}', [AssetController::class, 'selectedAccount']);
-                Route::get('/branch/selected/{asset}', [AssetController::class, 'selectedBranch']);
                 Route::post('/', [AssetController::class, 'store']);
                 Route::get('/{asset}', [AssetController::class, 'edit']);
                 Route::post('/update/{asset}', [AssetController::class, 'update']);
@@ -556,7 +540,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [PSBController::class, 'index']);
                 Route::get('/data', [PSBController::class, 'data']);
                 Route::get('/area/data', [PSBController::class, 'getAreaData']);
-                Route::get('/search', [PSBController::class, 'search']);
                 Route::post('/', [PSBController::class, 'store']);
                 Route::get('/{psb}', [PSBController::class, 'edit']);
                 Route::post('/{psb}', [PSBController::class, 'update']);
@@ -570,10 +553,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/search', [WorkTimeController::class, 'search']);
                 Route::post('/', [WorkTimeController::class, 'store']);
                 Route::post('/destroy', [WorkTimeController::class, 'destroy']);
-                Route::post('/{workTime}', [WorkTimeController::class, 'update']);
-                Route::post('/detail/data/destroy', [WorkTimeController::class, 'destroyDetailWorktimeUser']);
                 Route::post('/set-global-default-work-time/{workTime}', [WorkTimeController::class, 'setGlobalDefaultWorkTime']);
-                Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
                 Route::get('/show-default-work-time', [WorkTimeController::class, 'showDefaultWorkTime']);
             });
 
@@ -628,7 +608,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/sp/data', [UserProfileController::class, 'spData']);
             Route::get('/leaves', [UserProfileController::class, 'leavePage']);
             Route::get('/leaves/data', [UserProfileController::class, 'leavesData']);
-            Route::get('/leaves/search', [UserProfileController::class, 'searchLeaves']);
 
             Route::prefix('attendance-records')->group(function () {
                 Route::get('/', [AttendanceRecordController::class, 'index']);
@@ -679,18 +658,12 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('financial-report')->group(function () {
             Route::get('/', [FinancialReportController::class, 'index']);
             Route::get('/data', [FinancialReportController::class, 'data']);
-            Route::get('/current-assets/data', [FinancialReportController::class, 'getCurrentAsset']);
-            Route::get('/fixed-assets/data', [FinancialReportController::class, 'getFixedAsset']);
             Route::get('/branch/data', [FinancialReportController::class, 'getBranchData']);
             Route::get('/filter', [FinancialReportController::class, 'filter']);
-            Route::get(
-                '/accumulated-depreciation-of-fixed-assets-account',
-                [FinancialReportController::class, 'accumulatedDepreciationOfFixedAssetsAccount']
-            );
+
         });
 
         Route::prefix('assets-depreciation')->group(function () {
-            Route::get('/', [AssetDepreciationController::class, 'index']);
             Route::get('/data', [AssetDepreciationController::class, 'data']);
         });
 
@@ -712,8 +685,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('stocks')->group(function () {
             Route::get('/', [StockController::class, 'index']);
             Route::get('/data', [StockController::class, 'data']);
-            Route::get('/search', [StockController::class, 'goodsSearch']);
-            Route::get('/filter', [StockController::class, 'goodsFilter']);
             Route::get('/show/{itemCollection}', [StockController::class, 'show']);
             Route::get('/detail/{stock}', [StockController::class, 'detail']);
             Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
@@ -728,7 +699,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [StockWithdrawalController::class, 'filter']);
             Route::get('/create', [StockWithdrawalController::class, 'create']);
             Route::post('/store', [StockWithdrawalController::class, 'store']);
-            Route::get('/edit/{stockWithdrawal}', [StockWithdrawalController::class, 'edit']);
             Route::get('/show/{stockWithdrawal}', [StockWithdrawalController::class, 'show']);
             Route::delete('/destroy/{stockWithdrawal}', [StockWithdrawalController::class, 'destroy']);
             Route::post('/confirmed-by-pic/{stockWithdrawal}', [StockWithdrawalController::class, 'confirmedByPIC']);
@@ -761,7 +731,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [DraftStockController::class, 'index']);
             Route::get('/data', [DraftStockController::class, 'data']);
             Route::get('/search', [DraftStockController::class, 'search']);
-            Route::post('/', [DraftStockController::class, 'store']);
             Route::get('/filter', [DraftStockController::class, 'filter']);
             Route::get('/get-qty', [DraftStockController::class, 'getQty']);
             Route::get('/show/{draftStock}', [DraftStockController::class, 'show']);
@@ -826,21 +795,10 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('offering-letters')->group(function () {
             Route::get('/', [OfferingLetterController::class, 'index']);
             Route::get('/data', [OfferingLetterController::class, 'data']);
-            Route::get('/branch/data', [OfferingLetterController::class, 'branchData']);
-            Route::get('filter/branch/data/{branch}', [OfferingLetterController::class, 'filterByBranch']);
             Route::get('/search', [OfferingLetterController::class, 'search']);
             Route::get('/create', [OfferingLetterController::class, 'create']);
-            Route::get('/contact/data', [OfferingLetterController::class, 'getContactData']);
-            Route::get('/service-categories/data', [OfferingLetterController::class, 'getServicesCategoriesData']);
-            Route::get('/unit-types/data', [OfferingLetterController::class, 'getUnitType']);
-            Route::get('/unit-types/selected/{offeringLetterProduct}', [OfferingLetterController::class, 'getSelectedUnitType']);
-            Route::get('/skl/data', [OfferingLetterController::class, 'getSKL']);
-            Route::get('/skl/selected/{offeringLetterServiceDescription}', [OfferingLetterController::class, 'getSelectedSKL']);
             Route::post('/', [OfferingLetterController::class, 'store']);
-            Route::get('/users/data', [OfferingLetterController::class, 'getUserData']);
-            Route::get('/users/selected/{offeringLetter}', [OfferingLetterController::class, 'selectedUser']);
             Route::post('/update/{offeringLetter}', [OfferingLetterController::class, 'update']);
-            Route::get('/view-file/{offeringLetter}', [OfferingLetterController::class, 'viewFile']);
             Route::get('/detail/{offeringLetter}', [OfferingLetterController::class, 'show']);
             Route::get('/edit/{offeringLetter}', [OfferingLetterController::class, 'edit']);
             Route::get(
@@ -850,10 +808,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get(
                 '/get-selected-offering-letters-service-description/{offeringLetter}',
                 [OfferingLetterController::class, 'getOfferingLetterDescription']
-            );
-            Route::get(
-                '/get-selected-contact/{offeringLetter}',
-                [OfferingLetterController::class, 'getSelectedContact']
             );
             Route::get(
                 '/get-selected-services/{offeringLetter}',
@@ -869,17 +823,12 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [PurchaseOrderController::class, 'data']);
             Route::get('/search', [PurchaseOrderController::class, 'search']);
             Route::get('/create', [PurchaseOrderController::class, 'create']);
-            Route::get('/contacts/data', [PurchaseOrderController::class, 'getContactData']);
-            Route::get('/unit-types/data', [PurchaseOrderController::class, 'getUnitTypeData']);
-            Route::get('/users/data', [PurchaseOrderController::class, 'getUserData']);
             Route::get('/offering-letter/{contact}', [PurchaseOrderController::class, 'getOfferingLetterIfExists']);
             Route::post('/', [PurchaseOrderController::class, 'store']);
             Route::get('/detail/{purchaseOrder}', [PurchaseOrderController::class, 'detail']);
             Route::post('/confirm/{purchaseOrder}', [PurchaseOrderController::class, 'confirm']);
             Route::get('/export-pdf/{purchaseOrder}', [PurchaseOrderController::class, 'exportToPDF']);
             Route::get('/edit/{purchaseOrder}', [PurchaseOrderController::class, 'edit']);
-            Route::get('/pic/selected/{purchaseOrder}', [PurchaseOrderController::class, 'selectedPIC']);
-            Route::get('/contact/selected/{purchaseOrder}', [PurchaseOrderController::class, 'selectedContact']);
             Route::get('/purchase-order-item/selected/{purchaseOrder}', [PurchaseOrderController::class, 'getPurchaseOrderItem']);
             Route::post('/update/{purchaseOrder}', [PurchaseOrderController::class, 'update']);
         });
@@ -888,28 +837,17 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [FabController::class, 'index']);
             Route::get('/data', [FabController::class, 'data']);
             Route::get('/search', [FabController::class, 'search']);
-            Route::get('/branch/data', [FabController::class, 'branchData']);
-            Route::get('/filter/branch/data/{branch}', [FabController::class, 'filterByBranch']);
-            Route::get('/offering-letter/{contact}', [FabController::class, 'getOfferingLetterIfExists']);
             Route::get('/create', [FabController::class, 'create']);
-            Route::get('/po/data', [FabController::class, 'getPOData']);
-            Route::get('/services-categories/data', [FabController::class, 'getServicesCategoriesData']);
             Route::post('/', [FabController::class, 'store']);
             Route::get('/view-file/{fab}', [FabController::class, 'viewFile']);
             Route::get('/detail/{fab}', [FabController::class, 'detail']);
             Route::get('/edit/{fab}', [FabController::class, 'edit']);
-            Route::get('/get-selected-po/{fab}', [FabController::class, 'selectedPO']);
             Route::get('/get-selected-services/{fab}', [FabController::class, 'selectedServices']);
             Route::get('/get-selected-skl/{fab}', [FabController::class, 'selectedSKL']);
             Route::post('/update/{fab}', [FabController::class, 'update']);
             Route::post('/confirm/{fab}', [FabController::class, 'confirm']);
-            Route::get('/jurnal-entry/{fab}', [FabController::class, 'jurnalEntry']);
-            Route::get('/users/data', [FabController::class, 'getUserData']);
-            Route::get('/users/selected/{fab}', [FabController::class, 'getSelectedUser']);
             Route::delete('/{fab}', [FabController::class, 'destroy']);
             Route::get('/export-pdf/{fab}', [FabController::class, 'exportPDF']);
-            Route::get('/get-skl/data', [FabController::class, 'getSkl']);
-            Route::get('/get-unit-type/data', [FabController::class, 'getUnitType']);
             Route::get('/contract-pdf/{fab}', [FabController::class, 'contractPDF']);
         });
 
@@ -927,13 +865,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/confirm/{baa}', [BAAController::class, 'confirm']);
             Route::get('/edit/{baa}', [BAAController::class, 'edit']);
             Route::get('/export-pdf/{baa}', [BAAController::class, 'exportPDF']);
-            Route::get('/spk/{baa}', [BAAController::class, 'spk']);
             Route::delete('destroy/{baa}', [BAAController::class, 'destroy']);
             Route::post('save-spk/{baa}', [BAAController::class, 'saveSpk']);
             Route::get('get-spk/{baa}', [BAAController::class, 'getSpk']);
             Route::get('get-selected-from/{user}', [BAAController::class, 'getSelectedFrom']);
             Route::get('get-selected-to/{user}', [BAAController::class, 'getSelectedTo']);
-            Route::get('users/data', [BAAController::class, 'getUserData']);
             Route::get('spk/export-pdf/{baa}', [BAAController::class, 'exportSpkToPDF']);
         });
 
@@ -946,14 +882,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/baa/selected/{bast}', [BastController::class, 'selectedBAA']);
             Route::get('/create', [BastController::class, 'create']);
             Route::get('/branch/data', [BastController::class, 'branchData']);
-            Route::get('/filter/branch/data/{branch}', [BastController::class, 'filterByBranch']);
-            Route::get('/contact/data', [BastController::class, 'contactData']);
             Route::post('/', [BastController::class, 'store']);
             Route::get('/view-file/{bast}', [BastController::class, 'viewFile']);
             Route::get('/detail/{bast}', [BastController::class, 'detail']);
             Route::get('/edit/{bast}', [BastController::class, 'edit']);
             Route::get('/get-selected-contact/{bast}', [BastController::class, 'getSelectedContact']);
-            Route::get('/get-selected-products/{bast}', [BastController::class, 'getProductBast']);
             Route::post('/update/{bast}', [BastController::class, 'update']);
             Route::post('/confirm/{bast}', [BastController::class, 'confirm']);
             Route::delete('/{bast}', [BastController::class, 'destroy']);
@@ -964,7 +897,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/create', [InvoiceController::class, 'create']);
             Route::get('/account/data', [InvoiceController::class, 'getAccountData']);
             Route::get('/contact/data', [InvoiceController::class, 'getContact']);
-            Route::get('/branch/data', [InvoiceController::class, 'branchData']);
             Route::get('/filter/branch/data/{branch}', [InvoiceController::class, 'filterByBranch']);
             Route::post('/generate-invoice/', [InvoiceController::class, 'store']);
             Route::get('/data', [InvoiceController::class, 'data']);
@@ -1053,10 +985,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
             Route::post('/test-connection/{fpDevice}', [FpDevicesController::class, 'testConnection']);
             Route::post('/attendance-log/{fpDevice}', [FpDevicesController::class, 'getAttendances']);
-
             Route::get('/restart-device/{fpDevice}', [FpDevicesController::class, 'restartDevice']);
-            Route::post('/get-users/{fpDevice}', [FpDevicesController::class, 'getUser']);
-
             Route::get('/job-status/{fpDevice}', [FpDevicesController::class, 'getJobStatus']);
         });
 
@@ -1066,12 +995,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
             Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
-            Route:: get('/branch/data', [AttendanceSummaryController::class, 'getBranchData']);
-            Route::get('/department/data', [AttendanceSummaryController::class, 'getDepartmentData']);
-            Route::get('/roles/data', [AttendanceSummaryController::class, 'getRolesData']);
-            Route::get('/detail/running-commands/{user}', [AttendanceSummaryController::class, 'getRunningCommands']);
-            Route::get('/detail/deactivate-active-commands/{user}', [AttendanceSummaryController::class, 'deactivateRunningCommand']);
-            Route::get('/detail/get-fp-devices', [AttendanceSummaryController::class, 'getFPDeviceData']);
             Route::get('/detail/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detailData']);;
             Route::get('/filter', [AttendanceSummaryController::class, 'filter']);
@@ -1093,10 +1016,6 @@ Route::group(['middleware' => ['auth']], static function () {
         });
     });
 
-    Route::get('/love-you-with-all-my-heart', [AttendanceSummaryController::class, 'absenTanpaMesin'])->name(
-        'absenTanpaMesin'
-    );
-    Route::post('/love-you-with-all-my-heart/simpan', [AttendanceSummaryController::class, 'simpanAbsenTanpaMesin']);
 
 
     Route::prefix('payroll/setting')->group(function () {
@@ -1119,7 +1038,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [PositionAllowancesController::class, 'filter']);
             Route::get('/data', [PositionAllowancesController::class, 'data']);
             Route::get('/search', [PositionAllowancesController::class, 'search']);
-            Route::post('/', [PositionAllowancesController::class, 'store']);
             Route::get('/{user}', [PositionAllowancesController::class, 'show']);
             Route::post('/{user}', [PositionAllowancesController::class, 'updateOrStore']);
         });
@@ -1142,7 +1060,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('allowances/transportation')->group(function () {
             Route::get('/', [TransportationAllowanceController::class, 'index']);
             Route::get('/data', [TransportationAllowanceController::class, 'data']);
-            Route::get('/search', [TransportationAllowanceController::class, 'search']);
             Route::get('/user/data', [TransportationAllowanceController::class, 'getUserData']);
             Route::get(
                 '/user/selected/{userHasTransportationAllowance}',
@@ -1269,7 +1186,6 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('payroll/generate-payroll')->group(function () {
         Route::prefix('/employee')->group(function () {
             Route::get('/', [GeneratePayrollController::class, 'index']);
-            Route::get('/attendances-data', [GeneratePayrollController::class, 'data']);
             Route::get('/attendance-summary', [GeneratePayrollController::class, 'getAttendancesSummary']);
             Route::get('/user-job-info', [GeneratePayrollController::class, 'getUserJobInformation']);
         });
@@ -1345,7 +1261,6 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('account-transactions')->group(function () {
         Route::get('/data/{account}', [AccountTransactionController::class, 'accountTransactionHistory']);
         Route::get('/{account}', [AccountTransactionController::class, 'index']);
-        Route::get('/search', [AccountTransactionController::class, 'search']);
     });
 });
 

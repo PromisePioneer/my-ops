@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 #[AllowDynamicProperties] class UserController extends Controller
 {
@@ -60,10 +61,7 @@ use Maatwebsite\Excel\Facades\Excel;
     }
 
 
-    public function trashedSearch(Request $request): JsonResponse
-    {
-        return response()->json($this->userService->trashedSearch($request));
-    }
+
 
     /**
      * @throws AuthorizationException
@@ -149,7 +147,7 @@ use Maatwebsite\Excel\Facades\Excel;
     }
 
     /**
-     * @throws AuthorizationException
+     * @throws AuthorizationException|Throwable
      */
     public function update(UserRequest $request, User $user): JsonResponse
     {
@@ -209,19 +207,6 @@ use Maatwebsite\Excel\Facades\Excel;
         return response()->json($this->userService->getUserHasArea($request));
     }
 
-
-    public function getStockerByBranchId(Request $request): JsonResponse
-    {
-        return response()->json($this->userService->getStockerByBranchId($request));
-    }
-
-
-    public function getUserByBranch(Request $request): JsonResponse
-    {
-        return response()->json($this->userService->getUserByBranch($request));
-    }
-
-
     public function getUnassignedTechnician(Request $request, Branch $branch): JsonResponse
     {
         return response()->json($this->userService->getUnassignedTechnician($request, $branch));
@@ -230,15 +215,33 @@ use Maatwebsite\Excel\Facades\Excel;
 
     public function trashed(): View
     {
+        $this->authorize('viewArchived', User::class);
         return view('pages.manage-users.user.trashed.index');
     }
 
-
     public function trashedData(): JsonResponse
     {
+        $this->authorize('viewArchived', User::class);
         return response()->json($this->userService->trashedData());
     }
 
+    public function trashedSearch(Request $request): JsonResponse
+    {
+        $this->authorize('viewArchived', UserService::class);
+        return response()->json($this->userService->trashedSearch($request));
+    }
 
+    public function restore(Request $request, User $user): JsonResponse
+    {
+        $this->authorize('viewArchived', $user);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $trashedUsers = $this->user->onlyTrashed()->whereIn('id', $explodeID)->get();
+        foreach ($trashedUsers as $trashedUser) {
+            $trashedUser->restore();
+        }
+
+        return response()->json(['message' => 'data berhasil di kembalikan']);
+    }
 
 }

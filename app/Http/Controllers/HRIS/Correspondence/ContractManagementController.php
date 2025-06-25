@@ -31,8 +31,7 @@ use Spatie\Browsershot\Browsershot;
 
     public function data(): JsonResponse
     {
-        return response()
-            ->json($this->contractManagementService->data());
+        return response()->json($this->contractManagementService->data());
     }
 
 
@@ -65,9 +64,9 @@ use Spatie\Browsershot\Browsershot;
     }
 
 
-    public function update(ContractManagementRequest $request, ContractManagement $contractManagement): JsonResponse
+    public function update(Request $request, ContractManagement $contractManagement): JsonResponse
     {
-        $data = $request->validated();
+        $data = $request->all();
         $contractManagement->update($data);
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -83,7 +82,7 @@ use Spatie\Browsershot\Browsershot;
 
     public function contractFile(User $user): Response
     {
-        $contract = ContractManagement::with('user', 'user.education', 'user.identityInformation')
+        $contract = ContractManagement::with('user')
             ->where(
             'user_id',
             $user->id

@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Models\FpDevice;
 use App\Support\FpDevice\Repository\FpDeviceRepository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -30,11 +31,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $data = $this->fpDevice->search($search)->query(function ($query) use ($request) {
-            $fpDevice = $query->orderBy('name');
-            FpDeviceQueryFilter::apply($fpDevice, $request);
+        $data = $this->fpDevice->search($search)->query(function (Builder $query) use ($request) {
+            FpDeviceQueryFilter::apply($query, $request);
         })->paginate(self::$perPage);
-
         return self::formattedData($data);
     }
 
@@ -52,10 +51,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $fpDevice = $data->getCollection()->map(function ($query) {
             return [
                 'id' => $query->id,
-                'name' => $query->name,
                 'serial_number' => $query->serial_number,
                 'ip_address' => $query->ip_address,
-                'branch_name' => $query->branch?->name,
+                'branch_name' => "{$query->branch->parent->name} - {$query->branch?->name}",
                 'online' => $query->online ? 'Online' : 'Offline',
                 'last_download_date' => $query->attendanceJobProgress?->created_at ? Carbon::parse($query->attendanceJobProgress->created_at) : null,
                 'last_download_status' => $query->attendanceJobProgress?->status ?? null,

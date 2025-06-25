@@ -100,29 +100,6 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
         ]);
     }
 
-    public function getUser(FpDevice $fpDevice)
-    {
-        $zk = new ZKTeco($fpDevice->ip_address, 4370);
-        $connected = $zk->connect();
-
-        if ($connected) {
-            $users = $zk->getUser();
-            $fpTemplate = [];
-
-            foreach ($users as $user) {
-                $uid = $user['uid'];
-                $fingerprintData = $zk->getFingerprint($uid);
-
-                $fpTemplate[] = [
-                    'user' => $user,
-                    'fingerprint' => $fingerprintData
-                ];
-            }
-            return response()->json(mb_convert_encoding($fpTemplate, 'UTF-8', 'UTF-8'));
-        }
-        return response()->json(['message' => 'error']);
-    }
-
 
 
     public function restartDevice(FpDevice $fpDevice): JsonResponse

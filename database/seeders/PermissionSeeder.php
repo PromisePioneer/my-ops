@@ -311,9 +311,9 @@ class PermissionSeeder extends Seeder
             'Tambah Data Karyawan',
             'Edit Data Karyawan',
             'Hapus Data Karyawan',
-            'Aktifasi Data Karyawan',
             'Lihat Detail Data Karyawan',
-            'Import Data Karyawan'
+            'Import Data Karyawan',
+            'Lihat Menu Arsip Karyawan',
         ];
 
         foreach ($permissions as $permission) {

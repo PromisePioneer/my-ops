@@ -12,8 +12,12 @@ return new class () extends Migration {
     {
         Schema::create('fp_devices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->nullable()->constrained('branches');
-            $table->string('name');
+            $table->foreignId('branch_id')
+                ->index()
+                ->nullable()
+                ->constrained('branches')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->string('serial_number');
             $table->string('ip_address');
             $table->string('online')->nullable();

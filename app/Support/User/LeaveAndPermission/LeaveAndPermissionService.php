@@ -165,8 +165,7 @@ use function App\Helper\formatDate;
     {
         $search = $request->input('search');
         $users = User::search($search)->query(function ($query) use ($request) {
-            $newQuery = $query->where('active', true);
-            UserSelect2QueryFilter::apply($newQuery, $request);
+            UserSelect2QueryFilter::apply($query, $request);
         })->get();
 
         return $users->map(function ($item) {

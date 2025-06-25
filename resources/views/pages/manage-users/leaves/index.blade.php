@@ -24,6 +24,7 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-leaves"
                                 >
+                                    <x-icons.add-item/>
                                     Tambah
                                 </button>
                             </div>
@@ -73,26 +74,15 @@
                                         <th class="min-w-125px">TGL Pengajuan</th>
                                         <th class="min-w-125px">Action</th>
                                     </thead>
-                                    <tbody class=" fw-bold">
                                     <template x-if="isLoading">
-                                        <tr>
-                                            <td colspan="9">
-                                                <div style="text-align: center;">
-                                                    <div class="spinner-border" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <x-table.loading colspan="9"/>
                                     </template>
                                     <template x-if="!isLoading && leaves.data?.length === 0">
-                                        <tr>
-                                            <td colspan="9">
-                                                <center>Data Tidak Ditemukan</center>
-                                            </td>
-                                        </tr>
+                                        <x-table.empty colspan="9"/>
                                     </template>
                                     <template x-for="(leave, index) in leaves?.data" :key="index">
+                                        <tbody class="fw-bold">
+
                                         <tr>
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -183,8 +173,8 @@
                                                 </td>
                                             </template>
                                         </tr>
+                                        </tbody>
                                     </template>
-                                    </tbody>
                                 </table>
                             </div>
                             <ul class="pagination float-end mb-4">
@@ -203,6 +193,7 @@
         </div>
     </div>
     @include('components.toast')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script>
@@ -237,9 +228,10 @@
                 months: [],
                 async init() {
                     this.getMonth();
-                    await this.getMainBranches();
+                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
+                    await select2('.users-select2', 'Pilih Karyawan', '/manage-users/leaves/users/data');
                     await this.getLeavesData();
-                    await this.getUserData();
+                    await this.userOnChange();
                 },
                 getMonth() {
                     this.months.push(
@@ -257,22 +249,20 @@
                         {name: "Desember", number: '12'},
                     )
                 },
+                async userOnChange() {
+                    $('.users-select2').on('change', async () => {
+                        const userId = $(".users-select2").val()
+                        const resp = await axios.get(`/manage-users/leaves/leaves-left`, {
+                            params: {
+                                user_id: userId
+                            }
+                        });
+
+                        this.leavesLeft = resp.data
+                    })
+                },
                 async add() {
                     this.editVal = null;
-                },
-                async getMainBranches() {
-                    $(".main-branches-select2").select2({
-                        allowClear: true,
-                        placeholder: 'Pilih Cabang',
-                        ajax: {
-                            url: '/select2/main-branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -354,27 +344,6 @@
                         this.isLoading = false;
                     }
                 },
-                async selectedUserData(id) {
-                    const self = this;
-                    const selectedUser = $('#selected-user');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-user/${id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedUser.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-
-                    const resp = await axios.get('/manage-users/leaves/leaves-left', {
-                        params: {
-                            user_id: response.id
-                        }
-                    });
-                    this.leavesLeft = resp.data;
-                },
                 async getUserData() {
                     const self = this;
                     $(".users-select2").select2({
@@ -424,7 +393,16 @@
                     this.editVal = resp.data;
                     this.leavesStatus = this.editVal.leaves_status;
                     this.importantLeaveType = this.editVal.important_leaves;
-                    await this.selectedUserData(this.editVal.user_id);
+                    await selectedValue('selected-user', `/select2/selected-user/${this.editVal.user_id}`);
+                    await this.getLeavesLeft(this.editVal.user_id);
+                },
+                async getLeavesLeft(id) {
+                    const resp = await axios.get('/manage-users/leaves/leaves-left', {
+                        params: {
+                            user_id: id
+                        }
+                    });
+                    this.leavesLeft = resp.data;
                 },
                 async confirm(id) {
                     this.buttonLoading = true;

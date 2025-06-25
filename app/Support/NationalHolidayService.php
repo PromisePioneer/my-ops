@@ -12,7 +12,6 @@ class NationalHolidayService
     public function getNationalHoliday(Carbon $startDate, Carbon $endDate)
     {
         $nationalHoliday = NationalHoliday::whereBetween('date', [$startDate, $endDate])->orderBy('date')->get();
-
         return self::formattedData($nationalHoliday);
     }
 

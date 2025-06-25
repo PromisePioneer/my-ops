@@ -71,7 +71,7 @@ use function App\Helper\formatDate;
     public function filter(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $users = User::withsearch($search)->query(function ($query) use ($request) {
+        $users = User::search($search)->query(function ($query) use ($request) {
             $getUsers = $this->userRepository->getUsers($query, $request);
             UserQueryFilter::apply($getUsers, $request);
         })->paginate(self::$perPage);
@@ -93,6 +93,7 @@ use function App\Helper\formatDate;
                 'join_date' => formatDate($user->join_date),
                 'profile_pic' => $user->profile_pic,
                 'last_login' => $user->last_login ? Carbon::parse($user->last_login)->diffForHumans() : null,
+                'absent_id' => $user->absent_id,
             ];
         });
 
