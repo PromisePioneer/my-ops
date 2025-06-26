@@ -6,7 +6,7 @@ use App\Models\User;
 
 class AttendancesSummaryRepository
 {
-    public function getAttendancesSummary($startDate, $endDate)
+    public function getAttendancesSummary($query, $startDate, $endDate)
     {
         return User::select('id', 'nip', 'name', 'profile_pic', 'absent_id')
             ->with([

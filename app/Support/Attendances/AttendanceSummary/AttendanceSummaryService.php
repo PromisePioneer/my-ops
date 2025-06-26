@@ -4,6 +4,7 @@ namespace App\Support\Attendances\AttendanceSummary;
 
 use AllowDynamicProperties;
 use App\Models\EmployeeSchedule;
+use App\Models\User;
 use App\Models\WeekHoliday;
 use App\Support\Attendances\EmployeeSchedule\Repository\EmployeeScheduleRepository;
 use App\Support\Attendances\Repository\AttendancesSummaryRepository;
@@ -57,12 +58,10 @@ use Illuminate\Http\Request;
         $search = $request->input('search');
 
 
-        $query = $this->attendancesSummaryRepository->getAttendancesSummary($startDate, $endDate);
-
-        if (!empty($search)) {
-            $query->where('name', 'like', '%' . $search . '%');
-        }
-        $attendanceSummary = AttendancesACLFilter::apply($query, $request)->paginate(self::$perPage);
+        $attendanceSummary = User::search($search)->query(function ($query) use ($startDate, $endDate, $request) {
+            $attendanceSummary = $this->attendancesSummaryRepository->getAttendancesSummary($query, $startDate, $endDate);
+            AttendancesACLFilter::apply($attendanceSummary, $request);
+        })->paginate(self::$perPage);
         $weeklyLateCount = $this->weeklyLateCount($attendanceSummary);
         $userIds = $attendanceSummary->getCollection()->pluck('id');
         $absentIds = $attendanceSummary->getCollection()->pluck('absent_id');

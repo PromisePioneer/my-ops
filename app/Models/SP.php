@@ -3,16 +3,13 @@
 namespace App\Models;
 
 use App\Models\Master\Common\Branch;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Laravel\Scout\Searchable;
 
 class SP extends Model
 {
-    use HasFactory, Searchable;
+    use Searchable;
 
     protected $table = 'sp';
 
