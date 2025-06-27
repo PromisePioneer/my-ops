@@ -67,10 +67,10 @@
                                 </template>
                             </thead>
                             <template x-if="isLoading">
-                                <x-table.loading colspan="2"/>
+                                <x-table.loading colspan="3"/>
                             </template>
                             <template x-if="!isLoading && skl.data?.length === 0">
-                                <x-table.loading colspan="2"/>
+                                <x-table.loading colspan="3"/>
                                 <template x-for="service in skl?.data" :key="service.id">
                                     <tbody class="fw-bold text-center">
                                     <tr>
