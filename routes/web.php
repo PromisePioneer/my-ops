@@ -336,6 +336,15 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/show/{unitType}', [UnitTypeController::class, 'edit']);
                 Route::post('/destroy', [UnitTypeController::class, 'destroy']);
                 Route::post('/update/{unitType}', [UnitTypeController::class, 'update']);
+
+
+                Route::prefix('/archives')->group(function () {
+                    Route::get('/', [UnitTypeController::class, 'archives']);
+                    Route::get('/data', [UnitTypeController::class, 'archivedData']);
+                    Route::get('/search', [UnitTypeController::class, 'archivedSearch']);
+                    Route::post('/restore', [UnitTypeController::class, 'restore']);
+                    Route::post('/force-delete', [UnitTypeController::class, 'forceDelete']);
+                });
             });
 
             Route::prefix('skl')->group(function () {

@@ -122,7 +122,7 @@ use Psy\Util\Json;
     public function trashed(): View
     {
         $this->authorize('viewArchives', Contact::class);
-        return view('pages.master.common.contacts.archived');
+        return view('pages.master.common.contacts.archives');
     }
 
     public function trashedData(): JsonResponse

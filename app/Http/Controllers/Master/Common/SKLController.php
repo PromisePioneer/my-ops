@@ -138,7 +138,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
     public function restore(Request $request, SKL $skl): JsonResponse
     {
-
         $this->authorize('viewArchives', $skl);
         $this->sklService->restore($request, $skl);
         return response()->json(['message' => 'Data berhasil disimpan.']);

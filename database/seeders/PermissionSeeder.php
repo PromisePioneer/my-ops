@@ -821,6 +821,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data Satuan',
             'Edit Data Satuan',
             'Hapus Data Satuan',
+            'Lihat Arsip Data Satuan'
         ];
 
 

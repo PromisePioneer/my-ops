@@ -18,29 +18,29 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         @can('Tambah Data Satuan')
-                            <button type="button" class="btn btn-light-primary btn-sm"
+                            <button type="button" class="btn btn-light-primary btn-sm me-2"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-unit-type">
                                 <x-icons.add-item/>
                                 Tambah
                             </button>
                         @endcan
+                        <a href="{{ url('/master/common/unit-types/archives/') }}"
+                           class="btn btn-light-secondary btn-sm">
+                            <x-icons.archived/>
+                            Arsip
+                        </a>
                     </div>
                 </div>
             </div>
             <div class="card-body py-3">
                 <div class="col-12 ">
                     <form id="form-delete" @submit.prevent="destroy()">
-                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox.filter((val) => val !== 'on')">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
-                            <i class="ki-duotone ki-trash-square fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
+                            <x-icons.trash/>
                             Hapus
                         </button>
                     </form>
