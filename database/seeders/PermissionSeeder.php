@@ -836,6 +836,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data SKL',
             'Edit Data SKL',
             'Hapus Data SKL',
+            'Lihat Data Arsip SKL'
         ];
 
         foreach ($permissions as $permission) {
@@ -944,6 +945,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data Kontak',
             'Edit Data Kontak',
             'Hapus Data Kontak',
+            'Lihat Data Arsip Kontak'
         ];
         foreach ($contacts as $contact) {
             Permission::create(['name' => $contact]);

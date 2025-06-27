@@ -31,6 +31,7 @@ return new class extends Migration {
             $table->enum('type', ['Client', 'Supplier']);
             $table->enum('tax_type', ['PKP', 'NON PKP'])->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -40,6 +41,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('suppliers');
+        Schema::dropIfExists('contacts');
     }
 };

@@ -33,4 +33,10 @@ class ContactPolicy
     {
         return $user->can('Hapus Data Kontak');
     }
+
+
+    public function viewArchives(User $user): bool
+    {
+        return $user->can('Lihat Data Arsip Kontak');
+    }
 }

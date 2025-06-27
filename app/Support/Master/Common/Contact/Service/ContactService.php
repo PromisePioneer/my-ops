@@ -5,9 +5,11 @@ namespace App\Support\Master\Common\Contact\Service;
 use AllowDynamicProperties;
 use App\Enum\Contact\ContactType;
 use App\Http\Requests\Master\Common\Contact\ContactRequest;
+use App\Models\Master\Common\Branch;
 use App\Models\Master\Common\Contact;
 use App\Support\Master\Common\Contact\Interface\ContactServiceInterface;
 use App\Support\Master\Common\Contact\Repository\ContactRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -160,4 +162,51 @@ use Illuminate\Support\Collection;
             'name' => "$contact->code - $contact->name $contactTaxType"
         ];
     }
+
+
+    public function trashedData(): LengthAwarePaginator
+    {
+        $data = $this->contact->onlyTrashed()->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+
+    public function trashedSearch(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $data = $this->contact::search($search)->onlyTrashed()->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+    public function restore(Request $request, Contact $contact): ?bool
+    {
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        return $contact->whereIn('id', $explodeID)->restore();
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function forceDelete(Request $request, Contact $contact): void
+    {
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+
+
+        $contacts = $contact->with(['transaction', 'offeringLetter', 'initialInventoryBalance'])->whereIn('id', $request->get('id'))
+            ->onlyTrashed()
+            ->get();
+
+        foreach ($contacts as $archivedContact) {
+            if ($archivedContact->ifHasRelatedData($archivedContact)) {
+                throw new \Exception('Data sudah terikat dengan data lainnya, tidak bisa dihapus secara permanen!');
+            } else {
+                $archivedContact->forceDelete();
+            }
+        }
+    }
+
+
 }

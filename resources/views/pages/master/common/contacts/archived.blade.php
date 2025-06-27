@@ -1,10 +1,9 @@
-﻿@extends('layouts.template')
-@section('page-title', 'Kontak')
-@section('breadcrumbs', 'Master Umum - Kontak')
+@extends('layouts.template')
+@section('page-title', 'Arsip Kontak')
+@section('breadcrumbs', 'Master Umum - Kontak - Arsip')
 @section('content')
 
-    <div x-data="contactsData()">
-        @include('pages.master.common.contacts.form')
+    <div x-data="contactTrashedData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -16,31 +15,19 @@
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
-                <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            @can('Tambah Data Kontak')
-                                <button type="button" class="btn btn-light-primary btn-sm me-2" @click="add()"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#contact-modal">
-                                    <x-icons.add-item/>
-                                    Tambah
-                                </button>
-                            @endcan
-                            @can('Lihat Data Arsip Kontak')
-                                <a href="{{ url('/master/common/contact/archives') }}"
-                                   class="btn btn-light-secondary btn-sm">
-                                    <x-icons.archived/>
-                                    Arsip
-                                </a>
-                            @endcan
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="card-body py-3">
                 <div class="col-12 ">
-                    <form id="form-delete" @submit.prevent="destroy()">
+                    <form id="restore-form" @submit.prevent="restore()">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox.filter((val) => val !== 'on')">
+                        <button type="submit" class="btn btn-light-info btn-sm mt-5"
+                                x-show="selectedCheckBox.length > 0"
+                                x-transition x-cloak>
+                            <x-icons.restore/>
+                            Pulihkan
+                        </button>
+                    </form>
+                    <form id="force-delete-form" @submit.prevent="forceDelete()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox.filter((val) => val !== 'on')">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
@@ -68,7 +55,7 @@
                                 <x-table.loading colspan="4"/>
                             </template>
                             <template x-if="!isLoading && contacts.data?.length === 0">
-                                <x-table.empty colspan="4"/>
+                                <x-table.empty colspan="5"/>
                             </template>
                             <template x-for="contact in contacts?.data" :key="contact.id">
                                 <tbody class="fw-bold">
@@ -93,15 +80,22 @@
                             </template>
                         </table>
                     </div>
-                    <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in contacts.links">
-                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link" @click="paginate(pagination.url)"
-                                        x-html="pagination.label">
-                                </button>
-                            </li>
-                        </template>
-                    </ul>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <a href="{{ url('/master/common/contact/') }}" class="btn btn-light-danger btn-sm">
+                            <x-icons.back/>
+                            Kembali
+                        </a>
+
+                        <ul class="pagination float-end mb-4 mt-4">
+                            <template x-for="pagination in contacts.links">
+                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                    <button class="page-link" @click="paginate(pagination.url)"
+                                            x-html="pagination.label">
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,11 +104,8 @@
 @endsection
 @push('script')
     <script>
-        function contactsData() {
+        function contactTrashedData() {
             return {
-                createPermission: "{{  request()->user()->can('Tambah Data Kontak')  }}",
-                editPermission: "{{  request()->user()->can('Edit Data Kontak')  }}",
-                deletePermission: "{{ request()->user()->can('Hapus Data Kontak') }}",
                 contacts: [],
                 isLoading: false,
                 buttonLoading: false,
@@ -123,16 +114,14 @@
                 contactType: null,
                 singleChecked: false,
                 search: '',
-                editVal: '',
-                form: document.getElementById('contact-form'),
-                modal: new bootstrap.Modal(document.getElementById('contact-modal')),
-                formDelete: document.getElementById('form-delete'),
+                restoreForm: document.getElementById('restore-form'),
+                forceDeleteForm: document.getElementById('force-delete-form'),
                 async init() {
                     await this.contactData();
                 },
                 async searchData() {
                     try {
-                        const resp = await axios.get('/master/common/contact/search', {
+                        const resp = await axios.get('/master/common/contact/archives/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -140,10 +129,6 @@
                     } catch (error) {
                         console.error('Error fetching data:', error);
                     }
-                },
-                add() {
-                    this.form.reset();
-                    this.editVal = '';
                 },
                 async paginate(url) {
                     if (url) {
@@ -164,18 +149,17 @@
                     }
                 },
                 toggleAllCheckBox() {
-                    if (Number(this.deletePermission) === 1) {
-                        this.selectAll = !this.selectAll;
-                        this.singleChecked = false;
-                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                        this.selectedCheckBox = [];
-                        checkboxes.forEach((checkbox) => {
-                            checkbox.checked = this.selectAll;
-                            if (this.selectAll) {
-                                this.selectedCheckBox.push(checkbox.value);
-                            }
-                        });
-                    }
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
@@ -188,35 +172,24 @@
                         }
                     }
                 },
-                async saveContact(id = null) {
-                    this.buttonLoading = true;
-                    try {
-                        if (!id) {
-                            await axios.post(`/master/common/contact`, new FormData(this.form))
-                        } else {
-                            await axios.post(`/master/common/contact/update/${id}`, new FormData(this.form))
-                        }
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.form.reset();
-                        this.modal.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async edit(id) {
-                    const resp = await axios.get(`/master/common/contact/edit/${id}`);
-                    this.editVal = resp.data;
-                    this.contactType = resp.data.type
-                },
-                async destroy() {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                async forceDelete() {
+                    showConfirmModal("Anda yakin?", "Data akan hilang secara permanen.", "Ya, Hapus Permanen!", async () => {
                         try {
-                            await axios.post(`/master/common/contact/destroy`, new FormData(this.formDelete));
-                            await showAlert('success', 'Data sukses dihapus');
+                            await axios.post(`/master/common/contact/archives/force-delete`, new FormData(this.forceDeleteForm));
+                            await showAlert('success', 'Data sukses dihapus permanen');
+                            await this.init();
+                            this.selectedCheckBox = [];
+                        } catch (error) {
+                            console.log(error)
+                            await showAlert('error', error.response.data.message);
+                        }
+                    });
+                },
+                async restore() {
+                    showConfirmModal("Anda yakin?", "Data akan dipulihkan.", "Ya, pulihkan!", async () => {
+                        try {
+                            await axios.post(`/master/common/contact/archives/restore`, new FormData(this.restoreForm));
+                            await showAlert('success', 'Data sukses dipulihkan');
                             await this.init();
                             this.selectedCheckBox = [];
                         } catch (error) {
@@ -225,10 +198,11 @@
                         }
                     });
                 },
+
                 async contactData() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get('/master/common/contact/data')
+                        const resp = await axios.get('/master/common/contact/archives/data')
                         this.contacts = resp.data
                     } catch (e) {
                         console.log(e)

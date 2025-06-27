@@ -37,4 +37,9 @@ class SKLPolicy
     {
         return $user->can('Hapus Data SKL');
     }
+
+    public function viewArchives(User $user): bool
+    {
+        return $user->can('Lihat Data Arsip SKL');
+    }
 }

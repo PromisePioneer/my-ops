@@ -2,16 +2,20 @@
 
 namespace App\Models\Master\Common;
 
+use App\Models\InitialInventoryBalance;
 use App\Models\OfferingLetter;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Laravel\Scout\Searchable;
 
 class Contact extends Model
 {
-    use HasFactory, Searchable;
+    use Searchable, SoftDeletes;
 
     protected $table = 'contacts';
 
@@ -46,8 +50,27 @@ class Contact extends Model
     }
 
 
-    public function offeringLetter(): HasOne
+    public function offeringLetter(): HasMany
     {
-        return $this->HasOne(OfferingLetter::class);
+        return $this->hasMany(OfferingLetter::class, 'contact_id');
+    }
+
+
+    public function transaction(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'contact_id');
+    }
+
+
+    public function initialInventoryBalance(): HasMany
+    {
+        return $this->hasMany(InitialInventoryBalance::class, 'contact_id');
+    }
+
+    public function ifHasRelatedData($query): bool
+    {
+        return $query->offeringLetter()->exists()
+            || $query->transaction()->exists()
+            || $query->initialInventoryBalance()->exists();
     }
 }
