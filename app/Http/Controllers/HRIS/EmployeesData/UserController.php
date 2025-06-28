@@ -208,10 +208,10 @@ use Throwable;
     }
 
 
-    public function archivedData(): JsonResponse
+    public function archivedData(Request $request): JsonResponse
     {
         $this->authorize('viewArchives', User::class);
-        return response()->json($this->userService->getArchivedData());
+        return response()->json($this->userService->getArchivedData($request));
     }
 
 
