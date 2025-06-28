@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers\Master\Common;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SKLRequest;
 use App\Models\Master\Common\SKL;
+use App\Support\Master\Common\SKL\Service\SKLService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class SKLController extends Controller
+#[AllowDynamicProperties] class SKLController extends Controller
 {
-    private static int $perPage = 10;
+
+
+    public function __construct()
+    {
+        $this->sklService = new SKLService();
+    }
 
     /**
      * @throws AuthorizationException
@@ -29,8 +36,7 @@ class SKLController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', SKL::class);
-        $data = SKL::orderBy('name')->paginate(self::$perPage);
-        return response()->json($data);
+        return response()->json($this->sklService->data());
     }
 
     /**
@@ -39,11 +45,7 @@ class SKLController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', SKL::class);
-        $search = $request->input('search');
-        $data = SKL::search($search)->query(function ($query) {
-            $query->orderBy('name');
-        })->paginate(self::$perPage);
-        return response()->json($data);
+        return response()->json($this->sklService->search($request));
     }
 
 
@@ -53,7 +55,7 @@ class SKLController extends Controller
     public function store(SKLRequest $request): JsonResponse
     {
         $this->authorize('create', SKL::class);
-        SKL::create($request->validated());
+        $this->sklService->store($request);
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
 
@@ -73,7 +75,6 @@ class SKLController extends Controller
     public function update(SKLRequest $request, SKL $skl): JsonResponse
     {
         $this->authorize('update', $skl);
-        $skl->update($request->validated());
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
 
@@ -83,10 +84,7 @@ class SKLController extends Controller
     public function destroy(Request $request, SKL $skl): JsonResponse
     {
         $this->authorize('delete', $skl);
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $skl->whereIn('id', $explodeID)->delete();
-
+        $this->sklService->destroy($request, $skl);
         return response()->json([
             'message' => 'data berhasil dihapus',
         ]);
@@ -115,5 +113,42 @@ class SKLController extends Controller
             'id' => $skl->id,
             'text' => $skl->name,
         ];
+    }
+
+    public function archives(): View
+    {
+        $this->authorize('viewArchives', SKL::class);
+        return view('pages.master.common.skl.archives');
+    }
+
+
+    public function archivedData(): JsonResponse
+    {
+        $this->authorize('viewArchives', SKL::class);
+        return response()->json($this->sklService->archivedData());
+    }
+
+
+    public function searchArchivedData(Request $request): JsonResponse
+    {
+        $this->authorize('viewArchives', SKL::class);
+        return response()->json($this->sklService->archivedSearch($request));
+    }
+
+
+    public function restore(Request $request, SKL $skl): JsonResponse
+    {
+        $this->authorize('viewArchives', $skl);
+        $this->sklService->restore($request, $skl);
+        return response()->json(['message' => 'Data berhasil disimpan.']);
+    }
+
+
+    public function forceDelete(Request $request, SKL $skl): JsonResponse
+    {
+
+        $this->authorize('viewArchives', $skl);
+        $this->sklService->forceDelete($request, $skl);
+        return response()->json(['message' => 'Data berhasil dihapus secara permanen.']);
     }
 }

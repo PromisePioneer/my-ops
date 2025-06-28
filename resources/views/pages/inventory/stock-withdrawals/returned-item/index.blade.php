@@ -1,0 +1,353 @@
+@extends('layouts.template')
+@section('page-title', 'Pengembalian Barang')
+@section('breadcrumbs', 'Inventory Controller - Pemakaian Barang - Pengembalian Barang')
+@section('content')
+    <div x-data="returnedItemsData()">
+        @include('pages.inventory.stock-withdrawals.returned-item.modal.if-meter')
+        @include('pages.inventory.stock-withdrawals.returned-item.modal.single-and-without-category-3')
+        @include('pages.inventory.stock-withdrawals.returned-item.modal.category3')
+        @include('pages.inventory.stock-withdrawals.returned-item.modal.category4')
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2>Barang dibawa</h2>
+                        </div>
+                        <div class="card-toolbar">
+                            <a href="{{ url('/inventory/stock-withdrawals') }}" class="btn btn-light-danger btn-sm">
+                                <x-icons.back/>
+                                Kembali
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-bordered fs-6 gy-5">
+                                <thead>
+                                <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="w-10px pe-2">#</th>
+                                    <th class="min-w-125px">Kode</th>
+                                    <th class="min-w-125px">Barang</th>
+                                    <th class="min-w-125px">Qty</th>
+                                    <th class="min-w-125px">Status Terkini</th>
+                                    <th class="min-w-125px">Actions</th>
+                                </tr>
+                                </thead>
+                                <template x-if="isLoading">
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="5">
+                                            <div style="text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-if="!isLoading && carriedStock?.length === 0">
+                                    <tbody class="fw-bolder text-center">
+                                    <tr>
+                                        <td colspan="6">
+                                            <center>Data Tidak Ditemukan</center>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-for="(stock, index) in carriedStock" :key="index">
+                                    <tbody class="fw-bolder text-center">
+                                    <tr>
+                                        <td x-text="startIndex + index++"></td>
+                                        <td x-text="stock.code ?? '-'"></td>
+                                        <td x-text="stock.item_name"></td>
+                                        <td>
+                                            <span x-text="stock.qty"></span>
+                                        </td>
+                                        <td>
+                                            <template x-if="!stock.returned_item">
+                                                <span
+                                                    class="!stock_returned_item">Belum Dikembalikan / Terpakai / Habis</span>
+                                            </template>
+                                            <template x-if="stock.returned_item">
+                                                <span
+                                                    class="!stock_returned_item">Sudah Dikembalikan / Terpakai / Habis</span>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <template x-if="!stock.returned_item">
+                                                <div>
+                                                    <template
+                                                        x-if="stock.unit_type !== 'Meter' && stock.category !== 'Kategori 3'  && stock.code">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-single-and-without-category-3"
+                                                                @click="getStockWithdrawalItem(stock.id)">
+                                                            <i class="ki-duotone ki-tablet-up fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                                <span class="path3"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
+                                                    <template
+                                                        x-if="stock.unit_type !== 'Meter' && stock.category === 'Kategori 3'">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-category-3"
+                                                                @click="getStockWithdrawalItem(stock.id)">
+                                                            <i class="ki-duotone ki-tablet-up fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                                <span class="path3"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
+                                                    <template
+                                                        x-if="stock.unit_type === 'Meter' && stock.category === 'Kategori 1'">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-if-unit-type-meter"
+                                                                @click="getStockWithdrawalItem(stock.id)">
+                                                            <i class="ki-duotone ki-tablet-up fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                                <span class="path3"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
+                                                    <template x-if="stock.category === 'Kategori 4' && !stock.code">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-category-4"
+                                                                @click="getStockWithdrawalItem(stock.id)">
+                                                            <i class="ki-duotone ki-tablet-up fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                                <span class="path3"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                        </td>
+
+                                    </tr>
+                                    </tbody>
+                                </template>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2>Barang dikembalikan / terpakai / habis</h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-bordered fs-6 gy-5">
+                                <thead>
+                                <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="w-10px pe-2">#</th>
+                                    <th class="min-w-125px">Kode</th>
+                                    <th class="min-w-125px">Barang</th>
+                                    <th class="min-w-125px">Terpakai</th>
+                                    <th class="min-w-125px">Dikembalikan</th>
+                                    <th class="min-w-125px">Rusak</th>
+                                    <th class="min-w-125px">Bukti</th>
+                                </tr>
+                                </thead>
+                                <template x-if="isLoading">
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="7">
+                                            <div style="text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-if="!isLoading && consumedOrAppliedStock.data?.length === 0">
+                                    <tbody class="fw-bolder text-center">
+                                    <tr>
+                                        <td colspan="7">
+                                            <center>Data Tidak Ditemukan</center>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-for="(stock, index) in consumedOrAppliedStock.data" :key="index">
+                                    <tbody class="fw-bolder text-center">
+                                    <tr>
+                                        <td x-text="startIndex + index++"></td>
+                                        <td x-text="stock.code ?? '-'"></td>
+                                        <td x-text="stock.item_name"></td>
+                                        <td x-text="stock.consumed_qty"></td>
+                                        <td x-text="stock.returned_qty"></td>
+                                        <td x-text="stock.broken_qty"></td>
+                                        <td>
+                                            <a href="#">
+                                                <div class="symbol-label">
+                                                    <a href="#" @click="openImageList(stock.attachment)">
+                                                        <img :src="getImageURL(stock.attachment ?? null)"
+                                                             alt="Image" class="w-100 h-200px">
+                                                    </a>
+                                                </div>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @include('components.toast')
+        </div>
+        @endsection
+        @push('script')
+            <script>
+                function returnedItemsData() {
+                    return {
+                        isLoading: false,
+                        buttonLoading: false,
+                        returnedItems: [],
+                        search: '',
+                        selectedCheckBox: [],
+                        carriedStock: [],
+                        itemStatusForItemExceptUnitTypeValue: null,
+                        startIndex: 1,
+                        consumedOrAppliedStock: [],
+                        id: "{{ $stockWithdrawal->id }}",
+                        stockWithdrawalItem: {},
+                        itemStatus: 'Sisa',
+                        itemStatusWithoutCategory3AndUnitTypeMeter: null,
+                        itemCondition: null,
+                        modalIfUnitTypeMeter: new bootstrap.Modal(document.getElementById('modal-if-unit-type-meter')),
+                        formIfUnitTypeMeter: document.getElementById('form-if-unit-type-meter'),
+                        modalSingleAndWithoutCategory3: new bootstrap.Modal(document.getElementById('modal-single-and-without-category-3')),
+                        formSingleAndWithoutCategory3: document.getElementById('form-single-and-without-category-3'),
+                        modalCategory3: new bootstrap.Modal(document.getElementById('modal-category-3')),
+                        formCategory3: document.getElementById('form-category-3'),
+                        modalCategory4: new bootstrap.Modal(document.getElementById('modal-category-4')),
+                        formCategory4: document.getElementById('form-category-4'),
+                        async init() {
+                            await this.getCarriedStock();
+                            await this.getConsumedOrAppliedStock();
+                        },
+                        async getCarriedStock() {
+                            this.isLoading = true;
+                            try {
+                                const resp = await axios.get(`/inventory/stock-withdrawals/stock-withdrawal-items/${this.id}`);
+                                this.carriedStock = resp.data
+                            } catch (e) {
+                                console.log(e);
+                            } finally {
+                                this.isLoading = false;
+                            }
+                        },
+                        async getStockWithdrawalItem(id) {
+                            try {
+                                const resp = await axios.get(`/inventory/stock-withdrawals/stock-withdrawal-item/${id}`);
+                                this.stockWithdrawalItem = resp.data;
+                            } catch (e) {
+                                console.log(e);
+                            }
+                        },
+                        async getConsumedOrAppliedStock() {
+                            try {
+                                const resp = await axios.get(`/inventory/returned-items/${this.id}`);
+                                this.consumedOrAppliedStock = resp.data;
+                                this.startIndex = this.consumedOrAppliedStock.from
+                            } catch (e) {
+                                console.log(e);
+                            }
+                        },
+                        async ifUnitTypeMeterStore() {
+                            this.buttonLoading = true;
+                            try {
+                                await axios.post(`/inventory/returned-items/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formIfUnitTypeMeter));
+                                await showAlert('success', 'Data berhasil disimpan');
+                                await this.init();
+                            } catch (error) {
+                                const respError = error.response.data.errors;
+                                Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                            } finally {
+                                this.buttonLoading = false;
+                            }
+                        },
+                        async itemStatusWithoutCategory3AndUnitTypeMeterStore() {
+                            this.buttonLoading = true;
+                            try {
+                                await axios.post(`/inventory/returned-items/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formSingleAndWithoutCategory3));
+                                await showAlert('success', 'Data berhasil disimpan');
+                                await this.init();
+                                await this.modalSingleAndWithoutCategory3.hide();
+                            } catch (error) {
+                                const respError = error.response.data.errors;
+                                Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                            } finally {
+                                this.buttonLoading = false;
+                            }
+                        },
+                        async itemCategory3Store() {
+                            this.buttonLoading = true;
+                            try {
+                                await axios.post(`/inventory/returned-items/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}}`, new FormData(this.formCategory3));
+                                await showAlert('success', 'Data berhasil disimpan');
+                                await this.init();
+                                await this.modalCategory3.hide();
+                            } catch (error) {
+                                const respError = error.response.data.errors;
+                                Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                            } finally {
+                                this.buttonLoading = false;
+                            }
+                        },
+                        async itemCategory4Store() {
+                            this.buttonLoading = true;
+                            try {
+                                await axios.post(`/inventory/returned-items/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formCategory4));
+                                await showAlert('success', 'Data berhasil disimpan');
+                                await this.init();
+                                await this.modalCategory4.hide();
+                            } catch (error) {
+                                const respError = error.response.data.errors;
+                                Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                            } finally {
+                                this.buttonLoading = false;
+                            }
+                        },
+                        openImageList(imagePath) {
+                            const lightbox = new FsLightbox();
+                            if (imagePath === null) {
+                                const placeholders = 'assets/media/avatars/blank.png'
+                                const image = "{{ asset('')  }}" + placeholders;
+                                lightbox.props.sources = [image, image];
+                                lightbox.open();
+                            } else {
+                                const image = "{{  Storage::url('') }}" + imagePath;
+                                lightbox.props.sources = [image];
+                                lightbox.open();
+                            }
+                        },
+                        getImageURL(imagePath) {
+                            if (imagePath === null) {
+                                const placeholders = 'assets/media/avatars/blank.png'
+                                return "{{ asset('') }}" + placeholders;
+                            }
+                            return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
+                        },
+                    }
+                }
+            </script>
+    @endpush

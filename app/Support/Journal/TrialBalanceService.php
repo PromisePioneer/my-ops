@@ -29,22 +29,26 @@ class TrialBalanceService
             $debit = 0;
             $childDebit = 0;
 
+            if ($account->trial_balance_type === 'debit') {
                 $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
                 $childDebit = $account->children->sum(function ($child) use ($request, $account) {
                     return $this->getFilteredTransactionSum($child, 'debit', $request);
                 });
+            }
 
             $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
+
             $childCredit = $account->children->sum(function ($child) use ($request) {
                 return $this->getFilteredTransactionSum($child, 'credit', $request);
             });
 
+
             return [
                 'trial_balance_type' => $account->trial_balance_type,
                 'account_name' => $account->name,
-                'debit' => currencyFormat(($debit + $childDebit) - $childCredit) ?? null,
-                'credit' => currencyFormat($credit + $childCredit) ?? null,
-                'balance_debit' => $account->trial_balance_type === 'debit' ? floatval(($debit + $childDebit) - ($credit + $childCredit)) : null,
+                'debit' => $account->trial_balance_type === 'debit' ? currencyFormat(($debit + $childDebit) - $childCredit) : null,
+                'credit' => $account->trial_balance_type === 'credit' ? currencyFormat($credit + $childCredit) : null,
+                'balance_debit' => $account->trial_balance_type === 'debit' ? floatval(($debit + $childDebit) - $childCredit) : null,
                 'balance_credit' => $account->trial_balance_type === 'credit' ? floatval($credit + $childCredit) : null,
             ];
         });
@@ -52,8 +56,7 @@ class TrialBalanceService
 
     public function getFilteredTransactionSum($account, $type, ?Request $request): float
     {
-        $transactions = $account->accountTransaction()->where('entries_type', $type)
-            ->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'), Carbon::now()->endOfYear()->lastOfMonth()->format('Y-m-d')]);
+        $transactions = $account->accountTransaction()->where('entries_type', $type)->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'), Carbon::now()->endOfYear()->lastOfMonth()->format('Y-m-d')]);
 
         if ($request?->branch_id) {
             $transactions->where('branch_id', $request->branch_id);
@@ -76,23 +79,20 @@ class TrialBalanceService
 
     public function filter(Request $request): array
     {
-
         $query = $this->query();
-
-
         return [
             'trial_balance' => $this->formattedData($query, $request),
-            'total_debit' => currencyFormat($this->getTotalDebit($request)->sum('amount')),
-            'total_credit' => currencyFormat($this->getTotalCredit($request)->sum('amount')),
+            'total_debit' => currencyFormat($this->getTotalDebit($request)),
+            'total_credit' => currencyFormat($this->getTotalCredit($request)),
         ];
     }
 
-    public function getTotalDebit(Request $request): Builder
+    public function getTotalDebit(Request $request): string
     {
         return $this->getFilteredTotal('debit', $request);
     }
 
-    private function getFilteredTotal(string $type, Request $request): Builder
+    private function getFilteredTotal(string $type, Request $request): string
     {
         $query = AccountTransaction::with('account')
             ->whereHas('account', function ($query) use ($type) {
@@ -111,10 +111,10 @@ class TrialBalanceService
             $query->whereMonth('date', $request->month);
         }
 
-        return $query;
+        return $query->sum('amount');
     }
 
-    public function getTotalCredit(Request $request): Builder
+    public function getTotalCredit(Request $request): string
     {
         return $this->getFilteredTotal('credit', $request);
     }

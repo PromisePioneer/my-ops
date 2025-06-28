@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
+use App\Http\Requests\ReturnedItemRequest;
 use App\Http\Requests\StockWithdrawalRequest;
 use App\Models\ItemCatalog;
+use App\Models\ReturnedItem;
 use App\Models\Stock;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalItem;
+use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Inventory\StockWithdrawal\Service\StockWithdrawalService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -19,9 +22,11 @@ use Throwable;
 #[AllowDynamicProperties] class StockWithdrawalController extends Controller
 {
 
+
     public function __construct()
     {
         $this->stockWithdrawalService = new StockWithdrawalService();
+        $this->handleUploadService = new HandleFileUploadService();
     }
 
 
@@ -112,7 +117,7 @@ use Throwable;
                 $stock = Stock::where('id', $item->stock_id)->first();
                 $stock->increment('qty', $item->qty);
                 $stock->decrement('on_hold_qty', $item->qty);
-                }
+            }
             $stockWithdrawal->delete();
         });
     }
@@ -150,49 +155,113 @@ use Throwable;
 
     public function getStockWithdrawalItem(StockWithdrawalItem $stockWithdrawalItem): JsonResponse
     {
-        return response()->json($stockWithdrawalItem);
+        $itemCatalog = ItemCatalog::with('item.category', 'item.unitType')
+            ->where('code', $stockWithdrawalItem->code)
+            ->first();
+        return response()->json([
+            'withdrawal_item' => $stockWithdrawalItem,
+            'item_catalog' => $itemCatalog
+        ]);
     }
 
 
     /**
      * @throws Throwable
      */
-    public function returningItems(Request $request, StockWithdrawalItem $stockWithdrawalItem): void
+    public function returningItems(ReturnedItemRequest $request, StockWithdrawalItem $stockWithdrawalItem): void
     {
         $stockWithdrawalItem->load('stock');
         DB::transaction(function () use ($request, $stockWithdrawalItem) {
-            if ($stockWithdrawalItem->code) {
-                $stockWithdrawalItem->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
-                $itemCatalog = ItemCatalog::where('code', $stockWithdrawalItem?->code)->first();
-                ItemCatalog::create([
-                    'transaction_id' => $stockWithdrawalItem->stock?->transaction_id,
-                    'stock_id' => $stockWithdrawalItem->stock?->id,
-                    'draft_stock_id' => $stockWithdrawalItem->stock?->draft_stock_id,
-                    'item_id' => $stockWithdrawalItem->stock?->item_id,
-                    'code' => $itemCatalog->code,
-                    'condition' => $itemCatalog->condition,
-                    'created_by' => $itemCatalog->created_by,
-                    'status' => $request->input('status') === 'Terpakai' ? 'Terpakai' : 'Tersedia',
-                    'initial_balance_inventory_id' => $stockWithdrawalItem->stock?->initial_balance_inventory_id,
-                    'asset_id' => $itemCatalog->asset_id,
+            $itemCatalog = ItemCatalog::with('stock.item')->where('code', $stockWithdrawalItem->code)->first();
+            if ($itemCatalog->stock->item->type === 'ASET' && $itemCatalog->stock->item->category->name === 'Kategori 1') {
+                ReturnedItem::create([
+                    'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
+                    'status' => $request->status,
+                    'remaining_qty' => $request->remaining_qty,
+                    'item_condition' => $request->item_condition,
+                    'broken_qty' => $request->broken_qty,
+                    'attachment' => $this->handleUploadService->upload(
+                        $request,
+                        'documents/returned-items/attachment/',
+                        'attachment',
+                    ),
                 ]);
-                $itemCatalog->delete();
-                $stockWithdrawalItem->update([
-                    'status' => $request->input('status')
-                ]);
-                if ($request->input('status') === 'Dikembalikan') {
-                    $stockWithdrawalItem->stock->increment('qty');
+                $itemCatalog->decrement('qty_in_meter', $itemCatalog->qty_in_meter - $request->remaining_qty);
+                if ($request->item_condition === 'Rusak') {
+                    $itemCatalog->increment('broken_qty', $request->broken_qty ?? 1);
                 }
-            } else {
-                $stockWithdrawalItem->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
-                $stockWithdrawalItem->update([
-                    'qty_used' => $stockWithdrawalItem->qty - $request->input('qty'),
-                    'qty' => $request->input('qty'),
+            }
+
+
+            if (!empty($stockWithdrawalItem->code) && $itemCatalog->stock->item->category->name !== 'Kategori 3') {
+                ReturnedItem::create([
+                    'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
+                    'status' => $request->status,
+                    'remaining_qty' => 1,
+                    'item_condition' => $request->item_condition,
+                    'broken_qty' => $request->item_condition === 'Rusak' ? 1 : 0,
+                    'attachment' => $this->handleUploadService->upload(
+                        $request,
+                        'documents/returned-items/attachment/',
+                        'attachment',
+                    ),
                 ]);
-                $stockWithdrawalItem->stock->increment('qty', $request->input('qty'));
-                $stockWithdrawalItem->update([
-                    'status' => 'Habis',
-                ]);
+                if ($request->item_condition === 'Rusak') {
+                    $stock = Stock::where('condition', $request->item_condition)
+                        ->where(function ($query) use ($itemCatalog) {
+                            $query->where('transaction_id', $itemCatalog->transaction_id)
+                                ->orWhere('initial_balance_inventory_id', $itemCatalog->initial_balance_inventory_id);
+                        })->first();
+
+                    if (empty($stock)) {
+                        $stock = Stock::create([
+                            'transaction_id' => $itemCatalog->stock->transaction_id,
+                            'branch_id' => $itemCatalog->stock->branch_id,
+                            'item_id' => $itemCatalog->item_id,
+                            'qty' => 1,
+                            'draft_stock_id' => $itemCatalog->stock->draft_stock_id,
+                            'condition' => $request->item_condition,
+                            'on_hold_qty' => 0,
+                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
+                        ]);
+
+                        ItemCatalog::create([
+                            'transaction_id' => $itemCatalog->transaction_id,
+                            'stock_id' => $stock->id,
+                            'draft_stock_id' => $itemCatalog->stock->draft_stock_id,
+                            'item_id' => $itemCatalog->item_id,
+                            'code' => $itemCatalog->code,
+                            'condition' => $request->item_condition,
+                            'created_by' => $itemCatalog->created_by,
+                            'status' => 'Tersedia',
+                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
+                            'asset_id' => $itemCatalog->asset_id,
+                        ]);
+                        $itemCatalog->delete();
+
+                    } else {
+                        $stock->increment('qty');
+                        $itemCatalog->stock->increment('qty');
+                        ItemCatalog::create([
+                            'transaction_id' => $itemCatalog->transaction_id,
+                            'stock_id' => $stock->id,
+                            'draft_stock_id' => $itemCatalog->stock->draft_stock_id,
+                            'item_id' => $itemCatalog->item_id,
+                            'code' => $itemCatalog->code,
+                            'condition' => $request->item_condition,
+                            'created_by' => $itemCatalog->created_by,
+                            'status' => 'Tersedia',
+                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
+                            'asset_id' => $itemCatalog->asset_id,
+                        ]);
+                        $itemCatalog->delete();
+                    }
+                } else {
+                    $itemCatalog->stock->increment('qty');
+                    $itemCatalog->update([
+                        'status' => 'Tersedia',
+                    ]);
+                }
             }
         });
     }

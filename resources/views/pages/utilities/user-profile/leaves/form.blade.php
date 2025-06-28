@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-form">
+<div class="modal fade" tabindex="-1" id="modal-leaves">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,8 +9,15 @@
                 </div>
             </div>
 
-            <form id="form" @submit.prevent="save(editVal.id)">
+            <form id="form-leaves" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Pilih Karyawan</label>
+                        <select name="user_id" id="selected-user" class="form-select form-select-solid users-select2"
+                                data-dropdown-parent="#modal-leaves">
+                            <option></option>
+                        </select>
+                    </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Status Cuti</label>
                         <select name="leaves_status" id="leaves_status" class="form-select form-select-solid"
@@ -74,7 +81,7 @@
                             </option>
                             <option value="Anggota Keluarga Meninggal Dunia"
                                     :selected="editVal?.important_leaves === 'Anggota Keluarga Meninggal Dunia'">
-                                Suami / istri / orang tua / mertua / anak / menantu meninggal dunia
+                                Suami / istri / orang tua / mertua / anak / nenek / kakek / menantu / anak menantu meninggal dunia
                             </option>
                             <option value="Anggota Keluarga Dalam Satu Rumah Meninggal Dunia"
                                     :selected="editVal?.important_leaves === 'Anggota Keluarga Dalam Satu Rumah Meninggal Dunia'">
@@ -110,6 +117,7 @@
                                   data-kt-autosize="true" placeholder="ALasan" x-text="editVal?.reason"></textarea>
                     </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary btn-sm" :disabled="buttonLoading"

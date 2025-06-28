@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Master\Common\Branch;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,10 +26,14 @@ class StockMutationRequest extends FormRequest
      */
     public function rules(Request $request): array
     {
+        $ifMutationItemNotExists = $this->ifMutationItemNotExists($request);
+        $ifMutationOnSameBranch = $this->ifMutationOnSameBranch($request);
         return [
-            'from_branch' => ['required', $this->ifNotSelectAnyItemOption($request)],
-            'itemWithCodeFields' => [Rule::requiredIf($request->has('item_with_code_option')), 'array'],
-            'to_branch' => ['required'],
+            'from_branch' => ['required', Rule::exists('branches', 'id')],
+            'to_branch' => ['required', Rule::exists('branches', 'id')],
+            'item_category_id' => ['required', Rule::exists('item_categories', 'id'), $ifMutationItemNotExists],
+            'description' => ['required', $ifMutationOnSameBranch],
+            'receiver_id' => ['required', Rule::exists('users', 'id')],
         ];
     }
 
@@ -38,22 +43,34 @@ class StockMutationRequest extends FormRequest
         return [
             'from_branch.required' => 'Cabang asal tidak boleh kosong',
             'to_branch.required' => 'Cabang tujuan tidak boleh kosong',
+            'description.required' => 'Keterangan tidak boleh kosong',
+            'from_branch.exists' => 'Cabang asal tidak valid',
+            'to_branch.exists' => 'Cabang tujuan tidak valid',
+            'item_category_id.required' => 'Cabang kategori tidak boleh kosong',
+            'item_category_id.exists' => 'Cabang kategori tidak valid',
+            'receiver_id.required' => 'Penerima tidak boleh kosong',
+            'receiver_id.exists' => 'Penerima tidak valid',
         ];
     }
 
-
-    public function ifNotSelectAnyItemOption(Request $request): Closure
+    private function ifMutationItemNotExists(Request $request): Closure
     {
-        $itemWithCodeOption = $request->has('item_with_code_option');
-        $itemWithoutCodeOption = $request->has('item_without_code_option');
-
-
-        return static function ($attribute, $value, $fail) use ($itemWithCodeOption, $itemWithoutCodeOption) {
-            if (!$itemWithCodeOption && !$itemWithoutCodeOption) {
-                return $fail('Pilih salah satu opsi barang');
+        return function ($attribute, $value, $fail) use ($request) {
+            if (empty($request->session()->get('stock_mutation_items'))) {
+                $fail('Barang masih kosong, silahkan isi barang terlebih dahulu');
             }
+        };
+    }
 
-            return null;
+
+    private function ifMutationOnSameBranch(Request $request): Closure
+    {
+        return function ($attribute, $value, $fail) use ($request) {
+            $fromBranch = Branch::with('parent')->find($request->from_branch);
+            $toBranch = Branch::with('parent')->find($request->to_branch);
+            if ($fromBranch->id == $toBranch->id) {
+                $fail('tidak bisa mutasi ke sub cabang yg sama silahkan pilih sub cabang / cabang yang berbeda');
+            }
         };
     }
 }

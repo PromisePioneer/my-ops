@@ -35,16 +35,14 @@ class PermissionSeeder extends Seeder
         $this->assetData();
         $this->initialInventoryBalance();
 
-
-        //operational master data
-        $this->supplier();
         $this->goodsCategory();
         $this->itemCollections();
 
         // Inventory Controller
         $this->BoQ();
         $this->stock();
-        $this->consumedStock();
+        $this->stockWithdrawal();
+        $this->mustReorderItem();
 
         // journal
         $this->generalJournal();
@@ -607,21 +605,6 @@ class PermissionSeeder extends Seeder
     }
 
 
-    public function supplier(): void
-    {
-        $permissions = [
-            'Lihat Menu Supplier',
-            'Tambah Data Supplier',
-            'Edit Data Supplier',
-            'Hapus Data Supplier',
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
-    }
-
-
     public function joinClosureCode(): void
     {
         $permissions = [
@@ -838,6 +821,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data Satuan',
             'Edit Data Satuan',
             'Hapus Data Satuan',
+            'Lihat Arsip Data Satuan'
         ];
 
 
@@ -853,6 +837,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data SKL',
             'Edit Data SKL',
             'Hapus Data SKL',
+            'Lihat Data Arsip SKL'
         ];
 
         foreach ($permissions as $permission) {
@@ -961,6 +946,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data Kontak',
             'Edit Data Kontak',
             'Hapus Data Kontak',
+            'Lihat Data Arsip Kontak'
         ];
         foreach ($contacts as $contact) {
             Permission::create(['name' => $contact]);
@@ -999,17 +985,6 @@ class PermissionSeeder extends Seeder
             Permission::create(['name' => $permission]);
         }
         $branchManager = Role::where('name', 'Branch Manager')->first();
-    }
-
-    public function consumedStock(): void
-    {
-        $permissions = [
-            'Input Pemakaian Stok Barang',
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
     }
 
     public function itemCollections(): void
@@ -1081,6 +1056,31 @@ class PermissionSeeder extends Seeder
             'Reset Data Jam Kerja Jabatan Di Cabang'
         ];
 
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    private function stockWithdrawal(): void
+    {
+        $permissions = [
+            'Lihat Menu Pemakaian Barang',
+            'Tambah Data Pemakaian Barang',
+            'Hapus Data Pemakaian Barang',
+            'Filter Data Pemakaian Barang Berdasarkan Cabang',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    private function mustReorderItem(): void
+    {
+        $permissions = [
+            'Lihat Menu Stok Yang Harus Di Order',
+        ];
 
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);

@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Master\Common\Contact;
 
+use App\Enum\Contact\ContactType;
+use App\Enum\Contact\TaxType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -16,53 +18,48 @@ class ContactRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'pic_name' => ['required'],
-            'pic_position' => ['required'],
-            'company_name' => ['required', Rule::unique('contacts', 'company_name')->ignore($request->route('contact'))],
-            'company_code' => [
-                'required',
-                Rule::unique('contacts', 'company_code')
-                    ->ignore($request->route('contact')),
-                'min:3',
-                'max:3'
+            'code' => ['required', 'min:3', 'max:3'],
+            'name' => ['required'],
+            'address' => ['required'],
+            'city' => ['required'],
+            'province' => ['required'],
+            'country' => ['required'],
+            'postal_code' => ['required'],
+            'fax' => ['nullable'],
+            'email' => ['nullable', 'email:email'],
+            'phone_number' => ['nullable'],
+            'bank_account_number' => ['required'],
+            'bank_account_name' => ['required'],
+            'bank_name' => ['required'],
+            'npwp' => ['nullable'],
+            'description' => ['nullable'],
+            'type' => ['required', Rule::in(ContactType::CLIENT->value, ContactType::SUPPLIER->value)],
+            'tax_type' => [
+                Rule::requiredIf($request->input('type') === ContactType::SUPPLIER->value),
+                Rule::in(TaxType::NON_PKP, TaxType::PKP)
             ],
-            'email' => [
-                'nullable',
-                'email',
-                Rule::unique('contacts', 'email')
-                    ->ignore($request->route('contact')),
-            ],
-            'phone_number' => ['required'],
-            'identity_type' => [
-                'required',
-                Rule::in('ktp', 'sim', 'passport'),
-            ],
-            'identity_number' => [
-                'nullable',
-                Rule::unique('contacts', 'identity_number')
-                    ->ignore($request->route('contact') === null),
-            ],
-            'fax' => ['nullable', Rule::unique('contacts', 'fax')],
-            'npwp' => ['nullable', Rule::unique('contacts', 'npwp')],
-            'complete_address' => ['nullable'],
-            'other_info' => ['nullable'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'pic_name.required' => 'Kolom nama lengkap wajib diisi.',
-            'pic_position.required' => 'Kolom jabatan wajib diisi.',
-            'company_name.required' => 'Kolom nama perusahaan wajib diisi.',
-            'company_code.required' => 'Kolom kode Perusahaan wajib diisi.',
-            'company_code.min' => 'Kolom kode perusahaan minimal 3 karakter.',
-            'company_code.max' => 'Kolom kode perusahaan maksimal 3 karakter.',
-            'company_code.unique' => 'Kolom kode perusahaan sudah terdaftar.',
-            'email.email' => 'Masukkan alamat email yang valid.',
-            'email.unique' => 'Email sudah terdaftar',
-            'phone_number.required' => 'Kolom nomor telepon wajib diisi.',
-            'identity_type.in' => 'Jenis identitas yang dipilih tidak valid.',
+            'code.required' => 'Kode tidak boleh kosong.',
+            'code.min' => 'Kode minimal 3 karakter.',
+            'code.max' => 'Kode maksimal 3 karakter.',
+            'name.required' => 'Nama tidak boleh kosong.',
+            'address.required' => 'Alamat tidak boleh kosong.',
+            'city.required' => 'Kota tidak boleh kosong.',
+            'province.required' => 'Provinsi tidak boleh kosong.',
+            'country.required' => 'Negara tidak boleh kosong.',
+            'postal_code.required' => 'Kode Pos tidak boleh kosong.',
+            'bank_account_number.required' => 'Nomor Rekening Bank tidak boleh kosong.',
+            'bank_account_name.required' => 'Nama Rekening Bank tidak boleh kosong.',
+            'bank_name.required' => 'Nama Bank tidak boleh kosong.',
+            'type.required' => 'Tipe kontak tidak boleh kosong',
+            'type.in' => 'Tipe Kontak tidak valid.',
+            'tax_type.required' => 'Tipe Pajak tidak boleh kosong.',
+            'tax_type.in' => 'Tipe Pajak tidak valid.',
         ];
     }
 }

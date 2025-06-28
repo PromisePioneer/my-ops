@@ -58,19 +58,44 @@
                                     <tr>
                                         <td x-text="startIndex + index++"></td>
                                         <td x-text="stock.code ?? '-'"></td>
-                                        <td x-text="stock.stock.transaction.item.name"></td>
-                                        <td x-text="stock.qty"></td>
-                                        <td x-text="stock.status"></td>
+                                        <td x-text="stock.item_name"></td>
                                         <td>
-                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-returning-items"
-                                                    @click="getStockWithdrawalItem(stock.id)">
-                                                <i class="ki-duotone ki-tablet-up fs-2">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                            </button>
+                                            <template x-if="stock.qty_in_meter">
+                                                <span x-text="`${stock.qty_in_meter} Meter`"></span>
+                                            </template>
+
+                                            <template x-if="!stock.qty_in_meter">
+                                                <span x-text="stock.qty"></span>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <template x-if="!stock.returned_item">
+                                                <span
+                                                    class="!stock_returned_item">Belum Dikembalikan / Terpakai / Habis</span>
+                                            </template>
+                                            <template x-if="stock.returned_item">
+                                                <span
+                                                    class="!stock_returned_item">Sudah Dikembalikan / Terpakai / Habis</span>
+                                            </template>
+
+                                        </td>
+                                        <td>
+                                            <template x-if="!stock.returned_item">
+                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-returning-items"
+                                                        @click="getStockWithdrawalItem(stock.id)">
+                                                    <i class="ki-duotone ki-tablet-up fs-2">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                    </i>
+                                                </button>
+                                            </template>
+                                            <template x-if="stock.returned_item">
+                                                <button class="btn btn-light-success" disabled>
+                                                    <x-icons.confirm/>
+                                                </button>
+                                            </template>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -95,9 +120,9 @@
                                     <th class="w-10px pe-2">#</th>
                                     <th class="min-w-125px">Kode</th>
                                     <th class="min-w-125px">Barang</th>
-                                    <th class="min-w-125px">Jml Terpakai</th>
-                                    <th class="min-w-125px">Jml Dikembalikan</th>
-                                    <th class="min-w-125px">Status Terkini</th>
+                                    <th class="min-w-125px">Terpakai</th>
+                                    <th class="min-w-125px">Dikembalikan</th>
+                                    <th class="min-w-125px">Rusak</th>
                                 </tr>
                                 </thead>
                                 <template x-if="isLoading">
@@ -124,27 +149,14 @@
                                 </template>
                                 <template x-for="(stock, index) in consumedOrAppliedStock.data" :key="index">
                                     <tbody class="fw-bolder text-center">
-                                    <template x-if="!stock.code">
-                                        <tr>
-                                            <td x-text="startIndex + index++"></td>
-                                            <td x-text="stock.code ?? '-'"></td>
-                                            <td x-text="stock.item_name"></td>
-                                            <td x-text="stock.qty_used"></td>
-                                            <td x-text="stock.qty"></td>
-                                            <td x-text="stock.status"></td>
-                                        </tr>
-                                    </template>
-                                    <template x-if="stock.code">
-                                        <tr>
-                                            <td x-text="startIndex + index++"></td>
-                                            <td x-text="stock.code ?? '-'"></td>
-                                            <td x-text="stock.item_name"></td>
-                                            <td colspan="3"
-                                                :class="stock.status === 'Dikembalikan' ? 'bg-danger text-danger' : 'bg-success text-white text-uppercase'">
-                                                <span x-text="stock.status"></span>
-                                            </td>
-                                        </tr>
-                                    </template>
+                                    <tr>
+                                        <td x-text="startIndex + index++"></td>
+                                        <td x-text="stock.code ?? '-'"></td>
+                                        <td x-text="stock.item_name"></td>
+                                        <td x-text="stock.consumed_qty"></td>
+                                        <td x-text="stock.returned_qty"></td>
+                                        <td x-text="stock.broken_qty"></td>
+                                    </tr>
                                     </tbody>
                                 </template>
                             </table>
@@ -152,8 +164,8 @@
                     </div>
                 </div>
             </div>
+            @include('components.toast')
         </div>
-        @include('components.toast')
         @endsection
         @push('script')
             <script>
@@ -165,10 +177,14 @@
                         search: '',
                         selectedCheckBox: [],
                         carriedStock: [],
+                        itemStatusForItemExceptUnitTypeValue: null,
                         startIndex: 1,
                         consumedOrAppliedStock: [],
                         id: "{{ $stockWithdrawal->id }}",
                         stockWithdrawalItem: {},
+                        itemStatus: 'Sisa',
+                        itemStatusWithoutCategory3AndUnitTypeMeter: null,
+                        itemCondition: null,
                         returnStockModal: new bootstrap.Modal(document.getElementById('modal-returning-items')),
                         returnStockForm: document.getElementById('form-returning-items'),
                         async init() {
@@ -196,22 +212,23 @@
                         },
                         async getConsumedOrAppliedStock() {
                             try {
-                                const resp = await axios.get(`/inventory/stock-withdrawals/stock-withdrawal-item/consumed-or-applied-stock/${this.id}`);
+                                const resp = await axios.get(`/inventory/returned-items/${this.id}`);
                                 this.consumedOrAppliedStock = resp.data;
                                 this.startIndex = this.consumedOrAppliedStock.from
                             } catch (e) {
                                 console.log(e);
                             }
                         },
-                        async save(id) {
+                        async save() {
                             this.buttonLoading = true;
                             try {
-                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${id}`, new FormData(this.returnStockForm));
+                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.returnStockForm));
                                 await showAlert('success', 'Data berhasil disimpan');
                                 this.returnStockModal.hide();
                                 await this.init();
-                            } catch (e) {
-                                console.log(e);
+                            } catch (error) {
+                                const respError = error.response.data.errors;
+                                Object.keys(respError).map(err => toastr.error(respError[err][0]))
                             } finally {
                                 this.buttonLoading = false;
                             }

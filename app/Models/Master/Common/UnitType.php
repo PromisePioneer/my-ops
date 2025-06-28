@@ -2,17 +2,27 @@
 
 namespace App\Models\Master\Common;
 
+use App\Models\ItemCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 
 class UnitType extends Model
 {
-    use Searchable;
+    use Searchable, SoftDeletes;
+
     protected $table = 'unit_types';
 
     protected $fillable = [
         'name',
     ];
+
+
+    public function itemCollection(): HasMany
+    {
+        return $this->hasMany(ItemCollection::class);
+    }
 
     public function toSearchableArray(): array
     {
@@ -20,6 +30,11 @@ class UnitType extends Model
             'id' => $this->id,
             'name' => $this->name,
         ];
+    }
+
+    public function ifRelatedDataExists($query): bool
+    {
+        return $query->itemCollection()->exists();
     }
 
 }

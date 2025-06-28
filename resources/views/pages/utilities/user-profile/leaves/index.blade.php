@@ -18,7 +18,7 @@
                             <button class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-form"
-                                    {{-- @click="add()" --}}
+                                {{-- @click="add()" --}}
                             >
                                 Tambah
                             </button>

@@ -2,75 +2,75 @@
 
 namespace App\Models\Master\Common;
 
+use App\Models\InitialInventoryBalance;
 use App\Models\OfferingLetter;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Laravel\Scout\Searchable;
 
 class Contact extends Model
 {
-    use HasFactory, Searchable;
+    use Searchable, SoftDeletes;
 
     protected $table = 'contacts';
 
     protected $fillable = [
-        'pic_name',
-        'pic_position',
-        'company_name',
-        'company_code',
+        'name',
+        'code',
+        'position',
+        'address',
+        'city',
+        'province',
+        'country',
+        'postal_code',
+        'fax',
         'email',
         'phone_number',
-        'identity_type',
-        'identity_number',
-        'fax',
+        'bank_account_number',
+        'bank_account_name',
+        'bank_name',
         'npwp',
-        'complete_address',
-        'other_info',
+        'description',
+        'type',
+        'tax_type'
     ];
 
     public function toSearchableArray(): array
     {
         return [
             'id' => $this->id,
-            'pic_name' => $this->pic_name,
-            'company_name' => $this->company_name,
+            'name' => $this->name,
+            'code' => $this->code,
         ];
     }
 
 
-    public function offeringLetter(): HasOne
+    public function offeringLetter(): HasMany
     {
-        return $this->HasOne(OfferingLetter::class);
+        return $this->hasMany(OfferingLetter::class, 'contact_id');
     }
 
-    public function getData(Request $request): array
-    {
-        $search = $request->input('search');
-        $query = self::orderby('pic_name', 'asc');
-        if ($search !== '') {
-            $query->where('pic_name', 'like', '%' . $request->search . '%')
-                ->where('pic_name', 'like', '%' . $request->search . '%');
-        }
-        $contact = $query->get(['id', 'pic_name', 'company_name', 'company_code']);
 
-        return $contact->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'text' => $item->pic_name . ' - ' . $item->company_name,
-            ];
-        })->toArray();
+    public function transaction(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'contact_id');
     }
 
-    public function getSelectedData(int $contactId): array
-    {
-        $contact = self::where('id', $contactId)->first();
 
-        return [
-            'id' => $contact->id,
-            'name' => $contact->pic_name . ' - ' . $contact->company_name,
-            'company_name' => $contact->company_name
-        ];
+    public function initialInventoryBalance(): HasMany
+    {
+        return $this->hasMany(InitialInventoryBalance::class, 'contact_id');
+    }
+
+    public function ifHasRelatedData($query): bool
+    {
+        return $query->offeringLetter()->exists()
+            || $query->transaction()->exists()
+            || $query->initialInventoryBalance()->exists();
     }
 }

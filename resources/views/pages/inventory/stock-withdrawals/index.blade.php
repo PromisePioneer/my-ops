@@ -40,11 +40,9 @@
                             <thead>
                             <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">#</th>
-                                <th class="min-w-125px">Cabang</th>
-                                <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Deskripsi</th>
-                                <th class="min-w-125px">PIC</th>
-                                <th class="min-w-125px">Stocker</th>
+                                <th class="min-w-125px">Informasi Umum</th>
+                                <th class="min-w-125px">Informasi Pemakaian</th>
+                                <th class="min-w-125px">Penanggung Jawab</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -71,14 +69,36 @@
                             </template>
                             <template x-for="(stockWithdrawal, index) in stockWithdrawals?.data"
                                       :key="stockWithdrawal.id">
-                                <tbody class="fw-bold text-center">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
-                                    <td class="text-center" x-text="stockWithdrawal.branch_name"></td>
-                                    <td class="text-center" x-text="stockWithdrawal.date"></td>
-                                    <td class="text-center" x-text="stockWithdrawal.description"></td>
-                                    <td class="text-center" x-text="stockWithdrawal.pic"></td>
-                                    <td class="text-center" x-text="stockWithdrawal.stocker"></td>
+                                    <td>
+                                        <p class="text-center" x-text="stockWithdrawal.date"></p>
+                                        <p class="text-center" x-text="stockWithdrawal.branch_name"></p>
+                                        <p class="text-center" x-text="`Stocker : ${stockWithdrawal.stocker}`"></p>
+                                    </td>
+                                    <td>
+                                        <p x-text="`Stocker : ${stockWithdrawal.stocker}`"></p>
+                                        <div class="row align-items-center">
+                                            <template x-for="item in stockWithdrawal.withdrawal_item"
+                                                      :key="item.id">
+                                                <ul class="ms-3">
+                                                    <li>
+                                                        <p x-text="`(${item.code ?? '-'}) ${item.item_name} ${item.quantity}`"></p>
+                                                    </li>
+                                                </ul>
+                                            </template>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row align-items-center">
+                                            <template x-for="user in stockWithdrawal.pic" :key="user.id">
+                                                <ul class="ms-3">
+                                                    <li x-text="user.name"></li>
+                                                </ul>
+                                            </template>
+                                        </div>
+                                    </td>
                                     <td class="text-center">
                                         <div class="d-flex align-items-center flex-column">
                                             <button class="btn btn-light-info btn-sm mb-4" data-bs-toggle="modal"
@@ -101,7 +121,7 @@
                                             <a :href="`/inventory/stock-withdrawals/return/${stockWithdrawal.id}`"
                                                class="btn btn-light-warning btn-sm mb-4">
                                                 <x-icons.back/>
-                                                Kembalikan Barang
+                                                Barang Kembali
                                             </a>
                                             <button class="btn btn-light-danger btn-sm"
                                                     @click="destroy(stockWithdrawal.id)">

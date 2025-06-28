@@ -24,6 +24,7 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-leaves"
                                 >
+                                    <x-icons.add-item/>
                                     Tambah
                                 </button>
                             </div>

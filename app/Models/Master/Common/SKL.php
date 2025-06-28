@@ -2,17 +2,36 @@
 
 namespace App\Models\Master\Common;
 
+use App\Models\Fab;
+use App\Models\FabHasSKL;
+use App\Models\OfferingLetterSKL;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Laravel\Scout\Searchable;
 
 class SKL extends Model
 {
-    use Searchable;
+    use Searchable, SoftDeletes;
+
     protected $table = 'skl';
     protected $fillable = [
         'name'
     ];
+
+
+    public function offeringLetterSKL(): HasMany
+    {
+        return $this->hasMany(OfferingLetterSKL::class, 'skl_id');
+    }
+
+
+    public function fabSKL(): HasMany
+    {
+        return $this->hasMany(FabHasSKL::class, 'skl_id');
+    }
 
 
     public function toSearchableArray(): array

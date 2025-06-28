@@ -2,14 +2,9 @@
 
 namespace App\Support\Inventory\StockManagement\DraftStock\Service;
 
-use AllowDynamicProperties;
-use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
-
 namespace App\Support\Inventory\DraftStock\Service;
 
 use AllowDynamicProperties;
-use App\Models\DraftStock;
-use App\Support\Inventory\DraftStock\Repository\DraftStockServiceRepository;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -27,9 +22,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function getQty(): ?int
+    public function getQty(Request $request): ?int
     {
-        return $this->draftStockRepostitory->getQty();
+        return $this->draftStockRepostitory->getQty($request);
     }
 
     public function data(Request $request): LengthAwarePaginator
@@ -39,7 +34,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function search(Request $request)
+    public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
         $query = $this->draftStockRepostitory->getDraftStockQuery();
@@ -63,20 +58,19 @@ use Illuminate\Pagination\LengthAwarePaginator;
     private static function formattedData(Request $request, LengthAwarePaginator $itemData): LengthAwarePaginator
     {
         $data = $itemData->getCollection()->map(function ($query) use ($request) {
-            $unitType = $query->transaction->item->unitType->name ?? $query->initialInventoryBalance->item->unitType->name;
-
+            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($request, $query->id);
 
             return [
                 'id' => $query->id,
-                'transaction_number' => $query->transaction?->transaction_number ?? '-',
-                'name' => $query->transaction?->item?->name ?? $query->initialInventoryBalance->item->name,
-                'qty' => $query->qty . ' ' . $unitType,
+                'name' => $query->name,
+                'qty' => $totalDraftStockQty,
             ];
+        })->filter(function ($item) use ($request) {
+            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($request, $item['id']);
+            return $totalDraftStockQty > 0;
         });
 
         $itemData->setCollection($data);
         return $itemData;
     }
-
-
 }

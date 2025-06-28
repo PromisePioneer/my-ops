@@ -4,7 +4,7 @@
 
     <div x-data="generalJournals()">
         <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto mb-10" x-show="filterButton" x-transition>
+            <div class="flex-column flex-lg-row-auto mb-10" x-show="filterButton" x-transition x-cloak>
                 <div class="card card-flush">
                     <div class="card-header">
                         <div class="card-title">

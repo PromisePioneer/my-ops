@@ -11,12 +11,13 @@ class CreateUnitTypes extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('unit_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,7 +26,7 @@ class CreateUnitTypes extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('unit_types');

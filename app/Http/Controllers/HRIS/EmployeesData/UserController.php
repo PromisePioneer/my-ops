@@ -205,14 +205,8 @@ use Maatwebsite\Excel\Facades\Excel;
     }
 
 
-    public function getStockerByBranchId(Request $request): JsonResponse
+    public function getUserBranches(Branch $branch): JsonResponse
     {
-        return response()->json($this->userService->getStockerByBranchId($request));
-    }
-
-
-    public function getUserByBranch(Request $request): JsonResponse
-    {
-        return response()->json($this->userService->getUserByBranch($request));
+        return response()->json($this->userService->getUserByBranchId($branch->parent_id));
     }
 }

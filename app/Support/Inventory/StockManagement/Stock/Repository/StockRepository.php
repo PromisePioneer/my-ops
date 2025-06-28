@@ -2,27 +2,33 @@
 
 namespace App\Support\Inventory\StockManagement\Stock\Repository;
 
+use AllowDynamicProperties;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
+use App\Models\ItemCategory;
 use App\Models\ItemCollection;
+use App\Models\Master\Common\Branch;
 use App\Models\Stock;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class StockRepository
+#[AllowDynamicProperties] class StockRepository
 {
-    public function findByDraftStock(DraftStock $draftStock, $request)
+    public function __construct()
     {
-        return Stock::where('draft_stock_id', $draftStock->id)
-            ->where('condition', $request->input('condition'))
-            ->first();
+        $this->stock = new Stock();
+    }
+
+
+    public function findByDraftStock(DraftStock $draftStock)
+    {
+        return Stock::where('transaction_id', $draftStock->transaction_id)->first();
     }
 
 
     public function findByItemCatalog(ItemCatalog $itemCatalog)
     {
-        return Stock::where('draft_stock_id', $itemCatalog->draft_stock_id)
-            ->where('condition', $itemCatalog->condition)
+        return Stock::where('id', $itemCatalog->stock?->id)
             ->lockForUpdate()
             ->first();
     }
@@ -48,43 +54,97 @@ class StockRepository
     }
 
 
-    public function findByItemAndBranchWithoutCode(int $branchId, int $itemId)
+    public function findByItemId(ItemCollection $itemCollection)
     {
-        return Stock::with('branch', 'item.category', 'item.unitType', 'itemCatalog')
-            ->where('item_id', $itemId)
-            ->whereHas('branch', function ($query) use ($branchId) {
-                $query->where('parent_id', $branchId);
+        return Stock::with('transaction', 'initialInventoryBalance')
+            ->where(function ($query) use ($itemCollection) {
+                $query->whereHas('transaction', function ($query) use ($itemCollection) {
+                    $query->where('item_id', $itemCollection->id);
+                })->orWhereHas('initialInventoryBalance', function ($query) use ($itemCollection) {
+                    $query->where('item_id', $itemCollection->id);
+                });
             });
     }
 
 
-    public function findByDraftStockAndItemName(DraftStock $draftStock)
+    public static function getSumStockQtyByItemId(Request $request, $itemId)
     {
-        return Stock::with('transaction', 'branch', 'item')
-            ->whereHas('item', function ($query) use ($draftStock) {
-                $query->where('name', $draftStock->transaction->item->name ?? $draftStock->initialInventoryBalance->item->name);
-            })->where('draft_stock_id', $draftStock->id);
+        $branch = Branch::with('children')->find($request->user()->branch_id);
+        return Stock::with('transaction', 'initialInventoryBalance')
+            ->where(function ($query) use ($itemId, $request, $branch) {
+                $query->whereHas('transaction', function ($query) use ($itemId, $request, $branch) {
+                    $query->when(!empty($request->user()->branch_id), function ($query) use ($itemId, $request, $branch) {
+                        $query->whereIn('stocks.branch_id', $branch->children->pluck('id')->toArray());
+                    })->where('item_id', $itemId);
+                });
+            });
+    }
+    public function getStockByCategoryAndBranch(int|string $branchId, int|string $categoryId)
+    {
+        $itemCategory = ItemCategory::find($categoryId);
+        if ($itemCategory->name !== 'Kategori 4') {
+            $stock = Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
+                ->where('branch_id', $branchId)
+                ->where(function ($query) use ($categoryId) {
+                    $query->whereHas('transaction.item.category', function ($query) use ($categoryId) {
+                        $query->where('id', $categoryId);
+                    })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($categoryId) {
+                        $query->where('id', $categoryId);
+                    });
+                })->first();
+
+            if (!empty($stock)) {
+                return $stock->itemCatalog()->where(function ($query) use ($branchId) {
+                    $code = [];
+                    $code2 = [];
+                    if (session()->has('stock_withdrawal_item')) {
+                        foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
+                            $code[] = $withDrawalItem['code'];
+                        }
+                    }
+
+                    if (session()->has('stock_mutation_items')) {
+                        foreach (session()->get('stock_mutation_items') as $mutationItem) {
+                            $code2[] = $mutationItem['code'];
+                        }
+                    }
+                    $query->whereNotIn('code', $code)->whereNotIn('code', $code2)->where('available_qty', '>', 0);
+                });
+            }
+        }
+
+        return Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
+            ->where('available_qty', '>', 0)
+            ->where('branch_id', $branchId)
+            ->where(function ($query) use ($categoryId) {
+                $query->whereHas('transaction.item.category', function ($query) use ($categoryId) {
+                    $query->where('id', $categoryId);
+                })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($categoryId) {
+                    $query->where('id', $categoryId);
+                });
+            });
     }
 
 
-    public function getStockWithCodes()
+    public function findByTransactionIdAndBranch(?int $transactionId, ?int $initialInventoryBalanceId, int $branchId): Builder
     {
-        return Stock::with('item', 'itemCatalog')
-            ->whereHas('item.category', function ($query) {
-                $query->where('name', '!=', 'Kategori 4');
-            })->when(!empty(Auth::user()->branch_id), function ($query) {
-                $query->where('branch_id', Auth::user()->branch_id);
-            })->where('condition', 'Baik');
+        return $this->stock->query()
+            ->where(function ($query) use ($transactionId, $initialInventoryBalanceId) {
+                if ($transactionId) {
+                    $query->whereHas('transaction', function ($query) use ($transactionId) {
+                        $query->where('id', $transactionId);
+                    });
+                }
+                if ($initialInventoryBalanceId) {
+                    $query->whereHas('transaction', function ($query) use ($transactionId) {
+                        $query->where('id', $transactionId);
+                    });
+                }
+            })->where('branch_id', $branchId);
     }
 
-
-    public function getStockWithoutCode(Request $request)
+    public function findByStockIdAndBranchId(int $stockId, int $branchId): Builder
     {
-        return Stock::with('item')->whereHas('item.category', function ($query) {
-            $query->where('name', 'Kategori 4');
-        })->when(!empty(Auth::user()->branch_id), function ($query) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        })->whereNotIn('id', $request->get('ids', []))
-            ->whereIn('condition', ['Baik', 'Diperbaiki']);
+        return $this->stock->query()->where('id', $stockId)->where('branch_id', $branchId);
     }
 }

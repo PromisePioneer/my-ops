@@ -16,6 +16,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function __construct()
     {
         $this->branchRepository = new BranchRepository();
+        $this->branch = new Branch();
     }
 
     public function data(): LengthAwarePaginator
@@ -28,7 +29,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $branch = Branch::search($search)->query(function () {
+        $branch = $this->branch->search($search)->query(function () {
             $this->branchRepository->handle();
         })->paginate(self::$perPage);
         return self::formattedData($branch);

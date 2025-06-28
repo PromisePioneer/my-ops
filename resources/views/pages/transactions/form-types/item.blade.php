@@ -1,11 +1,9 @@
 <div class="row mb-10">
-    @if(empty(Auth::user()->branch_id))
         <div class="col-md-6">
             <label for="branch_id" class="required form-label">Cabang</label>
             <x-select2.index name="branch_id" id="selected-branch" class="form-select form-select-solid"
                              elementSelector="branches-select2"/>
         </div>
-    @endif
 </div>
 
 
@@ -64,8 +62,8 @@
 <div class="row mb-10">
     <div class="col-md-4" x-show="qtyInMeter" x-transition x-cloak>
         <label for="name" class="required form-label">Qty (Meter) Dalam 1 Haspel</label>
-        <input type="number" class="form-control form-control-solid" :name="qtyInMeter ? 'qty_in_meter' : ''"
-               :value="{{ $transaction->qty_in_meter ?? ''}}" id="qty_in_meter">
+        <input type="number" class="form-control form-control-solid" :name="`${qtyInMeter ? 'qty_in_meter' : ''}`"
+               value="{{ $transaction->qty_in_meter ?? ''}}" id="qty_in_meter">
     </div>
     <div :class="qtyInMeter ? 'col-md-4' : 'col-md-6'">
         <label for="name" class="required form-label">Akun Persediaan</label>

@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 interface ContactRepositoryInterface
 {
-    public function handle(): Builder;
+    public function data(): Builder;
+
+    public function getSuppliers(): Builder;
+
+    public function getClients(): Builder;
 }

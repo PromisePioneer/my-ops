@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class StockWithdrawalItem extends Model
 {
@@ -13,8 +14,7 @@ class StockWithdrawalItem extends Model
         'stock_id',
         'code',
         'qty',
-        'status',
-        'qty_used',
+        'qty_in_meter',
     ];
 
 
@@ -27,5 +27,11 @@ class StockWithdrawalItem extends Model
     public function stockWithdrawal(): BelongsTo
     {
         return $this->belongsTo(StockWithdrawal::class, 'stock_withdrawal_id');
+    }
+
+
+    public function returnedItem(): HasOne
+    {
+        return $this->hasOne(ReturnedItem::class, 'stock_withdrawal_item_id');
     }
 }

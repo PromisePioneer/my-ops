@@ -1,9 +1,9 @@
 ﻿@extends('layouts.template')
-@section('page-title', 'Pelanggan')
-@section('breadcrumbs', 'Master Umum - Pelanggan')
+@section('page-title', 'Kontak')
+@section('breadcrumbs', 'Master Umum - Kontak')
 @section('content')
 
-    <div x-data="contactData()">
+    <div x-data="contactsData()">
         @include('pages.master.common.contacts.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
@@ -17,22 +17,31 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                        <template x-if="Number(createPermission) === 1">
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#contact-modal">
-                                <x-icons.add-item/>
-                                Tambah
-                            </button>
-                        </template>
+                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                            @can('Tambah Data Kontak')
+                                <button type="button" class="btn btn-light-primary btn-sm me-2" @click="add()"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#contact-modal">
+                                    <x-icons.add-item/>
+                                    Tambah
+                                </button>
+                            @endcan
+                            @can('Lihat Data Arsip Kontak')
+                                <a href="{{ url('/master/common/contact/archives') }}"
+                                   class="btn btn-light-secondary btn-sm">
+                                    <x-icons.archived/>
+                                    Arsip
+                                </a>
+                            @endcan
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card-body py-3">
-                <div class="py-5">
+                <div class="col-12 ">
                     <form id="form-delete" @submit.prevent="destroy()">
-                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox.filter((val) => val !== 'on')">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
@@ -40,69 +49,45 @@
                             Hapus
                         </button>
                     </form>
+                </div>
+                <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-bordered">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3"
-                                         @click="toggleAllCheckBox()">
-                                        <input class="form-check-input" type="checkbox"
-                                               :disabled="Number(deletePermission) !== 1"
-                                        />
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <th class="min-w-125px">PIC</th>
-                                <th class="min-w-125px">Nama Perusahaan</th>
-                                <th class="min-w-125px">No. Handphone</th>
-                                <template x-if="Number(editPermission) === 1">
-                                    <th class="min-w-125px">Actions</th>
-                                </template>
+                                <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Tipe</th>
+                                <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
-                                <tbody class="fw-bold text-center">
-                                <tr>
-                                    <td colspan="9">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.loading colspan="4"/>
                             </template>
                             <template x-if="!isLoading && contacts.data?.length === 0">
-                                <tbody class=" fw-bold">
-                                <tr>
-                                    <td colspan="9">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.empty colspan="4"/>
                             </template>
-                            <template x-for="(contact,index) in contacts?.data" :key="index">
-                                <tbody class="fw-bold text-center">
+                            <template x-for="contact in contacts?.data" :key="contact.id">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="contact.id"
-                                                   :id="'checkbox-' + contact.id"
-                                                   :disabled="Number(deletePermission) !== 1"/>
+                                                   :id="'checkbox-' + contact.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="contact.pic"></td>
-                                    <td x-text="contact.company_name"></td>
-                                    <td x-text="contact.phone_number"></td>
-                                    <template x-if="Number(editPermission) === 1">
-                                        <td>
-                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#contact-modal" @click="edit(contact.id)">
-                                                <x-icons.edit/>
-                                            </button>
-                                        </td>
-                                    </template>
+                                    <td x-text="contact.name"></td>
+                                    <td x-text="contact.type"></td>
+                                    <td>
+                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#contact-modal" @click="edit(contact.id)">
+                                            <x-icons.edit/>
+                                        </button>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </template>
@@ -124,8 +109,8 @@
     @include('components.toast')
 @endsection
 @push('script')
-    <script defer>
-        function contactData() {
+    <script>
+        function contactsData() {
             return {
                 createPermission: "{{  request()->user()->can('Tambah Data Kontak')  }}",
                 editPermission: "{{  request()->user()->can('Edit Data Kontak')  }}",
@@ -135,6 +120,7 @@
                 buttonLoading: false,
                 selectAll: false,
                 selectedCheckBox: [],
+                contactType: null,
                 singleChecked: false,
                 search: '',
                 editVal: '',
@@ -154,6 +140,10 @@
                     } catch (error) {
                         console.error('Error fetching data:', error);
                     }
+                },
+                add() {
+                    this.form.reset();
+                    this.editVal = '';
                 },
                 async paginate(url) {
                     if (url) {
@@ -220,6 +210,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/common/contact/edit/${id}`);
                     this.editVal = resp.data;
+                    this.contactType = resp.data.type
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

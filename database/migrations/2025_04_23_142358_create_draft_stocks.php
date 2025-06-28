@@ -23,6 +23,8 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->double('qty');
+            $table->double('qty_in_meter')->nullable();
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

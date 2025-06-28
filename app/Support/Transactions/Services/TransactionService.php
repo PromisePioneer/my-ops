@@ -125,9 +125,9 @@ use function App\Helper\formatDate;
         Transaction::create([
             'type' => $request->input('type'),
             'transaction_number' => $this->generateTransactionNumber($request),
-            'branch_id' => $request->user()->branch_id ?? $request->input('branch_id'),
+            'branch_id' => $request->input('branch_id'),
             'date' => $request->input('date'),
-            'supplier_id' => $request->input('supplier_id'),
+            'contact_id' => $request->input('supplier_id'),
             'detail' => $request->input('detail'),
             'qty' => $request->input('qty'),
             'item_id' => $request->input('type') === 'Barang' ? $request->input('item_id') : null,
@@ -160,7 +160,7 @@ use function App\Helper\formatDate;
 
         $transaction->update([
             'transaction_number' => $this->generateTransactionNumber($request),
-            'branch_id' => $request->user()->branch_id ?? $request->input('branch_id'),
+            'branch_id' => $request->input('branch_id'),
             'date' => $request->input('date'),
             'detail' => $request->input('detail'),
             'qty' => $request->input('qty'),
@@ -171,7 +171,7 @@ use function App\Helper\formatDate;
             'credit_account_id' => $request->input('credit_account_id'),
             'created_by' => $request->user()->id,
             'qty_in_meter' => $request->qty_in_meter,
-            'supplier_id' => $request->input('supplier_id'),
+            'contact_id' => $request->input('supplier_id'),
             'attachment' => $this->handleUploadService->upload(
                 $request,
                 'documents/transaction/item-transactions/',
@@ -232,14 +232,15 @@ use function App\Helper\formatDate;
         if ($transaction->item->category->name !== 'Kategori 4') {
             DraftStock::create([
                 'transaction_id' => $transaction->id,
-                'qty' => $transaction->qty
+                'qty' => $transaction->qty,
+                'qty_in_meter' => $transaction->qty_in_meter
             ]);
         } else {
             Stock::create([
                 'transaction_id' => $transaction->id,
                 'branch_id' => $transaction->branch_id,
                 'item_id' => $transaction->item_id,
-                'qty' => $transaction->qty,
+                'available_qty' => $transaction->qty,
                 'condition' => 'Baik'
             ]);
         }

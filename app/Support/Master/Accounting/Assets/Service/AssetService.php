@@ -9,6 +9,7 @@ use App\Models\AccountTransaction;
 use App\Models\Asset;
 use App\Models\AssetDepreciation;
 use App\Models\ItemCollection;
+use App\Models\Master\Common\Branch;
 use App\Support\AccountTransactions\AccountTransactionService;
 use App\Support\HelperService\UsefulLifeService;
 use App\Support\Master\Accounting\Assets\Repositories\AssetRepository;
@@ -22,8 +23,8 @@ use function App\Helper\currencyFormat;
 #[AllowDynamicProperties] class AssetService
 {
 
-    private const string PURCHASE_ASSET_DESCRIPTION = 'Pembelian  %s';
-    private const string DEPRECIATION_ASSET_DESCRIPTION = 'Penyusutan %s';
+    private const string PURCHASE_ASSET_DESCRIPTION = 'Pembelian aset %s untuk cabang %s - %s';
+    private const string DEPRECIATION_ASSET_DESCRIPTION = 'Penyusutan aset %s di cabang %s - %s';
     private const string INITIAL_BALANCE_ASSET_DESCRIPTION = 'Saldo Awal Aset %s';
 
     private static int $perPage = 10;
@@ -53,6 +54,7 @@ use function App\Helper\currencyFormat;
                 'useful_life' => $item->useful_life,
                 'price' => currencyFormat($item->price),
                 'status' => $item->status,
+                'stock_id' => $item->stock_id,
             ];
         });
 
@@ -135,12 +137,13 @@ use function App\Helper\currencyFormat;
     /**
      * @throws Throwable
      */
-    public function confirm(Request $request, Asset $asset): void
+    public function confirm(Asset $asset, string $date): void
     {
         $asset->load('item', 'branch');
-        $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->name);
-        DB::transaction(function () use ($request, $description, $asset) {
-            $this->depreciation($asset);
+        $branch = Branch::with('parent')->find($asset->branch_id);
+        $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->item->name, $branch->parent->name, $branch->name);
+        DB::transaction(function () use ($description, $asset, $date) {
+            $this->depreciation($asset, $date);
             $asset->status = 1;
             $asset->save();
         });
@@ -170,11 +173,16 @@ use function App\Helper\currencyFormat;
     /**
      * @throws Throwable
      */
-    public function depreciation(Asset $asset): void
+    public function depreciation(Asset $asset, ?string $date): void
     {
-        $yearsStart = Carbon::parse($asset->date)->startOfMonth();
-        $yearsEnd = Carbon::parse($asset->date)->startOfMonth()->addYears($asset->useful_life);
+        $yearsStart = Carbon::parse($date ?? $asset->date)
+            ->startOfMonth();
+        $yearsEnd = Carbon::parse($date ?? $asset->date)
+            ->startOfMonth()
+            ->addYears($asset->useful_life);
         $diffInMonth = $yearsStart->diffInMonths($yearsEnd);
+
+
         $depreciation = ($asset->price) / $diffInMonth;
         $price = $asset->price;
 
@@ -197,11 +205,13 @@ use function App\Helper\currencyFormat;
                     'depreciation_amount' => $depreciation,
                 ]);
 
+                $branch = Branch::with('parent')->find($asset->branch_id);
+
                 $account = Account::where('code', '130')->first();
-                $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->name, $i);
+                $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->name, $branch->parent->name, $branch->name, $i);
 
                 $this->accountTransactionService->createCreditTransaction(
-                    $asset->branch_id,
+                    Branch::find($asset->branch_id)->parent_id,
                     $description,
                     $account->id,
                     $depreciation,

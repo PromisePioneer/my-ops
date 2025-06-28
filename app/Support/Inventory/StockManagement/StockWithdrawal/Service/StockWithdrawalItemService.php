@@ -3,6 +3,7 @@
 namespace App\Support\Inventory\StockManagement\StockWithdrawal\Service;
 
 use AllowDynamicProperties;
+use App\Models\ItemCatalog;
 use App\Models\StockWithdrawal;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalItemRepository;
 use Illuminate\Http\Request;
@@ -52,17 +53,23 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function formattedData(LengthAwarePaginator $carriedStocks): LengthAwarePaginator
     {
         $data = $carriedStocks->getCollection()->map(function ($query) {
+            $itemCatalog = ItemCatalog::where('code', $query->code)->first();
+            $stockWithdrawal = StockWithdrawal::find($query->stock_withdrawal_id)->first() ?? [];
             return [
                 'id' => $query->id,
-                'pic' => $query->stockWithdrawal->stocker->name,
+                'pic' => $stockWithdrawal->stockWithdrawalByEmployees->map(function ($employee) {
+                    return [
+                        'id' => $employee->id,
+                        'name' => "({$employee->user->nip}) {$employee->user->name}",
+                    ];
+                }),
                 'stocker' => $query->stockWithdrawal->stocker->name,
-                'branch_name' => $query->stockWithdrawal->branch->name,
+                'branch_name' => "{$query->stockWithdrawal->branch->parent->name} - {$query->stockWithdrawal->branch->name}",
                 'stock_withdrawal_id' => $query->stock_withdrawal_id,
-                'item_name' => $query->stock->item->name,
-                'code' => $query->code,
-                'status' => $query->status,
+                'item_name' => $query->stock->transaction->item->name ?? $query->stock->initialInventoryBalance->item->name ,
+                'code' => $itemCatalog->code ?? $query->code,
                 'qty' => $query->qty,
-                'qty_used' => $query->qty_used
+                'unit_type' => $query->stock->transaction->item->unitType->name ?? $query->stock->initialInventoryBalance->item->unitType->name,
             ];
         });
 

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\Master\Common\Branch;
 use App\Support\Journal\TrialBalanceService;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -56,10 +55,19 @@ class TrialBalanceController extends Controller
 
     public function filter(Request $request): JsonResponse
     {
+        $trialBalance = $this->trialBalanceService->filter($request)['trial_balance'];
+        $totalDebit = '0';
+        $totalCredit = '0';
+
+        foreach ($trialBalance as $item) {
+            $totalDebit = bcadd($totalDebit, $item['balance_debit'], 2);
+            $totalCredit = bcadd($totalCredit, $item['balance_credit'], 2);
+        }
+
         return response()->json([
             'trial_balances' => $this->trialBalanceService->filter($request)['trial_balance'],
-            'total_debit' => $this->trialBalanceService->filter($request)['total_debit'],
-            'total_credit' => $this->trialBalanceService->filter($request)['total_credit'],
+            'total_debit' => 'Rp.' . number_format(bcsub($totalDebit, '0', 2), 2, '.', '.'),
+            'total_credit' => 'Rp.' . number_format(bcsub($totalCredit, '0', 2), 2, '.', '.'),
         ]);
     }
 

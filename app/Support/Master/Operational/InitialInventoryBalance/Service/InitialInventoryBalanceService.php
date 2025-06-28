@@ -90,7 +90,7 @@ use function App\Helper\formatDate;
         InitialInventoryBalance::create([
             'branch_id' => $request->branch_id,
             'date' => $request->input('date'),
-            'supplier_id' => $request->input('supplier_id'),
+            'contact_id' => $request->input('supplier_id'),
             'item_id' => $request->input('item_id'),
             'qty' => $request->input('qty'),
             'unit_price' => $unitPrice,
@@ -116,7 +116,7 @@ use function App\Helper\formatDate;
         $initialInventoryBalance->update([
             'branch_id' => $request->input('branch_id'),
             'date' => $request->input('date'),
-            'supplier_id' => $request->input('supplier_id'),
+            'contact_id' => $request->input('supplier_id'),
             'item_id' => $request->input('item_id'),
             'qty' => $request->input('qty'),
             'unit_price' => $unitPrice,
@@ -153,7 +153,8 @@ use function App\Helper\formatDate;
                 if ($item->item->category->name !== 'Kategori 4') {
                     DraftStock::create([
                         'initial_balance_inventory_id' => $item->id,
-                        'qty' => $item->qty
+                        'qty' => $item->qty,
+                        'qty_in_meter' => $item->qty_in_meter
                     ]);
                 } else {
                     Stock::create([

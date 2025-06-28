@@ -2,7 +2,6 @@
 @section('page-title', 'Barang Masuk yang Belum Diproses')
 @section('content')
     <div x-data="draftStockData()">
-        @include('pages.inventory.draft-stocks.generate-code')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
                 <div class="card card-flush">
@@ -52,7 +51,6 @@
                                         <th class="w-10px pe-2">
                                             #
                                         </th>
-                                        <th class="min-w-125px text-center">No.Transaksi</th>
                                         <th class="min-w-125px text-center">Nama Barang</th>
                                         <th class="min-w-125px text-center">Belum Terdata</th>
                                         <th class="min-w-125px text-center">Actions</th>
@@ -76,14 +74,13 @@
                                             </td>
                                         </tr>
                                     </template>
-                                    <template x-for="(stock, index) in draftStocks?.data" :key="stock.id">
+                                    <template x-for="(item, index) in draftStocks?.data" :key="item.id">
                                         <tr>
                                             <td x-text="startIndex + index++"></td>
-                                            <td class="text-center" x-text="stock.transaction_number"></td>
-                                            <td class="text-center" x-text="stock.name"></td>
-                                            <td class="text-center" x-text="stock.qty"></td>
+                                            <td class="text-center" x-text="item.name"></td>
+                                            <td class="text-center" x-text="item.qty"></td>
                                             <td class="text-center">
-                                                <a :href="`/inventory/draft-stocks/detail/${stock.id}`"
+                                                <a :href="`/inventory/draft-stocks/detail/${item.id}`"
                                                    class="btn btn-light-primary btn-sm">
                                                     <x-icons.add-item/>
                                                     Buat Kode
@@ -137,6 +134,24 @@
                             cache: true
                         }
                     });
+                },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        this.draftStocks = [];
+                        this.isLoading = true;
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                }
+                            });
+                            this.draftStocks = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
+                    }
                 },
                 async searchData() {
                     this.draftStocks = [];

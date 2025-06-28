@@ -77,7 +77,6 @@
                                         </th>
                                         <th class="min-w-125px">Nama</th>
                                         <th class="min-w-125px">Kategori</th>
-                                        <th class="min-w-125px">Material</th>
                                         <th class="min-w-125px">Satuan</th>
                                     </thead>
                                     <template x-if="isLoading">
@@ -132,7 +131,6 @@
                                                         x-text="`${item.category_name} - ${item.asset_account_name}`"></span>
                                                 </template>
                                             </td>
-                                            <td x-text="item.material"></td>
                                             <td x-text="item.unit_type_name"></td>
                                         </tr>
                                         </tbody>

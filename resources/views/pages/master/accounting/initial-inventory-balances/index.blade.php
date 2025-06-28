@@ -232,6 +232,20 @@
                         this.isLoading = false;
                     }
                 },
+                openImageList(imagePath) {
+                    console.log(imagePath);
+                    const lightbox = new FsLightbox();
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "<?php echo e(asset('')); ?>" + placeholders;
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "<?php echo e(Storage::url('')); ?>" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
+                    }
+                },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
                     if (event.target.checked) {
