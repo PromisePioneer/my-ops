@@ -31,6 +31,7 @@ class StockWithdrawalRequest extends FormRequest
             'category_id' => ['required', 'exists:item_categories,id', $ifWithdrawalItemNotExists],
             'user_id' => ['required'],
             'description' => ['required', 'string'],
+//            'itemWithoutCodeFields' => ['required'],
         ];
     }
 
