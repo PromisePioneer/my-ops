@@ -1,52 +1,25 @@
-﻿@extends('layouts.template')
-@section('page-title', 'Data User')
+@extends('layouts.template')
+@section('page-title', 'Arsip Data Karyawan')
 @section('content')
-    <div x-data="userData()">
-        @include('pages.manage-users.user.modal.import')
+    <div x-data="archivesUsersData()">
         @include('pages.manage-users.user.filter')
+        @include('pages.manage-users.user.modal.import')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush mb-6 mb-xl-9">
                     <div class="card-header pt-5">
                         <div class="card-title">
-                            @can('Tambah Data Karyawan')
-                                <a href="{{ url('manage-users/users/create') }}"
-                                   class="btn btn-light btn-light-primary btn-sm mx-1">
-                                    <x-icons.add-item/>
-                                    Tambah
-                                </a>
-                            @endcan
-                            @can('Import Data Karyawan')
-                                <button class="btn btn-light btn-light-info btn-sm mx-1" data-bs-toggle="modal"
-                                        data-bs-target="#modal-import">
-                               <span class="svg-icon">
-                                    <i class="bi bi-upload fs-5"></i>
-                               </span>
-                                    Import
-                                </button>
-                            @endcan
                             @canany([
-                                     'Filter Data Karyawan Berdasarkan Cabang',
-                                     'Filter Data Karyawan Berdasarkan Perusahaan',
-                                     'Filter Data Karyawan Berdasarkan Tahun',
-                                     'Filter Data Karyawan Berdasarkan Bulan',
-                                     ])
+                                  'Filter Data Karyawan Berdasarkan Cabang',
+                                  'Filter Data Karyawan Berdasarkan Perusahaan',
+                                  'Filter Data Karyawan Berdasarkan Tahun',
+                                  'Filter Data Karyawan Berdasarkan Bulan',
+                                  ])
                                 <button id="kt_drawer_example_basic_button" class="btn btn-light-info btn-sm mx-2">
                                     <x-icons.filter/>
                                     Filter
                                 </button>
                             @endcanany
-                            <button class="btn btn-light btn-light-warning btn-sm mx-2" @click="reload()">
-                               <span class="svg-icon">
-                                     <i class="bi bi-arrow-clockwise"></i>
-                               </span>
-                                Reload
-                            </button>
-                            <a href="{{ url('/manage-users/users/archives/') }}"
-                               class="btn btn-light btn-light-secondary btn-sm">
-                                <x-icons.archived/>
-                                Arsip
-                            </a>
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex align-items-center position-relative my-1"
@@ -69,18 +42,24 @@
                         </div>
                     </div>
                     <div class="card-body pt-0">
-                        <div class="col-12 ">
-                            <form id="form-delete" @submit.prevent="destroy()">
-                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                                <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                        <div class="col-12">
+                            <form id="restore-form" @submit.prevent="restore()">
+                                <input type="hidden" :name="`id[]`"
+                                       :value="selectedCheckBox.filter((val) => val !== 'on')">
+                                <button type="submit" class="btn btn-light-info btn-sm mt-5 "
                                         x-show="selectedCheckBox.length > 0"
                                         x-transition x-cloak>
-                                    <i class="ki-duotone ki-trash-square fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
+                                    <x-icons.restore/>
+                                    Pulihkan
+                                </button>
+                            </form>
+                            <form id="force-delete-form" @submit.prevent="forceDelete()">
+                                <input type="hidden" :name="`id[]`"
+                                       :value="selectedCheckBox.filter((val) => val !== 'on')">
+                                <button type="submit" class="btn btn-light-danger btn-sm mt-5 mb-4"
+                                        x-show="selectedCheckBox.length > 0"
+                                        x-transition x-cloak>
+                                    <x-icons.trash/>
                                     Hapus
                                 </button>
                             </form>
@@ -168,17 +147,21 @@
                                 </table>
                             </div>
                             <div class="text-center mt-10">
-                                <div class="col-sm-12  d-flex align-items-center justify-content-end">
-                                    <template x-for="pagination in users.links">
-                                        <ul class="pagination">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <a href="{{ url('/manage-users/users/') }}" class="btn btn-light-danger btn-sm">
+                                        <x-icons.back/>
+                                        Kembali
+                                    </a>
+                                    <ul class="pagination">
+                                        <template x-for="pagination in users.links">
                                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                                 <button
                                                     class="page-link"
                                                     @click="paginate(pagination.url)"
                                                     x-html="pagination.label"></button>
                                             </li>
-                                        </ul>
-                                    </template>
+                                        </template>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -191,7 +174,7 @@
 @endsection
 @push('script')
     <script>
-        function userData() {
+        function archivesUsersData() {
             return {
                 buttonLoading: false,
                 year: [{}],
@@ -203,9 +186,8 @@
                 selectAll: false,
                 singleChecked: false,
                 search: '',
-                modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
-                formImport: document.getElementById('form-import'),
-                formDelete: document.getElementById('form-delete'),
+                restoreForm: document.getElementById('restore-form'),
+                forceDeleteForm: document.getElementById('force-delete-form'),
                 async init() {
                     await this.getCompanies();
                     await this.getMainBranches();
@@ -288,7 +270,7 @@
                 async getUserData() {
                     this.isLoading = true;
                     try {
-                        const users = await axios.get('/manage-users/users/data');
+                        const users = await axios.get('/manage-users/users/archives/data');
                         this.users = users.data;
                     } catch (e) {
                         console.log(e);
@@ -300,7 +282,7 @@
                     try {
                         this.users = [];
                         this.isLoading = true;
-                        const resp = await axios.get('/manage-users/users/filter', {
+                        const resp = await axios.get('/manage-users/users/archives/filter', {
                             params: {
                                 search: this.search,
                                 month: document.getElementById('month')?.value,
@@ -358,11 +340,23 @@
                         this.isLoading = false;
                     }
                 },
-                async destroy() {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                async forceDelete() {
+                    showConfirmModal("Anda yakin?", "Data akan hilang secara permanen.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/manage-users/users/destroy`, new FormData(this.formDelete));
-                            await showAlert('success', 'Data sukses dihapus');
+                            await axios.post(`/manage-users/users/archives/force-delete`, new FormData(this.forceDeleteForm));
+                            await showAlert('success', 'Data sukses dihapus secara permanen');
+                            await this.init();
+                            this.selectedCheckBox = [];
+                        } catch (error) {
+                            await showAlert('error', 'Data sudah terikat dengan data lainnya, tidak bisa dihapus secara permanen!');
+                        }
+                    });
+                },
+                async restore() {
+                    showConfirmModal("Anda yakin?", "Data akan dipulihkan.", "Ya, Pulihkan!", async () => {
+                        try {
+                            await axios.post(`/manage-users/users/archives/restore`, new FormData(this.restoreForm));
+                            await showAlert('success', 'Data sukses dipulihkan. silahkan cek data karyawan.');
                             await this.init();
                             this.selectedCheckBox = [];
                         } catch (error) {

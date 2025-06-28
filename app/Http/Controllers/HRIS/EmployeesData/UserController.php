@@ -6,9 +6,6 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserRequest;
 use App\Imports\UserImport;
-use App\Models\Attendances;
-use App\Models\Company;
-use App\Models\Department;
 use App\Models\Master\Common\Branch;
 use App\Models\Role;
 use App\Models\User;
@@ -18,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 #[AllowDynamicProperties] class UserController extends Controller
 {
@@ -27,10 +25,7 @@ use Maatwebsite\Excel\Facades\Excel;
     public function __construct()
     {
         $this->user = new User();
-        $this->branch = new Branch();
-        $this->department = new Department();
         $this->userService = new UserService();
-        $this->company = new Company();
     }
 
     /**
@@ -96,7 +91,7 @@ use Maatwebsite\Excel\Facades\Excel;
     }
 
     /**
-     * @throws AuthorizationException
+     * @throws AuthorizationException|Throwable
      */
     public function store(UserRequest $request): JsonResponse
     {
@@ -144,18 +139,13 @@ use Maatwebsite\Excel\Facades\Excel;
     }
 
     /**
-     * @throws AuthorizationException
+     * @throws AuthorizationException|Throwable
      */
     public function update(UserRequest $request, User $user): JsonResponse
     {
         $this->authorize('update', User::class);
         $this->userService->update($request, $user);
         return response()->json(['message' => 'data sukses diupdate!']);
-    }
-
-    public function getDepartmentData(Request $request): JsonResponse
-    {
-        return response()->json($this->department->getData($request));
     }
 
     public function show(User $user): JsonResponse
@@ -208,5 +198,47 @@ use Maatwebsite\Excel\Facades\Excel;
     public function getUserBranches(Branch $branch): JsonResponse
     {
         return response()->json($this->userService->getUserByBranchId($branch->parent_id));
+    }
+
+
+    public function archives(): View
+    {
+        $this->authorize('viewArchives', User::class);
+        return view('pages.manage-users.user.archives');
+    }
+
+
+    public function archivedData(): JsonResponse
+    {
+        $this->authorize('viewArchives', User::class);
+        return response()->json($this->userService->getArchivedData());
+    }
+
+
+    public function archivedSearch(Request $request): JsonResponse
+    {
+        $this->authorize('viewArchives', User::class);
+        return response()->json($this->userService->searchArchivedData($request));
+    }
+
+
+    public function restore(Request $request, User $user): JsonResponse
+    {
+        $this->authorize('viewArchives', $user);
+        $this->userService->restore($request, $user);
+        return response()->json(['message' => 'data berhasil dipulihkan']);
+    }
+
+    public function forceDelete(Request $request, User $user): JsonResponse
+    {
+        $this->authorize('viewArchives', $user);
+        $this->userService->forceDelete($request, $user);
+        return response()->json(['message' => 'data berhasil di hapus permanen']);
+    }
+
+    public function filterArchivedData(Request $request): JsonResponse
+    {
+        $this->authorize('viewArchives', User::class);
+        return response()->json($this->userService->filterArchivedData($request));
     }
 }

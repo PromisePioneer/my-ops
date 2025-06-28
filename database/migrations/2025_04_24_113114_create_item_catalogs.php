@@ -12,21 +12,13 @@ return new class extends Migration {
     {
         Schema::create('item_catalogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('transaction_id')
-                ->nullable()
-                ->constrained('transactions')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreignId('initial_balance_inventory_id')
-                ->nullable()
-                ->constrained('initial_inventory_balance')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->foreignId('asset_id')->nullable()->constrained('assets')->cascadeOnDelete();
-            $table->double('broken_qty')->nullable();
+            $table->foreignId('stock_id')->constrained('stocks')->cascadeOnDelete();
             $table->string('code');
+            $table->integer('available_qty');
+            $table->integer('broken_qty');
             $table->enum('condition', ['Rusak', 'Baik'])->default('Baik');
-            $table->enum('status', ['Tersedia', 'Terpakai', 'Dibawa'])->default('Tersedia');
+            $table->enum('status', ['Tersedia', 'Terpakai', 'Dibawa', 'Proses Mutasi'])->default('Tersedia');
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
         });

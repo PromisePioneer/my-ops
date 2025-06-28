@@ -283,7 +283,7 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-                {{-- <x-menu-sections>Inventory</x-menu-sections>
+                <x-menu-sections>Inventory</x-menu-sections>
                 <x-dropdown-menu :active="request()->is('inventory/*')">
                     @slot('parentIcon')
                         <i class="ki-duotone ki-dollar fs-2">
@@ -317,7 +317,7 @@
                             Mutasi Barang
                         </x-dropdown-menu-item>
                     @endslot
-                </x-dropdown-menu> --}}
+                </x-dropdown-menu>
 
 
                 @canany(['Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo'])
@@ -445,38 +445,6 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-                @canany('Lihat Menu Pengeluaran', 'Lihat Menu Invoice Pengeluaran')
-                    <x-dropdown-menu :active="request()->segment(1) === 'expenditure-transactions'">
-                        @slot('parentIcon')
-                            <i class="ki-duotone ki-save-deposit fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
-                        @endslot
-                        @slot('menuTitle')
-                            Pengeluaran
-                        @endslot
-                        @slot('menuItem')
-                            @can('Lihat Menu Pengeluaran')
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'expenditure'"
-                                    href="{{ url('/expenditure-transactions/expenditure') }}">
-                                    Pengeluaran
-                                </x-dropdown-menu-item>
-                            @endcan
-                            @can('Lihat Menu Invoice Pengeluaran')
-                                <x-dropdown-menu-item
-                                    href="#">
-                                    Invoice
-                                </x-dropdown-menu-item>
-                            @endcan
-                        @endslot
-                    </x-dropdown-menu>
-                @endcanany
-
-
                 @canany('Lihat Menu Profil Perusahaan')
                     <x-menu-sections>Utilitas</x-menu-sections>
                 @endcanany

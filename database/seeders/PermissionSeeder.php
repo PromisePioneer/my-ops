@@ -306,13 +306,12 @@ class PermissionSeeder extends Seeder
             'Filter Data Karyawan Berdasarkan Perusahaan',
             'Filter Data Karyawan Berdasarkan Tahun',
             'Filter Data Karyawan Berdasarkan Bulan',
-            'Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif',
             'Tambah Data Karyawan',
             'Edit Data Karyawan',
             'Hapus Data Karyawan',
-            'Aktifasi Data Karyawan',
             'Lihat Detail Data Karyawan',
-            'Import Data Karyawan'
+            'Import Data Karyawan',
+            'Lihat Arsip Data Karyawan'
         ];
 
         foreach ($permissions as $permission) {

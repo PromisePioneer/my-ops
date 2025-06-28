@@ -4,7 +4,10 @@
     <div x-data="generateUser()">
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-info btn-sm mb-6" href="{{ url('manage-users/users/') }}">Kembali</a>
+                <a class="btn btn-light-danger btn-sm mb-6" href="{{ url('manage-users/users/') }}">
+                    <x-icons.back/>
+                    Kembali
+                </a>
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
@@ -136,16 +139,9 @@
                     <div class="separator py-2"></div>
 
                     <div class="float-end d-flex py-6 px-9">
-                        <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">Reset</button>
                         <button type="submit" class="btn btn-sm btn-light-primary"
                                 :disabled="buttonLoading">
-                            <i class="ki-duotone ki-click fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                                <span class="path5"></span>
-                            </i>
+                            <x-icons.save/>
                             <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
                         </button>
                     </div>
@@ -154,6 +150,7 @@
         </div>
     </div>
     @include('components.toast')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script defer>
@@ -170,12 +167,14 @@
                 userPlacement: "{{ $user->placement ?? null }}",
                 branchId: "{{ $user->branch_id ?? null }}",
                 async init() {
-                    await this.getMainBranches();
-                    await this.selectedBranch();
-                    await this.getCompanies();
-                    await this.selectedCompany();
+                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
+                    await select2('.companies-select2', 'Pilih Perusahaan', '/select2/companies-data');
                     await this.getRoleData();
                     await this.getUserData();
+                    if (this.id !== '') {
+                        await selectedValue('selected-branch', `/select2/selected-branch/${this.branchId}`)
+                        await selectedValue('selected-company', `/select2/selected-company/${this.companyId}`)
+                    }
                 },
                 async save() {
                     this.buttonLoading = true
@@ -244,12 +243,20 @@
                     });
                 },
                 async getRoleData() {
-                    const resp = await axios.get('/manage-users/users/roles/data');
-                    this.roles = resp.data;
+                    try {
+                        const resp = await axios.get('/manage-users/users/roles/data');
+                        this.roles = resp.data;
+                    } catch (error) {
+                        console.log(error)
+                    }
                 },
                 async getUserData() {
-                    const users = await axios.get(`/manage-users/users/show/${this.id}`);
-                    this.users = users.data;
+                    try {
+                        const users = await axios.get(`/manage-users/users/show/${this.id}`);
+                        this.users = users.data;
+                    } catch (error) {
+                        console.log(error);
+                    }
                 },
             }
         }
