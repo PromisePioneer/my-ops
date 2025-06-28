@@ -9,7 +9,6 @@ use App\Models\AccountTransaction;
 use App\Models\Area;
 use App\Models\Asset;
 use App\Models\AttendanceSummary;
-use App\Models\Boq;
 use App\Models\BranchDefaultWorkTime;
 use App\Models\BranchRoleDefaultWorkTime;
 use App\Models\BroadbandPacket;
@@ -18,6 +17,7 @@ use App\Models\Department;
 use App\Models\EmployeeSchedule;
 use App\Models\Fab;
 use App\Models\InitialInventoryBalance;
+use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\LeaveAndPermission;
 use App\Models\Master\Common\Branch;
@@ -27,8 +27,6 @@ use App\Models\Master\Common\SKL;
 use App\Models\Master\Common\UnitType;
 use App\Models\NationalHoliday;
 use App\Models\OfferingLetter;
-use App\Models\Product;
-use App\Models\PSB;
 use App\Models\PurchaseOrder;
 use App\Models\RoleDefaultWorkTime;
 use App\Models\SP;
@@ -42,7 +40,6 @@ use App\Policies\AccountPolicy;
 use App\Policies\AreaPolicy;
 use App\Policies\AssetPolicy;
 use App\Policies\AttendanceSummaryPolicy;
-use App\Policies\BoqPolicy;
 use App\Policies\BranchDefaultWorkTimePolicy;
 use App\Policies\BranchPolicy;
 use App\Policies\BranchRoleDefaultWorkTimePolicy;
@@ -54,12 +51,12 @@ use App\Policies\EmployeeSchedulePolicy;
 use App\Policies\FabPolicy;
 use App\Policies\InitialBalancePolicy;
 use App\Policies\InitialInventoryBalancePolicy;
+use App\Policies\ItemCategoryPolicy;
 use App\Policies\ItemCollectionPolicy;
 use App\Policies\LeaveAndPermissionPolicy;
 use App\Policies\NationalHolidayPolicy;
 use App\Policies\OfferingLetterPolicy;
 use App\Policies\PermissionPolicy;
-use App\Policies\PSBPolicy;
 use App\Policies\PurchaseOrderPolicy;
 use App\Policies\RoleDefaultWorkTimePolicy;
 use App\Policies\RolePolicy;
@@ -100,7 +97,6 @@ class AuthServiceProvider extends ServiceProvider
         Permission::class => PermissionPolicy::class,
         LeaveAndPermission::class => LeaveAndPermissionPolicy::class,
         AttendanceSummary::class => AttendanceSummaryPolicy::class,
-        Boq::class => BoqPolicy::class,
         AccountTransaction::class => InitialBalancePolicy::class,
         Company::class => CompanyPolicy::class,
         OfferingLetter::class => OfferingLetterPolicy::class,
@@ -112,7 +108,6 @@ class AuthServiceProvider extends ServiceProvider
         Area::class => AreaPolicy::class,
         TaxSetting::class => TaxSettingPolicy::class,
         Asset::class => AssetPolicy::class,
-        PSB::class => PSBPolicy::class,
         EmployeeSchedule::class => EmployeeSchedulePolicy::class,
         Transaction::class => TransactionPolicy::class,
         ItemCollection::class => ItemCollectionPolicy::class,
@@ -121,6 +116,7 @@ class AuthServiceProvider extends ServiceProvider
         BranchDefaultWorkTime::class => BranchDefaultWorkTimePolicy::class,
         BranchRoleDefaultWorkTime::class => BranchRoleDefaultWorkTimePolicy::class,
         StockWithdrawal::class => StockWithdrawalPolicy::class,
+        ItemCategory::class => ItemCategoryPolicy::class,
     ];
 
     /**

@@ -35,7 +35,7 @@ class PermissionSeeder extends Seeder
         $this->assetData();
         $this->initialInventoryBalance();
 
-        $this->goodsCategory();
+        $this->itemCategories();
         $this->itemCollections();
 
         // Inventory Controller
@@ -603,22 +603,7 @@ class PermissionSeeder extends Seeder
         }
     }
 
-
-    public function joinClosureCode(): void
-    {
-        $permissions = [
-            'Lihat Menu Kode Joint Closure',
-            'Tambah Data Kode Joint Closure',
-            'Edit Data Kode Joint Closure',
-            'Hapus Data Kode Joint Closure',
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
-    }
-
-    public function goodsCategory()
+    public function itemCategories(): void
     {
         $permissions = [
             'Lihat Menu Kategori Barang',
