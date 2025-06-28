@@ -103,7 +103,7 @@
                                         </tr>
                                     </template>
                                     <template x-for="user in users.data" :key="user.id">
-                                        <tr :class="`${user.active === 1 ? '' : 'bg-light-danger'}`">
+                                        <tr>
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                      @click="selectCheckBox($event)">
