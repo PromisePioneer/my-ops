@@ -20,7 +20,7 @@ use Illuminate\Http\Request;
     }
 
 
-    public function findByDraftStock(DraftStock $draftStock)
+    public function findByDraftStock(DraftStock $draftStock): Stock
     {
         return Stock::where('transaction_id', $draftStock->transaction_id)->first();
     }

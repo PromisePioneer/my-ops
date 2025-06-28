@@ -124,15 +124,15 @@ use Throwable;
             'transaction_id' => $draftStock->transaction_id,
             'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
             'on_hold_qty' => 0,
-            'available_qty' => $draftStock->transaction?->qty_in_meter ?? 1,
+            'available_qty' => $draftStock->transaction?->qty_in_meter ?? $draftStock->initialInventoryBalance?->qty_in_meter ?? 1,
             'broken_qty' => 0,
         ]);
     }
 
 
-    private static function insertItemCatalog(Request $request, DraftStock $draftStock, ?Stock $stock, ?Asset $asset = null): ItemCatalog
+    private static function insertItemCatalog(Request $request, DraftStock $draftStock, ?Stock $stock, ?Asset $asset = null): void
     {
-        return ItemCatalog::create([
+        ItemCatalog::create([
             'stock_id' => $stock->id,
             'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
             'code' => $request->code,

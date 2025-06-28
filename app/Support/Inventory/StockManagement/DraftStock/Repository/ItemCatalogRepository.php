@@ -3,7 +3,6 @@
 namespace App\Support\Inventory\StockManagement\DraftStock\Repository;
 
 use AllowDynamicProperties;
-use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\ItemCollection;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,12 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
     public function __construct()
     {
         return $this->itemCatalog = new ItemCatalog();
-    }
-
-    public function findByDraftStock(DraftStock $draftStock): Builder
-    {
-        return ItemCatalog::with('transaction', 'transaction.item', 'createdBy', 'initialInventoryBalance', 'initialInventoryBalance.item')
-            ->where('draft_stock_id', $draftStock->id);
     }
 
 
@@ -39,10 +32,12 @@ use Illuminate\Database\Eloquent\Builder;
 
     public function findByItemId(ItemCollection $itemCollection)
     {
-        return ItemCatalog::with('stock.transaction', 'stock.initialInventoryBalance')
+        return ItemCatalog::with(['stock.transaction', 'stock.initialInventoryBalance'])
             ->where(function (Builder $query) use ($itemCollection) {
-                $query->whereHas('stock.transaction', fn($query) => $query->where('item_id', $itemCollection->id))
-                    ->orWhereHas('stock.initialInventoryBalance', fn($query) => $query->where('item_id', $itemCollection->id));
+                $query->whereHas('stock.transaction.item', function (Builder $query) use ($itemCollection) {
+                    $query->where('id', $itemCollection->id);
+                })
+                    ->orWhereHas('stock.initialInventoryBalance');
             });
     }
 

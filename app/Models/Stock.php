@@ -18,6 +18,8 @@ class Stock extends Model
         'draft_stock_id',
         'condition',
         'on_hold_qty',
+        'available_qty',
+        'available_qty',
         'initial_balance_inventory_id',
     ];
 
