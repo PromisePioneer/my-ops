@@ -238,9 +238,9 @@ use function App\Helper\formatDate;
     }
 
 
-    public function getArchivedData(): LengthAwarePaginator
+    public function getArchivedData(Request $request): LengthAwarePaginator
     {
-        $data = $this->userRepository->getTrashed()->paginate(self::$perPage);
+        $data = $this->userRepository->getTrashed($request)->paginate(self::$perPage);
         return self::formattedData($data);
     }
 

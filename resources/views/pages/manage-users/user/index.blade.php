@@ -162,6 +162,11 @@
                                                 </div>
                                             </td>
                                             <td class="text-center" x-text="user.join_date"></td>
+                                            <td>
+                                                <a href="{{ url('/manage-users/user') }}" class="btn btn-light-primary btn-sm">
+                                                    <x-icons.edit/>
+                                                </a>
+                                            </td>
                                         </tr>
                                     </template>
                                     </tbody>

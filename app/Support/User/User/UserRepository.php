@@ -36,9 +36,12 @@ use Illuminate\Http\Request;
         return User::where('branch_id', $branchId);
     }
 
-    public function getTrashed(): Builder
+    public function getTrashed(Request $request): Builder
     {
-        return $this->user->onlyTrashed();
+        return $this->user->onlyTrashed()->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
+            $query->where('branch_id', $request->user()->branch_id)
+                ->where('id', '!=', $request->user()->id);
+        });
     }
 
 }
