@@ -95,7 +95,7 @@ use Illuminate\View\View;
 
     public function leavesData(Request $request): JsonResponse
     {
-        return response()->json($this->leaveAndPermissionService->getOwnleaves($request));
+        return response()->json($this->leaveAndPermissionService->getOwnLeaves($request));
     }
 
 

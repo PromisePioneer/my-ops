@@ -234,7 +234,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [LeaveAndPermissionController::class, 'data']);
             Route::get('/search', [LeaveAndPermissionController::class, 'search']);
             Route::post('/', [LeaveAndPermissionController::class, 'store']);
-            Route::post('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'changeStatus']);
+            Route::post('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'confirm']);
             Route::get('/users/data', [LeaveAndPermissionController::class, 'getUserData']);
             Route::get('/users/selected/{leaveAndPermission}', [LeaveAndPermissionController::class, 'selectedUserData']);
             Route::get('/filter', [LeaveAndPermissionController::class, 'filter']);

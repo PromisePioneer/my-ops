@@ -28,10 +28,10 @@ class FpDevice extends Model
 
     public function toSearchableArray(): array
     {
-        $this->loadMissing('branch');
         return [
             'serial_number' => $this->serial_number,
             'name' => $this->name,
+//            'branch'
             'ip_address' => $this->ip_address
         ];
     }

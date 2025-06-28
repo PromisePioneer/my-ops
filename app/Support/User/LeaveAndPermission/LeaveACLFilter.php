@@ -40,7 +40,8 @@ class LeaveACLFilter
                     'Project Controller & Vendor Supervisor',
                     'Warehouse Security',
                     'Graphic Designer & Socmed Admin',
-                    'Warehouse Supervisor'
+                    'Warehouse Supervisor',
+                    'Customer Service Supervisor',
                 ]);
             })->whereHas('user', function ($query) use ($request) {
                 $query->where('branch_id', 1)

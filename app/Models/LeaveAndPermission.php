@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
 class LeaveAndPermission extends Model
 {
-    use HasFactory, Searchable;
+    use Searchable;
 
     protected $table = 'leaves_and_permissions';
 
@@ -22,7 +21,7 @@ class LeaveAndPermission extends Model
         'reason',
         'leaves_status',
         'confirmation_status',
-        'sick_letter',
+        'attachment',
         'confirmation_reason',
         'acc_by',
         'important_leaves'
