@@ -6,7 +6,6 @@ use AllowDynamicProperties;
 use App\Models\Master\Common\UnitType;
 use App\Support\Master\Common\UnitType\Repository\UnitTypeRepository;
 use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -107,7 +106,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $unitTypes = $unitType->whereIn('id', $explodeID)->onlyTrashed()->get();
         foreach ($unitTypes as $unitType) {
             if ($unitType->ifRelatedDataExists($unitType)) {
-                throw new Exception('Data terhubung dengan data lain, tidak bisa dihapus permanen.');
+                throw new Exception('Data terhubung dengan data lain, tidak bisa dihapus permanen!.');
             }
             $unitType->forceDelete();
         }

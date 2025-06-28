@@ -179,8 +179,7 @@
                             await this.init();
                             this.selectedCheckBox = [];
                         } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
+                            await showAlert('error', error.response.data.message);
                         }
                     });
                 },
