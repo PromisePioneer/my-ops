@@ -301,7 +301,7 @@
                     }
                 },
                 async searchData() {
-                    const resp = await axios.get('/manage-users/users/search', {
+                    const resp = await axios.get('/manage-users/users/archives/search', {
                         params: {
                             search: this.search,
                             month: document.getElementById('month')?.value,
