@@ -12,13 +12,6 @@
             <form id="form-leaves" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Pilih Karyawan</label>
-                        <select name="user_id" id="selected-user" class="form-select form-select-solid users-select2"
-                                data-dropdown-parent="#modal-leaves">
-                            <option></option>
-                        </select>
-                    </div>
-                    <div class="mb-10">
                         <label for="name" class="required form-label">Status Cuti</label>
                         <select name="leaves_status" id="leaves_status" class="form-select form-select-solid"
                                 x-model="leavesStatus" @change="ifNotImportantLeave()">

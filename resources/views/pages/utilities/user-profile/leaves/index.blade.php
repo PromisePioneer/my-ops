@@ -2,8 +2,7 @@
 @section('page-title', 'Informasi Identitas')
 @section('content')
     @include('pages.utilities.user-profile.partials.header')
-
-    <div x-data="ownLeavesData">
+    <div x-data="ownLeavesData()">
         @include('pages.utilities.user-profile.leaves.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header">
@@ -17,8 +16,7 @@
                         @can('Tambah Data Manajemen Cuti')
                             <button class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-form"
-                                    {{-- @click="add()" --}}
+                                    data-bs-target="#modal-leaves"
                             >
                                 Tambah
                             </button>
@@ -151,10 +149,10 @@
                 leaves: [],
                 startIndex: 0,
                 leavesStatus: null,
-                modalForm: new bootstrap.Modal(document.getElementById('modal-form')),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-leaves')),
                 editVal: '',
                 search: '',
-                form: document.getElementById('form'),
+                form: document.getElementById('form-leaves'),
                 leavesLeft: 0,
                 confirmationStatus: null,
                 importantLeaveType: null,
