@@ -21,8 +21,8 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Status Cuti</label>
                         <select name="leaves_status" id="leaves_status" class="form-select form-select-solid"
-                                x-model="leavesStatus">
-                            <option value="0" selected>Pilih</option>
+                                x-model="leavesStatus" @change="ifNotImportantLeave()">
+                            <option value="" selected>Pilih</option>
                             <option value="Sakit" :selected="editVal?.leaves_status === 'Sakit'">Sakit</option>
                             <option value="Cuti" :selected="editVal?.leaves_status === 'Cuti'">Cuti</option>
                             <option value="Izin" :selected="editVal?.leaves_status === 'Izin'">Izin</option>
@@ -32,15 +32,25 @@
                             <option value="Lembur" :selected="editVal?.leaves_status === 'Lembur'">Lembur</option>
                         </select>
                     </div>
-                    <div class="mb-10">
+                    <div class="mb-10"
+                         x-show="importantLeaveType !== 'Mendapat Musibah'
+                    && importantLeaveType !== 'Memenuhi Panggilan Instansi Pemerintah'"
+                         x-transition x-cloak>
                         <label for="name" class="required form-label">Tanggal Mulai</label>
-                        <input type="date" id="start_date" name="start_date"
+                        <input type="date" id="start_date"
+                               :name="`${importantLeaveType !== 'Mendapat Musibah' &&
+                               importantLeaveType !== 'Memenuhi Panggilan Instansi Pemerintah'
+                               ? 'start_date' : ''}`"
                                class="form-control form-control-solid date"
                                placeholder="Tanggal Mulai" :value="editVal?.start_date"/>
                     </div>
-                    <div class="mb-10" x-show="leavesStatus !== 'Cuti Penting'">
+                    <div class="mb-10" x-show="leavesStatus !== 'Cuti Penting' && importantLeaveType !== 'Mendapat Musibah'
+                    && importantLeaveType !== 'Memenuhi Panggilan Instansi Pemerintah'">
                         <label for="name" class="required form-label">Tanggal Selesai</label>
-                        <input type="date" id="end_date" name="end_date" class="form-control form-control-solid date"
+                        <input type="date" id="end_date"
+                               :name="`${leavesStatus !== 'Cuti Penting' && importantLeaveType !== 'Mendapat Musibah'
+                                    && importantLeaveType !== 'Memenuhi Panggilan Instansi Pemerintah' ? 'end_date' : ''}`"
+                               class="form-control form-control-solid date"
                                placeholder="Tanggal Selesai" :value="editVal?.end_date"/>
                     </div>
                     <div class="mb-10" x-show="leavesStatus === 'Cuti'">
@@ -51,8 +61,10 @@
 
                     <div class="mb-10" x-show="leavesStatus === 'Cuti Penting'" x-transition x-cloak>
                         <label for="name" class="required form-label">Pilih Kategori Cuti Penting</label>
-                        <select name="important_leaves" id="important_leaves" class="form-select form-select-solid">
-                            <option value="0" selected>Pilih</option>
+                        <select :name="`${leavesStatus === 'Cuti Penting' ? 'important_leaves' : ''}`"
+                                id="important_leaves" class="form-select form-select-solid"
+                                x-model="importantLeaveType">
+                            <option value="" selected>Pilih</option>
                             <option value="Menikah" :selected="editVal?.important_leaves === 'Menikah'">Menikah</option>
                             <option value="Menikahkan Anak" :selected="editVal?.important_leaves === 'Menikahkan Anak'">
                                 Menikahkan anak
@@ -69,17 +81,33 @@
                             </option>
                             <option value="Anggota Keluarga Meninggal Dunia"
                                     :selected="editVal?.important_leaves === 'Anggota Keluarga Meninggal Dunia'">
-                                Suami / istri / orang tua / mertua / anak / menantu meninggal dunia
+                                Suami / istri / orang tua / mertua / anak / nenek / kakek / menantu / anak menantu meninggal dunia
                             </option>
                             <option value="Anggota Keluarga Dalam Satu Rumah Meninggal Dunia"
                                     :selected="editVal?.important_leaves === 'Anggota Keluarga Dalam Satu Rumah Meninggal Dunia'">
                                 Anggota keluarga dalam satu rumah meninggal dunia
                             </option>
+                            <option value="Pemakaman Saudara Kandung"
+                                    :selected="editVal?.important_leaves === 'Pemakaman Saudara Kandung'">
+                                Pemakaman Saudara Kandung
+                            </option>
+                            <option value="Memenuhi Panggilan Instansi Pemerintah"
+                                    :selected="editVal?.important_leaves === 'Memenuhi Panggilan Instansi Pemerintah'">
+                                Memenuhi Panggilan Instansi Pemerintah
+                            </option>
+                            <option value="Mendapat Musibah"
+                                    :selected="editVal?.important_leaves === 'Mendapat Musibah'">
+                                Mendapat Musibah (Banjir, Kebakaran dll)
+                            </option>
                         </select>
                     </div>
-                    <div class="mb-10" x-show="leavesStatus === 'Sakit'" x-transition x-cloak>
-                        <label for="name" class="required form-label">Surat Ketarangan Dokter</label>
-                        <input type="file" id="end_date" :name="`${leavesStatus === 'Sakit' ? 'sick_letter' : ''}`"
+                    <div class="mb-10"
+                         x-show="leavesStatus === 'Sakit' || importantLeaveType === 'Memenuhi Panggilan Instansi Pemerintah'"
+                         x-transition x-cloak>
+                        <label for="sick_letter" class="required form-label" x-text="leavesStatus === 'Sakit' ? 'Surat Ketarangan Dokter'
+                        : 'Surat Resmi Dari Instansi' "></label>
+                        <input type="file" id="file"
+                               :name="`${leavesStatus === 'Sakit' || importantLeaveType === 'Memenuhi Panggilan Instansi Pemerintah' ? 'attachment' : ''}`"
                                class="form-control form-control-solid"
                                accept=".jpg,.png,.jpeg"/>
                     </div>
