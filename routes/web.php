@@ -175,10 +175,19 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{user}', [UserController::class, 'show']);
             Route::post('/import', [UserController::class, 'import']);
             Route::get('/detail/{user}', [UserController::class, 'detail']);
-            Route::get('/department/data', [UserController::class, 'getDepartmentData']);
             Route::post('/update/{user}', [UserController::class, 'update']);
             Route::post('/change-status/{user}', [UserController::class, 'changeStatusActive']);
             Route::get('/filter', [UserController::class, 'filter']);
+
+
+            Route::prefix('archives')->group(function () {
+                Route::get('/', [UserController::class, 'archives']);
+                Route::get('/data', [UserController::class, 'archivedData']);
+                Route::get('/search', [UserController::class, 'archivedSearch']);
+                Route::get('/filter', [UserController::class, 'filterArchivedData']);
+                Route::post('/restore', [UserController::class, 'restore']);
+                Route::post('/force-delete', [UserController::class, 'forceDelete']);
+            });
         });
         Route::prefix('identity-information')->group(function () {
             Route::get('/{user}', [IdentityInformationController::class, 'index']);

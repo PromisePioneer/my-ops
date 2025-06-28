@@ -27,9 +27,9 @@ class UserPolicy
     }
 
 
-    public function setActive(User $user): bool
+    public function viewArchives(User $user): bool
     {
-        return $user->can('Aktifasi Data Karyawan');
+        return $user->can('Lihat Arsip Data Karyawan');
     }
 
     public function viewDetail(User $user): bool
@@ -63,13 +63,6 @@ class UserPolicy
     {
         return $user->can('Filter Data Karyawan Berdasarkan Bulan');
     }
-
-
-    public function filterBasedOnActiveOrNotActive(User $user): bool
-    {
-        return $user->can('Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif');
-    }
-
 
 
 }

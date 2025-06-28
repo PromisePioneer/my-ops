@@ -15,6 +15,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
+use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class UserService
 {
@@ -25,6 +26,7 @@ use Throwable;
         $this->branchService = new BranchService();
         $this->userRepository = new UserRepository();
         $this->userQueryFilter = new UserQueryFilter();
+        $this->user = new User();
     }
 
 
@@ -70,9 +72,10 @@ use Throwable;
                 'roles' => $user->roles[0]?->name ?? '',
                 'branch' => $user->branch?->name,
                 'company' => $user->company?->name ?? '',
-                'join_date' => $user->join_date,
+                'join_date' => formatDate($user->join_date),
                 'profile_pic' => $user->profile_pic,
                 'active' => $user->active,
+                'email' => $user->email,
             ];
         });
 
@@ -223,31 +226,7 @@ use Throwable;
         });
     }
 
-    public function getStockerByBranchId(Request $request)
-    {
-
-        if ($request->branch_id == null) {
-            return [];
-        }
-
-        $user = User::with('branch', 'roles')
-            ->where(function ($query) use ($request) {
-                $query->whereHas('roles', function ($query) {
-                    $query->where('name', 'Stocker Staff');
-                })->whereHas('branch', function ($query) use ($request) {
-                    $query->where('id', $request->branch_id);
-                });
-            })
-            ->get();
-        return $user->map(function ($query) {
-            return [
-                'id' => $query->id,
-                'text' => $query->name
-            ];
-        });
-    }
-
-    public function getUserByBranchId(int $branchId)
+    public function getUserByBranchId(int $branchId): \Illuminate\Support\Collection
     {
         $data = $this->userRepository->getUserByBranchId($branchId)->get();
         return $data->map(function ($query) {
@@ -256,5 +235,46 @@ use Throwable;
                 'text' => $query->name
             ];
         });
+    }
+
+
+    public function getArchivedData(): LengthAwarePaginator
+    {
+        $data = $this->userRepository->getTrashed()->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+
+    public function searchArchivedData(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $data = $this->user::search($search)->onlyTrashed()->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+
+    public function restore(Request $request, User $user): ?bool
+    {
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        return $user->whereIn('id', $explodeID)->restore();
+    }
+
+
+    public function forceDelete(Request $request, User $user): void
+    {
+        $contacts = $user->with(['transaction', 'offeringLetter', 'initialInventoryBalance'])->whereIn('id', $request->get('id'))
+            ->onlyTrashed()
+            ->forceDelete();
+    }
+
+    public function filterArchivedData(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $users = User::search($search)->query(function ($query) use ($request) {
+            $getUsers = $this->userRepository->getUsers($query, $request);
+            UserQueryFilter::apply($getUsers, $request);
+        })->onlyTrashed()->paginate(self::$perPage);
+        return self::formattedData($users);
     }
 }

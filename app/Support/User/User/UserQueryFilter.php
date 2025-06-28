@@ -2,7 +2,6 @@
 
 namespace App\Support\User\User;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -30,10 +29,6 @@ class UserQueryFilter
 
         if ($request->filled('year')) {
             $query->whereYear('join_date', $request->input('year'));
-        }
-
-        if ($request->filled('active')) {
-            $query->where('active', $request->input('active'));
         }
 
         return $query;
