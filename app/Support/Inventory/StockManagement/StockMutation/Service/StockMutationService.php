@@ -84,11 +84,12 @@ use function App\Helper\formatDate;
             return [
                 'id' => $query->id,
                 'date' => formatDate($query->date),
-                'old_branch_name' => "{$query->oldBranch->parent->name} - {$query->oldBranch->name}",
-                'new_branch_name' => "{$query->newBranch->parent->name} -  {$query->newBranch->name}",
+                'old_branch_name' => "{$query->oldBranch->parent->name} ({$query->oldBranch->name})",
+                'new_branch_name' => "{$query->newBranch->parent->name} ({$query->newBranch->name})",
                 'sender_name' => $query->sender->name,
                 'receiver_name' => $query->receiver->name,
                 'sender_signature' => $query->sender_signature,
+                'status' => $query->status,
             ];
         });
 

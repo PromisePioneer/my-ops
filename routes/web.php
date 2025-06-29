@@ -735,6 +735,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/get-sessions', [StockMutationController::class, 'getSessions']);
             Route::get('/flush-sessions', [StockMutationController::class, 'flushSessions']);
             Route::get('/delete-sessions', [StockMutationController::class, 'deleteSessions']);
+            Route::post('/cancel-item-delivery/{stockMutation}', [StockMutationController::class, 'cancelItemDelivery']);
         });
         Route::prefix('draft-stocks')->group(function () {
             Route::get('/', [DraftStockController::class, 'index']);

@@ -45,13 +45,11 @@
                     <div class="table-responsive">
                         <table class="table align-middle table-bordered fs-6 gy-5">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     #
                                 </th>
                                 <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Cabang Awal</th>
-                                <th class="min-w-125px">Cabang Tujuan</th>
                                 <th class="min-w-125px">Pengirim</th>
                                 <th class="min-w-125px">Penerima</th>
                                 <th class="min-w-125px">Actions</th>
@@ -83,12 +81,25 @@
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
-                                    <td x-text="stock.date"></td>
-                                    <td x-text="stock.old_branch_name"></td>
-                                    <td x-text="stock.new_branch_name"></td>
-                                    <td x-text="stock.sender_name"></td>
-                                    <td x-text="stock.receiver_name"></td>
-                                    <td>
+                                    <td class="text-center">
+                                        <p x-text="stock.date"></p>
+                                        <div class="mb-4">
+
+                                            <template x-if="stock.status === 'Diterima'">
+                                                <span class="badge bg-light-success fs-6 text-success">Diterima</span>
+                                            </template>
+                                            <template x-if="stock.status === 'Dikirim'">
+                                                <span class="badge bg-light-info fs-6 text-info">Dikirim</span>
+                                            </template>
+                                            <template x-if="stock.status === 'Dibatalkan'">
+                                                <span class="badge bg-light-danger text-danger fs-6">Dibatalkan</span>
+                                            </template>
+                                        </div>
+                                        <p x-text="`Dari ${stock.old_branch_name} ke ${stock.new_branch_name}`"></p>
+                                    </td>
+                                    <td class="text-center" x-text="stock.sender_name"></td>
+                                    <td class="text-center" x-text="stock.receiver_name"></td>
+                                    <td class="text-center">
                                         <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-stock-mutations-detail"
                                                 @click="showDetail(stock.id)">
@@ -206,7 +217,7 @@
                 async cancelDelivery(id) {
                     showConfirmModal("Anda yakin?", "Batalkan Pengiriman?", "Ya, Kirim!", async () => {
                         try {
-                            await axios.post(`/inventory/stock-mutations/cancel-delivery/${id}`);
+                            await axios.post(`/inventory/stock-mutations/cancel-item-delivery/${id}`);
                             await showAlert('success', 'Pengiriman berhasil dibatalkan');
                             await this.init();
                             await this.detailModal.hide();

@@ -31,7 +31,7 @@ use Illuminate\Http\Request;
     }
 
 
-    public function getUserByBranchId(int $branchId): User
+    public function getUserByBranchId(int $branchId): Builder|User
     {
         return User::where('branch_id', $branchId);
     }

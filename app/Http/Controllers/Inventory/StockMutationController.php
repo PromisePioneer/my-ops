@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Inventory;
 
 use AllowDynamicProperties;
+use App\Enum\StockMutation\StockMutationType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StockMutationRequest;
+use App\Models\ItemCatalog;
 use App\Models\ItemCollection;
 use App\Models\StockMutation;
 use App\Support\Inventory\StockManagement\StockMutation\Service\StockMutationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 use Throwable;
@@ -120,7 +123,26 @@ use function App\Helper\formatDate;
     public function deleteSessions(Request $request): void
     {
         Session::forget("stock_mutation_items.$request->index");
+    }
 
+
+    /**
+     * @throws Throwable
+     */
+    public function cancelItemDelivery(StockMutation $stockMutation): void
+    {
+        DB::transaction(function () use ($stockMutation) {
+            $items = $stockMutation->load('stockMutationItems')->stockMutationItems;
+            foreach ($items as $item) {
+                if (!empty($item->code)) {
+                    ItemCatalog::where('code', $item->code)->first()->update([
+                        'status' => 'Tersedia'
+                    ]);
+                }
+
+            }
+            $stockMutation->update(['status' => StockMutationType::CANCELED->value]);
+        });
     }
 
 }

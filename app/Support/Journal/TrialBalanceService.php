@@ -46,32 +46,41 @@ class TrialBalanceService
             return [
                 'trial_balance_type' => $account->trial_balance_type,
                 'account_name' => $account->name,
-                'debit' => $account->trial_balance_type === 'debit' ? currencyFormat(($debit + $childDebit) - $childCredit) : null,
-                'credit' => $account->trial_balance_type === 'credit' ? currencyFormat($credit + $childCredit) : null,
-                'balance_debit' => $account->trial_balance_type === 'debit' ? floatval(($debit + $childDebit) - $childCredit) : null,
-                'balance_credit' => $account->trial_balance_type === 'credit' ? floatval($credit + $childCredit) : null,
+                'debit' => $account->trial_balance_type === 'debit'
+                    ? currencyFormat($debit + $childDebit)
+                    : null,
+                'credit' => $account->trial_balance_type === 'credit'
+                    ? currencyFormat($credit + $childCredit)
+                    : null,
+                'balance_debit' => $account->trial_balance_type === 'debit'
+                    ? floatval($debit + $childDebit)
+                    : null,
+                'balance_credit' => $account->trial_balance_type === 'credit'
+                    ? floatval($credit + $childCredit)
+                    : null,
             ];
         });
     }
 
     public function getFilteredTransactionSum($account, $type, ?Request $request): float
     {
-        $transactions = $account->accountTransaction()->where('entries_type', $type)->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'), Carbon::now()->endOfYear()->lastOfMonth()->format('Y-m-d')]);
+        $transactions = $account->accountTransaction()->where('entries_type', $type);
+
+        if ($request?->year && $request?->month) {
+            $transactions->whereMonth('date', $request->month)
+                ->whereYear('date', $request->year);
+        } elseif ($request?->year) {
+            $start = Carbon::createFromDate($request->year - 1, 12, 1)->startOfDay();
+            $end = Carbon::createFromDate($request->year, 12, 31)->endOfDay();
+            $transactions->whereBetween('date', [$start, $end]);
+        } else {
+            $start = Carbon::now()->subYear()->startOfMonth()->setMonth(12); // 1 Dec tahun lalu
+            $end = Carbon::now()->endOfYear(); // 31 Dec tahun ini
+            $transactions->whereBetween('date', [$start, $end]);
+        }
 
         if ($request?->branch_id) {
             $transactions->where('branch_id', $request->branch_id);
-        }
-
-        if ($request?->year) {
-            $transactions->whereBetween('date', [
-                Carbon::parse($request->year)->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'),
-                Carbon::parse($request->year)->endOfYear()->lastOfMonth()->format('Y-m-d'),
-            ]);
-
-        }
-
-        if ($request?->month) {
-            $transactions->whereMonth('date', $request->month)->whereYear('date', $request->year);
         }
 
         return $transactions->sum('amount');

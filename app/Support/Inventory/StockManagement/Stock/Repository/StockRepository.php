@@ -20,13 +20,13 @@ use Illuminate\Http\Request;
     }
 
 
-    public function findByDraftStock(DraftStock $draftStock): Stock
+    public function findByDraftStock(DraftStock $draftStock): ?Stock
     {
         return Stock::where('transaction_id', $draftStock->transaction_id)->first();
     }
 
 
-    public function findByItemCatalog(ItemCatalog $itemCatalog)
+    public function findByItemCatalog(ItemCatalog $itemCatalog): ?Stock
     {
         return Stock::where('id', $itemCatalog->stock?->id)
             ->lockForUpdate()
@@ -79,6 +79,7 @@ use Illuminate\Http\Request;
                 });
             });
     }
+
     public function getStockByCategoryAndBranch(int|string $branchId, int|string $categoryId)
     {
         $itemCategory = ItemCategory::find($categoryId);
