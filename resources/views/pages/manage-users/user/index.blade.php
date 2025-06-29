@@ -102,6 +102,7 @@
                                         <th>Informasi Umum</th>
                                         <th>Karyawan</th>
                                         <th>Tanggal Masuk</th>
+                                        <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody class="fw-bold text-gray-600">
@@ -163,7 +164,8 @@
                                             </td>
                                             <td class="text-center" x-text="user.join_date"></td>
                                             <td>
-                                                <a :href="`/manage-users/users/edit/${user.id}`" class="btn btn-light-primary btn-sm">
+                                                <a :href="`/manage-users/users/edit/${user.id}`"
+                                                   class="btn btn-light-primary btn-sm">
                                                     <x-icons.edit/>
                                                 </a>
                                             </td>
