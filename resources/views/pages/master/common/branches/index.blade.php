@@ -58,7 +58,6 @@
                                         </div>
                                     </th>
                                 </template>
-                                <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Alamat</th>
                                 <th class="min-w-125px">Sub Cabang</th>
