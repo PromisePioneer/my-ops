@@ -2,152 +2,154 @@
 @section('page-title', 'Cabang')
 @section('breadcrumbs', 'Master Umum - Cabang')
 @section('content')
-        <div x-data="branchesData()">
-            <div class="card card-xl-stretch mb-5 mb-xl-8">
-                @include('pages.master.common.branches.modal.create')
-                @include('pages.master.common.branches.modal.edit')
-                @include('pages.master.common.branches.modal.create-children')
-                @include('pages.master.common.branches.modal.children-detail')
-                <div class="card-header border-0 pt-6">
-                    <div class="card-title">
-                        <div class="d-flex align-items-center position-relative my-1">
+    <div x-data="branchesData()">
+        <div class="card card-xl-stretch mb-5 mb-xl-8">
+            @include('pages.master.common.branches.modal.create')
+            @include('pages.master.common.branches.modal.edit')
+            @include('pages.master.common.branches.modal.create-children')
+            @include('pages.master.common.branches.modal.children-detail')
+            <div class="card-header border-0 pt-6">
+                <div class="card-title">
+                    <div class="d-flex align-items-center position-relative my-1">
                             <span class="svg-icon svg-icon-1 position-absolute ms-6">
                                <i class="bi bi-search"></i>
                             </span>
-                            <input type="text" name="search" x-model="search" @input.debounce="searchData()"
-                                   class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
-                        </div>
-                    </div>
-                    <div class="card-toolbar">
-                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                <template x-if="Number(createPermission) === 1">
-                                    <button type="button" class="btn btn-light-primary btn-sm"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-create">
-                                        <x-icons.add-item/>
-                                        Tambah
-                                    </button>
-                                </template>
-                            </div>
-                        </div>
+                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"
+                               class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
-                <div class="card-body py-3">
-                    <div class="col-12">
-                        <form id="form-delete" @submit.prevent="destroy()">
-                            <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                            <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                    x-show="selectedCheckBox.length > 0"
-                                    x-transition x-cloak>
-                                <x-icons.trash/>
-                                Hapus
-                            </button>
-                        </form>
-                    </div>
-                    <div class="py-5">
-                        <div class="table-responsive">
-                            <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5" id="kt_table_users">
-                                <thead>
-                                <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <template x-if="Number(deletePermission) === 1">
-                                        <th class="w-10px pe-2">
-                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                <input class="form-check-input" type="checkbox"
-                                                       @click="toggleAllCheckBox()">
-                                            </div>
-                                        </th>
-                                    </template>
-                                    <th class="min-w-125px">Kode</th>
-                                    <th class="min-w-125px">Nama</th>
-                                    <th class="min-w-125px">Alamat</th>
-                                    <th class="min-w-125px">Sub Cabang</th>
-                                    <template x-if="Number(editPermission) === 1">
-                                        <th class="min-w-125px">Actions</th>
-                                    </template>
-                                </thead>
-                                <template x-if="isLoading">
-                                    <tbody class="fw-bold">
-                                    <tr>
-                                        <td colspan="6">
-                                            <div style="text-align: center;">
-                                                <div class="spinner-border" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </template>
-                                <template x-if="!isLoading && branches.data?.length === 0">
-                                    <tbody class="fw-bold">
-                                    <tr>
-                                        <td colspan="6">
-                                            <center>Data Tidak Ditemukan</center>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </template>
-                                <template x-for="branch in branches?.data" :key="branch.id">
-                                    <tbody class="fw-bold">
-                                    <tr>
-                                        <template x-if="Number(deletePermission) === 1">
-                                            <td>
-                                                <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                                     @click="selectCheckBox($event)">
-                                                    <input class="form-check-input" type="checkbox" :value="branch.id"
-                                                           :id="'checkbox-' + branch.id"/>
-                                                </div>
-                                            </td>
-                                        </template>
-                                        <td class="text-center" x-text="branch.code"></td>
-                                        <td class="text-center" x-text="branch.name"></td>
-                                        <td class="text-center" x-text="branch.address"></td>
-                                        <td>
-                                            <ul >
-                                                <template x-for="(children, index) in branch.children" :key="index">
-                                                    <li>
-                                                        <button class="btn btn-link btn-sm" data-bs-toggle="modal"
-                                                                data-bs-target="#modal-children-detail"
-                                                                @click="edit(children.id)">
-                                                            <i class="bi bi-geo-alt-fill"></i>
-                                                            <span class="fw-bolder" x-text="children.name"></span>
-                                                        </button>
-                                                    </li>
-                                                </template>
-                                            </ul>
-                                        </td>
-                                        <td>
-                                            <template x-if="Number(editPermission) === 1">
-                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-edit" @click="edit(branch.id)">
-                                                    <x-icons.edit/>
-                                                </button>
-                                            </template>
-                                            <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-create-children"
-                                                    @click="edit(branch.id)">
-                                                <x-icons.add-folder/>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </template>
-                            </table>
-                        </div>
-                        <ul class="pagination float-end mb-4 mt-4">
-                            <template x-for="pagination in branches.links">
-                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                    <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                            x-html="pagination.label">
-                                    </button>
-                                </li>
+                <div class="card-toolbar">
+                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                            <template x-if="Number(createPermission) === 1">
+                                <button type="button" class="btn btn-light-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-create">
+                                    <x-icons.add-item/>
+                                    Tambah
+                                </button>
                             </template>
-                        </ul>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="card-body py-3">
+                <div class="col-12">
+                    <form id="form-delete" @submit.prevent="destroy()">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                x-show="selectedCheckBox.length > 0"
+                                x-transition x-cloak>
+                            <x-icons.trash/>
+                            Hapus
+                        </button>
+                    </form>
+                </div>
+                <div class="py-5">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5" id="kt_table_users">
+                            <thead>
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <template x-if="Number(deletePermission) === 1">
+                                    <th class="w-10px pe-2">
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                            <input class="form-check-input" type="checkbox"
+                                                   @click="toggleAllCheckBox()">
+                                        </div>
+                                    </th>
+                                </template>
+                                <th class="min-w-125px">Kode</th>
+                                <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Alamat</th>
+                                <th class="min-w-125px">Sub Cabang</th>
+                                <template x-if="Number(editPermission) === 1">
+                                    <th class="min-w-125px">Actions</th>
+                                </template>
+                            </thead>
+                            <template x-if="isLoading">
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="6">
+                                        <div style="text-align: center;">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </template>
+                            <template x-if="!isLoading && branches.data?.length === 0">
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="6">
+                                        <center>Data Tidak Ditemukan</center>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </template>
+                            <template x-for="branch in branches?.data" :key="branch.id">
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <template x-if="Number(deletePermission) === 1">
+                                        <td>
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                 @click="selectCheckBox($event)">
+                                                <input class="form-check-input" type="checkbox" :value="branch.id"
+                                                       :id="'checkbox-' + branch.id"/>
+                                            </div>
+                                        </td>
+                                    </template>
+                                    <td class="text-center" x-text="branch.code"></td>
+                                    <td class="text-center" x-text="branch.name"></td>
+                                    <td class="text-start">
+                                        <p x-text="branch.address"></p>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <template x-for="(children, index) in branch.children" :key="index">
+                                                <li>
+                                                    <button class="btn btn-link btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#modal-children-detail"
+                                                            @click="edit(children.id)">
+                                                        <i class="bi bi-geo-alt-fill"></i>
+                                                        <span class="fw-bolder" x-text="children.name"></span>
+                                                    </button>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <template x-if="Number(editPermission) === 1">
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-edit" @click="edit(branch.id)">
+                                                <x-icons.edit/>
+                                            </button>
+                                        </template>
+                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-create-children"
+                                                @click="edit(branch.id)">
+                                            <x-icons.add-folder/>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </template>
+                        </table>
+                    </div>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in branches.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
         </div>
+    </div>
     @include('components.toast')
 @endsection
 @push('script')
