@@ -103,7 +103,21 @@
                                         <p class="text-center" x-text="`${branch.code} - ${branch.name}`"></p>
                                     </td>
                                     <td class="text-start">
-                                        <p x-text="branch.address"></p>
+                                        <div x-data="{ expanded: false }">
+                                            <template x-if="branch.address.length > 100">
+                                                <p x-text="expanded ? branch.address : branch.address.slice(0, 100) + '...'"
+                                                   class="d-inline"></p>
+                                            </template>
+                                            <template x-if="branch.address.length <= 100">
+                                                <p x-text="branch.address"></p>
+                                            </template>
+                                            <template x-if="branch.address.length > 100">
+                                                <button type="button" @click="expanded = !expanded"
+                                                        class="btn btn-link text-primary btn-sm ps-0">
+                                                    <span x-text="expanded ? 'Sembunyikan' : 'Selengkapnya'"></span>
+                                                </button>
+                                            </template>
+                                        </div>
                                     </td>
                                     <td>
                                         <ul>
