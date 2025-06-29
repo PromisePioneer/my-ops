@@ -59,7 +59,7 @@
                                     </th>
                                 </template>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Alamat</th>
+                                <th style="width: 25%;">Alamat</th>
                                 <th class="min-w-125px">Sub Cabang</th>
                                 <template x-if="Number(editPermission) === 1">
                                     <th class="min-w-125px">Actions</th>
@@ -100,20 +100,20 @@
                                         </td>
                                     </template>
                                     <td>
-                                        <p class="text-center" x-text="`${branch.code} - ${branch.name}`"></p>
+                                        <p class="text-start" x-text="`${branch.code} - ${branch.name}`"></p>
                                     </td>
                                     <td class="text-start">
                                         <div x-data="{ expanded: false }">
                                             <template x-if="branch.address.length > 100">
-                                                <p x-text="expanded ? branch.address : branch.address.slice(0, 100) + '...'"
-                                                   class="d-inline"></p>
+                                                <p  x-text="expanded ? branch.address : branch.address.slice(0, 100) + '...'"
+                                                   class="d-inline lh-base"></p>
                                             </template>
                                             <template x-if="branch.address.length <= 100">
                                                 <p x-text="branch.address"></p>
                                             </template>
                                             <template x-if="branch.address.length > 100">
                                                 <button type="button" @click="expanded = !expanded"
-                                                        class="btn btn-link text-primary btn-sm ps-0">
+                                                        class="btn btn-link text-primary btn-sm ps-0 m-0 p-0">
                                                     <span x-text="expanded ? 'Sembunyikan' : 'Selengkapnya'"></span>
                                                 </button>
                                             </template>
