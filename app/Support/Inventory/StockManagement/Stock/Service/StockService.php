@@ -16,6 +16,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 #[AllowDynamicProperties] class StockService
 {
     private static int $perPage = 10;
+
     public function __construct()
     {
         $this->itemCollectionRepository = new ItemCollectionRepository();
@@ -116,9 +117,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function findByItemId(ItemCollection $itemCollection): LengthAwarePaginator
     {
-        $query = $this->stockRepository->findByItemId($itemCollection)?->paginate(self::$perPage);
+        $query = $this->stockRepository->findByItemId($itemCollection)->paginate(self::$perPage);
         $data = $query->getCollection()->map(function ($item) {
-            $unitType = $item->transaction?->item?->unitType?->name ?? $item->initialInventoryBalance->unitType?->name;
+            $unitType = $item->transaction?->item?->unitType?->name ?? $item->initialInventoryBalance->item?->unitType?->name;
 
             return [
                 'id' => $item->id,

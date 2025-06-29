@@ -283,7 +283,7 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-               @canany(['Lihat Menu Stok Barang', ''])
+                {{--               @canany(['Lihat Menu Stok Barang', ''])--}}
                 <x-menu-sections>Inventory</x-menu-sections>
                 <x-dropdown-menu :active="request()->is('inventory/*')">
                     @slot('parentIcon')
@@ -319,7 +319,7 @@
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
-                @endcan
+                {{--                @endcan--}}
 
 
                 @canany(['Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo'])
@@ -592,13 +592,13 @@
                                     Mesin Absen
                                 </x-dropdown-menu-item>
                             @endcan
-                                @canany(['Lihat Menu Jam Kerja Berdasarkan Jabatan', 'Lihat Menu Jam Kerja Berdasarkan Cabang', 'Lihat Menu Jam Kerja Jabatan Di Cabang'])
-                                    <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'work-time-settings'"
-                                        href="{{ url('adms/work-time-settings') }}">
-                                        Pengaturan Jam Kerja
-                                    </x-dropdown-menu-item>
-                                @endcanany
+                            @canany(['Lihat Menu Jam Kerja Berdasarkan Jabatan', 'Lihat Menu Jam Kerja Berdasarkan Cabang', 'Lihat Menu Jam Kerja Jabatan Di Cabang'])
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'work-time-settings'"
+                                    href="{{ url('adms/work-time-settings') }}">
+                                    Pengaturan Jam Kerja
+                                </x-dropdown-menu-item>
+                            @endcanany
                             @can('Lihat Menu Pengaturan Jadwal Libur')
                                 <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'employee-schedules'"

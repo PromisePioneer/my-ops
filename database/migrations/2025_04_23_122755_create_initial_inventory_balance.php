@@ -36,6 +36,7 @@ return new class extends Migration {
             $table->double('qty_in_meter')->nullable();
             $table->string('attachment');
             $table->boolean('status')->default(0);
+            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

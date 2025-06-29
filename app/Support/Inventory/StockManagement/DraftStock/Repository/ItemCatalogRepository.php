@@ -18,12 +18,12 @@ use Illuminate\Database\Eloquent\Builder;
 
     public function getLatestItem(int $itemId): Builder
     {
-        return ItemCatalog::with('stock.transaction', 'stock.initialInventoryBalance')
+        return ItemCatalog::with(['stock.transaction.item', 'stock.initialInventoryBalance.item'])
             ->where(function ($query) use ($itemId) {
                 $query->whereHas('stock.transaction.item', function (Builder $query) use ($itemId) {
-                    $query->where('item_id', $itemId);
-                })->orWhereHas('stock.initialInventoryBalance', function (Builder $query) use ($itemId) {
-                    $query->where('item_id', $itemId);
+                    $query->where('id', $itemId);
+                })->orWhereHas('stock.initialInventoryBalance.item', function (Builder $query) use ($itemId) {
+                    $query->where('id', $itemId);
                 });
             })
             ->orderBy('created_at', 'desc');
@@ -32,12 +32,13 @@ use Illuminate\Database\Eloquent\Builder;
 
     public function findByItemId(ItemCollection $itemCollection)
     {
-        return ItemCatalog::with(['stock.transaction', 'stock.initialInventoryBalance'])
+        return ItemCatalog::with(['stock.transaction.item', 'stock.initialInventoryBalance.item'])
             ->where(function (Builder $query) use ($itemCollection) {
                 $query->whereHas('stock.transaction.item', function (Builder $query) use ($itemCollection) {
                     $query->where('id', $itemCollection->id);
-                })
-                    ->orWhereHas('stock.initialInventoryBalance');
+                })->orWhereHas('stock.initialInventoryBalance.item', function ($query) use ($itemCollection) {
+                    $query->where('id', $itemCollection->id);
+                });
             });
     }
 

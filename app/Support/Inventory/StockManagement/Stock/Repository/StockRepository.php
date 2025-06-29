@@ -22,7 +22,15 @@ use Illuminate\Http\Request;
 
     public function findByDraftStock(DraftStock $draftStock): ?Stock
     {
-        return Stock::where('transaction_id', $draftStock->transaction_id)->first();
+
+        $draftStock->load('transaction.item', 'initialInventoryBalance.item');
+        return Stock::where(function ($query) use ($draftStock) {
+            $query->whereHas('transaction.item', function ($query) use ($draftStock) {
+                $query->where('id', $draftStock->transaction?->item->id);
+            })->orWhereHas('initialInventoryBalance.item', function ($query) use ($draftStock) {
+                $query->where('id', $draftStock->initialInventoryBalance?->item->id);
+            });
+        })->first();
     }
 
 
@@ -56,12 +64,12 @@ use Illuminate\Http\Request;
 
     public function findByItemId(ItemCollection $itemCollection)
     {
-        return Stock::with('transaction', 'initialInventoryBalance')
+        return Stock::with(['transaction.item', 'initialInventoryBalance.item'])
             ->where(function ($query) use ($itemCollection) {
-                $query->whereHas('transaction', function ($query) use ($itemCollection) {
-                    $query->where('item_id', $itemCollection->id);
-                })->orWhereHas('initialInventoryBalance', function ($query) use ($itemCollection) {
-                    $query->where('item_id', $itemCollection->id);
+                $query->whereHas('transaction.item', function ($query) use ($itemCollection) {
+                    $query->where('id', $itemCollection->id);
+                })->orWhereHas('initialInventoryBalance.item', function ($query) use ($itemCollection) {
+                    $query->where('id', $itemCollection->id);
                 });
             });
     }
@@ -131,14 +139,14 @@ use Illuminate\Http\Request;
     {
         return $this->stock->query()
             ->where(function ($query) use ($transactionId, $initialInventoryBalanceId) {
-                if ($transactionId) {
+                if (!empty($transactionId)) {
                     $query->whereHas('transaction', function ($query) use ($transactionId) {
                         $query->where('id', $transactionId);
                     });
                 }
-                if ($initialInventoryBalanceId) {
-                    $query->whereHas('transaction', function ($query) use ($transactionId) {
-                        $query->where('id', $transactionId);
+                if (!empty($initialInventoryBalanceId)) {
+                    $query->whereHas('initialInventoryBalance', function ($query) use ($initialInventoryBalanceId) {
+                        $query->where('id', $initialInventoryBalanceId);
                     });
                 }
             })->where('branch_id', $branchId);

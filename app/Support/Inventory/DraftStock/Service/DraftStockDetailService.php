@@ -23,6 +23,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $query = $this->draftStockRepository
             ->getDraftStockByItemId($itemCollection, $request)
             ->paginate(self::$perPage);
+
+
         $data = $query->getCollection()->map(function ($draftStock) {
             return [
                 'id' => $draftStock->id,

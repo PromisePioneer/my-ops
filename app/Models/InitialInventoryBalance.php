@@ -24,7 +24,8 @@ class InitialInventoryBalance extends Model
         'detail',
         'attachment',
         'status',
-        'qty_in_meter'
+        'qty_in_meter',
+        'created_by'
     ];
 
 
@@ -43,7 +44,6 @@ class InitialInventoryBalance extends Model
     {
         return $this->belongsTo(ItemCollection::class, 'item_id');
     }
-
 
     public function stockAccount(): BelongsTo
     {

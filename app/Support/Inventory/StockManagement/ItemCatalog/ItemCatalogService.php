@@ -79,15 +79,17 @@ use Throwable;
 
     public function findOrCreateStock(DraftStock $draftStock, Request $request): Stock
     {
+
         $stock = $this->stockRepository->findByDraftStock($draftStock);
+
+
         if (empty($stock)) {
             return self::insertStock($draftStock);
         }
-
         if ($request->condition === 'Rusak') {
-            $stock->increment('broken_qty', $draftStock->transaction?->qty_in_meter ?? 1);
+            $stock->increment('broken_qty', $draftStock->transaction?->qty_in_meter ?? $draftStock->initialInventoryBalance?->qty_in_meter ?? 1);
         } else {
-            $stock->increment('available_qty', $draftStock->transaction?->qty_in_meter ?? 1);
+            $stock->increment('available_qty', $draftStock->transaction?->qty_in_meter ?? $draftStock->initialInventoryBalance?->qty_in_meter ?? 1);
         }
 
         return $stock;
@@ -120,12 +122,13 @@ use Throwable;
 
     private static function insertStock(DraftStock $draftStock): Stock
     {
+
         return Stock::create([
             'branch_id' => $draftStock->transaction?->branch_id ?? $draftStock->initialInventoryBalance->branch_id,
             'transaction_id' => $draftStock->transaction_id,
             'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
             'on_hold_qty' => 0,
-            'available_qty' => $draftStock->transaction?->qty_in_meter ?? $draftStock->initialInventoryBalance?->qty_in_meter ?? 1,
+            'available_qty' => $draftStock->qty_in_meter ?? 1,
             'broken_qty' => 0,
         ]);
     }
@@ -133,15 +136,25 @@ use Throwable;
 
     private static function insertItemCatalog(Request $request, DraftStock $draftStock, ?Stock $stock, ?Asset $asset = null): void
     {
+        $availableQty = 0;
+        $brokenQty = 0;
+
+        if ($request->condition === 'Rusak') {
+            $availableQty += 0;
+            $brokenQty += $draftStock->qty_in_meter ?? 1;
+        } else {
+            $availableQty += $draftStock->qty_in_meter ?? 1;
+        }
+
+
         ItemCatalog::create([
             'stock_id' => $stock->id,
-            'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
             'code' => $request->code,
             'asset_id' => $asset->id ?? null,
             'condition' => $request->condition,
             'created_by' => $request->user()->id,
-            'available_qty' => $draftStock->transaction->qty_in_meter ?? 1,
-            'broken_qty' => 0,
+            'available_qty' => $availableQty,
+            'broken_qty' => $brokenQty,
         ]);
     }
 
@@ -153,25 +166,38 @@ use Throwable;
     {
         $itemCatalog->load('stock.transaction', 'stock.initialInventoryBalance');
         $oldStock = $this->stockRepository->findByItemCatalog($itemCatalog);
+
         DB::transaction(function () use ($oldStock, $itemCatalog) {
             $stockMutationItem = StockMutationItem::where('code', $itemCatalog->code)->first();
             $stockWithdrawalItem = StockWithdrawalItem::where('code', $itemCatalog->code)->first();
-
 
             if ($stockWithdrawalItem || $stockMutationItem) {
                 throw new \Exception('Tidak bisa dihapus, karena barang sudah di mutasi / di pakai');
             }
 
             if (!empty($oldStock) && $itemCatalog->status === 'Tersedia') {
-                DraftStock::where(
-                    'id', $itemCatalog->stock?->transaction_id ?? $itemCatalog->stock?->initial_inventory_balance_id
-                )->increment('qty');
-                $oldStock->decrement('available_qty', $itemCatalog->available_qty + $itemCatalog->broken_qty);
+                // Kembalikan kuantitas ke DraftStock
+                DraftStock::where('transaction_id', $itemCatalog->stock?->transaction_id)
+                    ->orWhere('initial_balance_inventory_id', $itemCatalog->stock?->initial_balance_inventory_id)
+                    ->increment('qty');
+
+                // Kurangi available_qty jika ada
+                if ($itemCatalog->available_qty > 0) {
+                    $itemCatalog->stock->decrement('available_qty', $itemCatalog->available_qty);
+                }
+
+                // Kurangi broken_qty jika ada
+                if ($itemCatalog->broken_qty > 0) {
+                    $itemCatalog->stock->decrement('broken_qty', $itemCatalog->broken_qty);
+                }
+
+                // Hapus itemCatalog dan asset-nya
                 $itemCatalog->delete();
                 Asset::where('id', $itemCatalog->asset_id)->delete();
             }
         });
     }
+
 
     public function generateAutomaticItemCode(DraftStock $draftStock): string
     {
@@ -214,7 +240,8 @@ use Throwable;
     {
         $query = $this->itemCatalogRepository->findByItemId($itemCollection)->paginate(self::$perPage);
         $data = $query->getCollection()->map(function ($itemCatalog) {
-            $unitType = $itemCatalog->transaction?->item?->unitType?->name ?? $itemCatalog->initialInventoryBalance?->item?->unitType?->name;
+            $unitType = $itemCatalog->transaction?->item?->unitType?->name ??
+                $itemCatalog->initialInventoryBalance?->item->unitType->name;
             return [
                 'id' => $itemCatalog->id,
                 'branch_name' => "{$itemCatalog->stock->branch->parent->name} - {$itemCatalog->stock->branch->name}",

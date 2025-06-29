@@ -121,7 +121,8 @@
                             <span class="svg-icon svg-icon-1 position-absolute ms-6">
                                <i class="bi bi-search"></i>
                             </span>
-                        <input type="text" name="search" x-model="itemCatalogQuery" @input.debounce="searchItemCatalog()"
+                        <input type="text" name="search" x-model="itemCatalogQuery"
+                               @input.debounce="searchItemCatalog()"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
@@ -242,6 +243,7 @@
                     await this.getStock();
                 },
                 async getStock() {
+                    console.log(this.itemId);
                     const resp = await axios.get(`/inventory/stocks/data/${this.itemId}`)
                     this.stocks = resp.data;
                 },

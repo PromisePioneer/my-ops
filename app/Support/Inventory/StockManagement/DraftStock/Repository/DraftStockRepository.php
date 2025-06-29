@@ -31,21 +31,24 @@ class DraftStockRepository
 
     public function getDraftStockQuery(): EloquentBuilder|Builder
     {
-        return ItemCollection::where('is_code_listed', true)->orWhere('must_have_code', true);
+        return ItemCollection::where('is_code_listed', true)
+            ->orWhere('must_have_code', true);
     }
 
 
     public function getDraftStockByItemId(ItemCollection $itemCollection, Request $request): EloquentBuilder|Builder
     {
-        return DraftStock::with('transaction', 'initialInventoryBalance')
+        return DraftStock::with(['transaction.item', 'initialInventoryBalance.item'])
             ->where(function ($query) use ($itemCollection, $request) {
-                $query->whereHas('transaction', function (EloquentBuilder $query) use ($itemCollection, $request) {
-                    $query->when(!empty($request->user()->branch_id), fn($query) => $query->where('branch_id', $request->user()->branch_id))
-                        ->where('item_id', $itemCollection->id);
+                $query->whereHas('transaction.item', function (EloquentBuilder $query) use ($itemCollection, $request) {
+                    $query->where('id', $itemCollection->id)->when(!empty($request->user()->branch_id), fn($query) => $query->where('branch_id', $request->user()->branch_id));
+
                 });
-                $query->orWhereHas('initialInventoryBalance', function (EloquentBuilder $query) use ($itemCollection, $request) {
-                    $query->when(!empty($request->user()->branch_id), fn($query) => $query->where('branch_id', $request->user()->branch_id))
-                        ->where('item_id', $itemCollection->id);
+                $query->orWhereHas('initialInventoryBalance.item', function (EloquentBuilder $query) use ($itemCollection, $request) {
+                    $query->where('id', $itemCollection->id)->when(
+                        !empty($request->user()->branch_id),
+                        fn($query) => $query->where('branch_id', $request->user()->branch_id)
+                    );
                 });
             });
     }
@@ -66,7 +69,7 @@ class DraftStockRepository
     public static function draftStockQtySumByItemId(Request $request, int $itemId)
     {
         $branch = Branch::with('children')->find($request->user()->branch_id ?? $request->input('branch_id'));
-        return DraftStock::with('transaction.item', 'initialInventoryBalance')
+        return DraftStock::with(['transaction.item', 'initialInventoryBalance.item'])
             ->where(function ($query) use ($request, $itemId, $branch) {
                 $query->whereHas('transaction.item', function (EloquentBuilder $query) use ($itemId, $branch, $request) {
                     if (!empty($request->user()->branch_id || $request->input('branch_id'))) {
@@ -75,7 +78,7 @@ class DraftStockRepository
                     if (empty($request->user()->branch_id)) {
                         $query->where('id', $itemId);
                     }
-                })->orWhereHas('initialInventoryBalance', function (EloquentBuilder $query) use ($itemId, $branch, $request) {
+                })->orWhereHas('initialInventoryBalance.item', function (EloquentBuilder $query) use ($itemId, $branch, $request) {
                     if (!empty($request->user()->branch_id || $request->input('branch_id'))) {
                         $query->where('id', $itemId)->whereIn('branch_id', $branch->children->pluck('id'));
                     }

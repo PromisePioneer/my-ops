@@ -158,15 +158,16 @@ use function App\Helper\formatDate;
             $stockMutationItems = $this->stockMutationItemRepository->getByStockMutationId($stockMutation->id)->get();
             foreach ($stockMutationItems as $stockMutationItem) {
                 $stock = $this->stock->query()->with('transaction', 'initialInventoryBalance')->find($stockMutationItem->stock_id);
-                $oldStock = $this->stockRepository->findByStockIdAndBranchId($stockMutationItem->stock_id, $stockMutation->old_branch_id);
+                $oldStock = $this->stockRepository->findByStockIdAndBranchId($stockMutationItem->stock_id, $stockMutation->old_branch_id)->first();
                 $newStock = $this->stockRepository->findByTransactionIdAndBranch(
                     $stock->transaction?->id,
                     $stock->initialInventoryBalance?->id,
                     $stockMutation->new_branch_id
-                );
+                )->first();
                 if (!empty($newStock)) {
                     $newStock->increment('available_qty', $stockMutationItem->qty);
                 } else {
+
                     $newStock = $this->stock->query()->create([
                         'branch_id' => $stockMutation->new_branch_id,
                         'transaction_id' => $oldStock->transaction_id,
@@ -196,33 +197,36 @@ use function App\Helper\formatDate;
     public function accountTransaction(ItemCatalog $itemCatalog, StockMutation $stockMutation): void
     {
         $transaction = $itemCatalog->stock->transaction;
-        $transactionDebitAccountId = $this->accountRepository->findById($itemCatalog->stock->transaction->credit_account_id);
+        $initialInventoryBalance = $itemCatalog->stock->initialInventoryBalance;
+        $transactionDebitAccountId = $this->accountRepository->findById($itemCatalog->stock->transaction?->credit_account_id ?? $itemCatalog->stock->initialInventoryBalance->stock_account_id);
         $accumulatedDepreciationOfAssetAccountId = $this->accountRepository->findByCode('130')->first();
         $asset = $this->assetRepository->findById($itemCatalog->asset_id);
-        $this->debitTransaction($stockMutation, $itemCatalog, $transaction, $transactionDebitAccountId, $accumulatedDepreciationOfAssetAccountId, $asset);
-        $this->creditTransaction($stockMutation, $itemCatalog, $transaction, $transactionDebitAccountId, $accumulatedDepreciationOfAssetAccountId, $asset);
+        $this->debitTransaction($stockMutation, $itemCatalog, $transaction, $initialInventoryBalance, $transactionDebitAccountId, $accumulatedDepreciationOfAssetAccountId, $asset);
+        $this->creditTransaction($stockMutation, $itemCatalog, $transaction, $initialInventoryBalance, $transactionDebitAccountId, $accumulatedDepreciationOfAssetAccountId, $asset);
     }
 
 
     private function debitTransaction(
         StockMutation $stockMutation,
         ItemCatalog   $itemCatalog,
-        Transaction   $transaction,
+        ?Transaction  $transaction,
+                      $initialInventoryBalance,
         Account       $transactionDebitAccountId,
         Account       $accumulatedDepreciationOfAssetAccountId,
         Asset         $asset
     ): void
     {
+        $unitPrice = $transaction->unit_price ?? $initialInventoryBalance?->unit_price;
         // cabang awal
         $this->accountTransactionService->createDebitTransaction(
             $this->branchRepository->findById($stockMutation->old_branch_id)->parent->id,
             sprintf(self::ITEM_MUTATION_DESCRIPTION,
-                $transaction->item->name,
+                $transaction?->item?->name ?? $initialInventoryBalance?->item->name,
                 $this->branchRepository->findById($stockMutation->old_branch_id)->parent->name,
                 $this->branchRepository->findById($stockMutation->new_branch_id)->parent->name,
             ),
             $transactionDebitAccountId->id,
-            $transaction->unit_price
+            $transaction?->unit_price ?? $initialInventoryBalance?->unit_price,
         );
         if (!empty($itemCatalog->asset_id)) {
             $this->accountTransactionService->createDebitTransaction(
@@ -238,15 +242,15 @@ use function App\Helper\formatDate;
                 $itemCatalog->asset_id,
                 $asset->date,
                 date('Y-m-d')
-            ) + $transaction->unit_price;
+            ) + $unitPrice;
         $this->accountTransactionService->createDebitTransaction(
             $this->branchRepository->findById($stockMutation->new_branch_id)->parent->id,
             sprintf(self::ITEM_MUTATION_DESCRIPTION,
-                $transaction->item->name,
+                $transaction?->item?->name ?? $initialInventoryBalance?->item?->name,
                 $this->branchRepository->findById($stockMutation->old_branch_id)->parent->name,
                 $this->branchRepository->findById($stockMutation->new_branch_id)->parent->name,
             ),
-            $transaction->credit_account_id,
+            $transaction->credit_account_id ?? $initialInventoryBalance->stock_account_id,
             !empty($itemCatalog->asset_id) ? $totalAmount : $transaction->unit_price,
         );
     }
@@ -254,35 +258,37 @@ use function App\Helper\formatDate;
     private function creditTransaction(
         StockMutation $stockMutation,
         ItemCatalog   $itemCatalog,
-        Transaction   $transaction,
+        ?Transaction  $transaction,
+                      $initialInventoryBalance,
         Account       $transactionDebitAccountId,
         Account       $accumulatedDepreciationOfAssetAccountId,
         Asset         $asset
     ): void
     {
         //cabang awal
-        $totalAmount = $this->assetDepreciationRepository->getSumDepreciationAmount($itemCatalog->asset_id, $asset->date, date('Y-m-d')) + $transaction->unit_price;
+        $unitPrice = $transaction->unit_price ?? $initialInventoryBalance?->unit_price;
+        $totalAmount = $this->assetDepreciationRepository->getSumDepreciationAmount($itemCatalog->asset_id, $asset->date, date('Y-m-d')) + $unitPrice;
         $this->accountTransactionService->createCreditTransaction(
             $this->branchRepository->findById($stockMutation->old_branch_id)->parent->id,
             sprintf(self::ITEM_MUTATION_DESCRIPTION,
-                $transaction->item->name,
+                $transaction?->item?->name ?? $initialInventoryBalance?->item->name,
                 $this->branchRepository->findById($stockMutation->old_branch_id)->parent->name,
                 $this->branchRepository->findById($stockMutation->new_branch_id)->parent->name,
             ),
-            $transaction->credit_account_id,
-            !empty($itemCatalog->asset_id) ? $totalAmount : $transaction->unit_price,
+            $transaction->credit_account_id ?? $initialInventoryBalance->stock_account_id,
+            !empty($itemCatalog->asset_id) ? $totalAmount : $unitPrice,
         );
 
         //cabang tujuan
         $this->accountTransactionService->createCreditTransaction(
             $this->branchRepository->findById($stockMutation->new_branch_id)->parent->id,
             sprintf(self::ITEM_MUTATION_DESCRIPTION,
-                $transaction->item->name,
+                $transaction?->item?->name ?? $initialInventoryBalance?->item?->name,
                 $this->branchRepository->findById($stockMutation->old_branch_id)->parent->name,
                 $this->branchRepository->findById($stockMutation->new_branch_id)->parent->name,
             ),
             $transactionDebitAccountId->id,
-            $transaction->unit_price
+            $transaction->unit_price ?? $initialInventoryBalance?->unit_price,
         );
         if (!empty($itemCatalog->asset_id)) {
             $this->accountTransactionService->createCreditTransaction(

@@ -27,6 +27,7 @@ use Throwable;
      */
     public function store(ItemCatalogRequest $request, DraftStock $draftStock): JsonResponse
     {
+
         $this->itemCatalogService->store($request, $draftStock);
         return response()->json(['message' => 'data berhasil disimpan']);
     }

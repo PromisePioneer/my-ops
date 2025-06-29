@@ -11,7 +11,7 @@
     @endpush
     <div x-data="generateInitialInventoryBalance()">
         @include('pages.master.operational.items.form')
-        @include('pages.master.operational.supplier.form')
+        @include('pages.master.common.contacts.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0">
                 <div class="card-title">
@@ -35,10 +35,10 @@
                             <div class="col-md-4">
                                 <label for="branch_id" class="required form-label">Cabang</label>
                                 <x-select2.index
-                                        class="form-select form-select-solid"
-                                        name="branch_id"
-                                        id="selected-branch"
-                                        elementSelector="branches-select2"
+                                    class="form-select form-select-solid"
+                                    name="branch_id"
+                                    id="selected-branch"
+                                    elementSelector="branches-select2"
                                 />
                             </div>
                         @endif
@@ -51,10 +51,10 @@
                         <div class="col-md-4">
                             <label for="date" class="required form-label">Supplier</label>
                             <x-select2.index
-                                    class="form-select form-select-solid"
-                                    name="supplier_id"
-                                    id="selected-supplier"
-                                    elementSelector="suppliers-select2"
+                                class="form-select form-select-solid"
+                                name="supplier_id"
+                                id="selected-supplier"
+                                elementSelector="suppliers-select2"
                             />
                         </div>
                     </div>
@@ -75,10 +75,10 @@
                                 Nama Barang
                             </label>
                             <x-select2.index
-                                    class="form-select form-select-solid"
-                                    name="item_id"
-                                    id="selected-item"
-                                    elementSelector="items-select2"
+                                class="form-select form-select-solid"
+                                name="item_id"
+                                id="selected-item"
+                                elementSelector="items-select2"
                             >
                                 <option></option>
                             </x-select2.index>
@@ -112,10 +112,10 @@
                         <div class="col-lg-6">
                             <label for="name" class="required form-label">Akun Persediaan</label>
                             <x-select2.index
-                                    class="form-select form-select-solid"
-                                    name="stock_account_id"
-                                    id="selected-stock-account"
-                                    elementSelector="stock-accounts-select2"
+                                class="form-select form-select-solid"
+                                name="stock_account_id"
+                                id="selected-stock-account"
+                                elementSelector="stock-accounts-select2"
                             >
                                 <option></option>
                             </x-select2.index>
@@ -125,7 +125,7 @@
 
                     <div class="row mb-4" x-show="attachmentImgSrc.length > 0" x-transition x-cloak>
                         <label
-                                :class="`${attachmentImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
+                            :class="`${attachmentImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
                             Preview
                         </label>
                         <img :src="attachmentImgSrc"

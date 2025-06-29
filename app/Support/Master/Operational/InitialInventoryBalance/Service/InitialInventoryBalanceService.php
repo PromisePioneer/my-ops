@@ -146,7 +146,7 @@ use function App\Helper\formatDate;
             $query->update(['status' => true]);
 
             $selectedInitialInventoryBalance = $query
-                ->with('branch', 'supplier', 'item', 'stockAccount', 'branch.parent')
+                ->with(['branch', 'supplier', 'item', 'stockAccount', 'branch.parent'])
                 ->get();
             foreach ($selectedInitialInventoryBalance as $item) {
 
@@ -160,9 +160,9 @@ use function App\Helper\formatDate;
                     Stock::create([
                         'initial_balance_inventory_id' => $item->id,
                         'branch_id' => $item->branch_id,
-                        'item_id' => $item->item_id,
-                        'qty' => $item->qty,
-                        'condition' => 'Baik'
+                        'available_qty' => $item->qty,
+                        'on_hold_qty' => 0,
+                        'broken_qty' => 0
                     ]);
                 }
 

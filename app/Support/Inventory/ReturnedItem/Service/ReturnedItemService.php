@@ -122,6 +122,7 @@ use Illuminate\Support\Facades\DB;
                 $itemCatalog->stock->increment('available_qty', $request->remaining_qty - $request->broken_qty);
                 if ($request->item_condition === 'Rusak') {
                     $itemCatalog->stock->increment('broken_qty', $request->broken_qty);
+                    $itemCatalog->increment('broken_qty', $request->broken_qty);
                 }
             }
 
