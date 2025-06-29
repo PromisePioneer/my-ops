@@ -33,6 +33,7 @@ use Throwable;
         $this->stockWithdrawalItemRepository = new StockWithdrawalItemRepository();
         $this->stockRepository = new StockRepository();
         $this->assetService = new AssetService();
+        $this->itemCatalog = new ItemCatalog();
     }
 
     public function formattedData(LengthAwarePaginator $catalog): LengthAwarePaginator
@@ -41,7 +42,7 @@ use Throwable;
             return [
                 'id' => $query->id,
                 'item_name' => $query->transaction?->item?->name
-                    ?? $query->initialInventoryBalance->item->name,
+                    ?? $query->initialInventoryBalance?->item?->name,
                 'code' => $query->code,
                 'condition' => $query->condition,
                 'created_at' => $query->created_at,
@@ -229,5 +230,24 @@ use Throwable;
 
         $query->setCollection($data);
         return $query;
+    }
+
+
+    public function searchByItemId(Request $request, ItemCollection $itemCollection): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $query = $this->itemCatalog->with(['stock.transaction.item', 'stock.initialInventoryBalance.item'])
+            ->where(function ($query) use ($itemCollection) {
+                $query->whereHas('stock.transaction.item', function ($query) use ($itemCollection) {
+                    $query->where('id', $itemCollection->id);
+                })->orWhereHas('stock.initialInventoryBalance.item', function ($query) use ($itemCollection) {
+                    $query->where('id', $itemCollection->id);
+                });
+            });
+
+        if (!empty($search)) {
+            $query->where('code', 'LIKE', "%" . $search . "%");
+        }
+        return self::formattedData($query->paginate(self::$perPage));
     }
 }

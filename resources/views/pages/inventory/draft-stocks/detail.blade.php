@@ -116,6 +116,15 @@
         <div class="card shadow-sm">
             <div class="card-header">
                 <h3 class="card-title">Katalog Barang</h3>
+                <div class="card-toolbar">
+                    <div class="d-flex align-items-center position-relative my-1">
+                            <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                               <i class="bi bi-search"></i>
+                            </span>
+                        <input type="text" name="search" x-model="itemCatalogQuery" @input.debounce="searchItemCatalog()"
+                               class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
+                    </div>
+                </div>
             </div>
 
             <div class="card-body">
@@ -177,7 +186,7 @@
                                 </td>
                                 <td>
                                     <a :disabled="item.status !== 'Tersedia'"
-                                            class="btn btn-light-info btn-sm mb-4"
+                                       class="btn btn-light-info btn-sm mb-4"
                                     >
                                         <x-icons.info/>
                                     </a>
@@ -222,6 +231,7 @@
                 itemId: "{{ $itemCollection->id }}",
                 itemCatalog: [],
                 stocks: [],
+                itemCatalogQuery: '',
                 editVal: '',
                 autoGenerateCode: null,
                 generateCodeModal: new bootstrap.Modal(document.getElementById('modal-generate-code')),
@@ -281,7 +291,7 @@
                         await axios.post(`/inventory/item-catalog/${id}`, new FormData(this.generateCodeForm))
                             .then(async () => {
                                 await this.successResponseAfterSubmit(id);
-                        });
+                            });
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -320,6 +330,15 @@
                             await showAlert('error', error.response.data.message);
                         }
                     });
+                },
+                async searchItemCatalog() {
+                    const resp = await axios.get(`/inventory/item-catalog/search-by-item/${this.itemId}`, {
+                        params: {
+                            search: this.itemCatalogQuery
+                        }
+                    })
+
+                    this.itemCatalog = resp.data;
                 },
                 async successResponseAfterSubmit(id) {
                     await this.init();

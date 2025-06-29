@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Laravel\Scout\Searchable;
 
 class ItemCatalog extends Model
 {
+
+    use Searchable;
+
     protected $table = 'item_catalogs';
     protected $fillable = [
         'stock_id',
@@ -19,6 +23,15 @@ class ItemCatalog extends Model
         'broken_qty'
     ];
 
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'code' => $this->code,
+            'status' => $this->status,
+            'condition' => $this->condition
+        ];
+    }
 
     public function draftStock(): BelongsTo
     {

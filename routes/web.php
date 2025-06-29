@@ -756,6 +756,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{itemCatalog}', [ItemCatalogController::class, 'edit']);
             Route::post('/{draftStock}', [ItemCatalogController::class, 'store']);
             Route::post('/destroy/{itemCatalog}', [ItemCatalogController::class, 'destroy']);
+            Route::get('/search-by-item/{itemCollection}', [ItemCatalogController::class, 'searchByItemId']);
         });
 
 

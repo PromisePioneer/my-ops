@@ -10,6 +10,7 @@ use App\Models\ItemCatalog;
 use App\Models\ItemCollection;
 use App\Support\Inventory\StockManagement\ItemCatalog\ItemCatalogService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 #[AllowDynamicProperties] class ItemCatalogController extends Controller
@@ -55,6 +56,11 @@ use Throwable;
     public function findByItemId(ItemCollection $itemCollection): JsonResponse
     {
         return response()->json($this->itemCatalogService->findByItemId($itemCollection));
+    }
+
+    public function searchByItemId(Request $request, ItemCollection $itemCollection): JsonResponse
+    {
+        return response()->json($this->itemCatalogService->searchByItemId($request, $itemCollection));
     }
 
 
