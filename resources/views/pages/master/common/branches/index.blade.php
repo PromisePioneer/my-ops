@@ -100,7 +100,7 @@
                                         </td>
                                     </template>
                                     <td>
-                                        <p class="text-start" x-text="`${branch.code} - ${branch.name}`"></p>
+                                        <p class="text-center" x-text="`${branch.code} - ${branch.name}`"></p>
                                     </td>
                                     <td class="text-start">
                                         <div x-data="{ expanded: false }">
