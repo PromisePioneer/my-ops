@@ -102,7 +102,7 @@
                                         </template>
                                         <td class="text-center" x-text="branch.code"></td>
                                         <td class="text-center" x-text="branch.name"></td>
-                                        <td class="text-center" x-text="`branch.address"></td>
+                                        <td class="text-center" x-text="branch.address"></td>
                                         <td>
                                             <ul >
                                                 <template x-for="(children, index) in branch.children" :key="index">
