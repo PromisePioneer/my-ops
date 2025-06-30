@@ -20,7 +20,7 @@ class UserRequest extends FormRequest
         return [
             'placement' => [
                 Rule::in('Pusat', 'Cabang'),
-                new UniqueLeaders($request),
+                // new UniqueLeaders($request),
             ],
             'branch_id' => [
                 Rule::exists('branches', 'id')
@@ -67,6 +67,7 @@ class UserRequest extends FormRequest
             'roles.exists' => 'Role tidak valid',
             'branch_id.required_if' => 'Branch tidak boleh kosong',
             'branch_id.exists' => 'Branch tidak valid',
+            'absent_id.unique' => 'ID Absen sudah terdaftar',
             'absent_id.max' => 'Absent tidak boleh lebih dari 3 karakter',
             'placement.required_if' => 'Penempatan tidak boleh kosong',
             'company_id.required' => 'Perusahaan tidak boleh kosong',

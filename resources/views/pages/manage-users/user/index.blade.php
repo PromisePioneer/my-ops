@@ -135,6 +135,7 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <p x-text="user.nik"></p>
                                                 <p x-text="user.branch"></p>
                                                 <p x-text="user.company"></p>
                                             </td>
