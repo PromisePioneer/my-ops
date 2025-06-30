@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 #[AllowDynamicProperties] class BranchController extends Controller
@@ -57,7 +58,15 @@ use Illuminate\View\View;
     public function store(BranchRequest $request): JsonResponse
     {
         $this->authorize('create', Branch::class);
-        $this->branch->query()->create($request->validated());
+        DB::transaction(function () use ($request) {
+            $this->branch->query()->create($request->validated());
+            activity()->event('created')->withProperties([
+                'attributes' => [
+                    'Nama' => $request->input('name'),
+                    'Alamat' => $request->input('address'),
+                ]
+            ])->log('Buat Cabang Baru');
+        });
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);

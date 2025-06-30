@@ -335,7 +335,7 @@
                 async testConnection(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/adms/fp-devices/test-connection/${id}`);
+                        await axios.get(`/adms/fp-devices/test-connection/${id}`);
                         await showAlert('success', 'Koneksi ke mesin sukses');
                         await this.init();
                     } catch (error) {

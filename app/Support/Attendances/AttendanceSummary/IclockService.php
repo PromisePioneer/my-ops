@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use function App\Helper\formatDate;
 
 class IclockService
 {
@@ -212,19 +213,46 @@ class IclockService
             $attendancesSummary = $this->findOrCreateSummary($attendanceData, $shift, $date);
             if (!$attendancesSummary->clock_in && $isCheckIn) {
                 $attendancesSummary->clock_in = $date;
+                activity()
+                    ->causedBy(User::where('absent_id', $attendanceData['employee_id'])->first()->id)
+                    ->withProperties([
+                        'attributes' => [
+                            'employee_id' => $attendanceData['employee_id'],
+                            'date' => formatDate($attendanceData['timestamp']),
+                            'clock_in' => Carbon::parse($attendanceData['timestamp'])->format('l, j F Y h:i A'),
+                            'work_time_id' => $shift->workTime?->name ?? $shift->name,
+                            'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name,
+                        ]
+                    ])->log('Clock Out');
             }
             if (!$attendancesSummary->clock_out && $isCheckOut) {
                 $attendancesSummary->clock_out = $date;
+                activity()
+                    ->causedBy(User::where('absent_id', $attendanceData['employee_id'])->first()->id)
+                    ->withProperties([
+                        $attendanceData
+                    ])->log('Clock out');
             }
             $attendancesSummary->save();
         } else {
-            Log::warning('Data dilewati karena tidak masuk tanggal', [
+            setlocale(LC_ALL, 'IND');
+            activity()->withProperties([
                 'timestamp' => $date,
                 'employee_id' => $attendanceData,
                 'shift' => $shift,
                 'checkin' => $isCheckIn,
                 'checkout' => $isCheckOut
-            ]);
+            ])->event('Absen')
+                ->causedBy(User::where('absent_id', $attendanceData['employee_id'])->first()->id)->withProperties([
+                    'attributes' => [
+                        'TANGGAL ABSEN' => $date->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y, h:i a'),
+                        'ID ABSEN' => $attendanceData['employee_id'],
+                        'BATAS CHECKIN' => $shift->time_to_checkin . ' - ' . $shift->end_time_to_checkin,
+                        'BATAS CHECKOUT' => $shift->time_to_checkout . ' - ' . $shift->end_time_to_checkout,
+                        'SHIFT SEHARUSNYA' => "$shift->name ({$shift->clock_in} - {$shift->clock_out})",
+                        'ABSEN DI' => $attendanceData[''],
+                    ]
+                ])->log('Absen dilewati karena tidak sesuai dengan jadwal');
         }
     }
 

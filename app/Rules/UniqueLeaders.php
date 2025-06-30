@@ -87,6 +87,7 @@ class UniqueLeaders implements ValidationRule
         $role = implode(',', $this->request->roles);
         $branchManager = User::role('Branch Manager')->where('branch_id', $this->request->branch_id)->first();
 
+
         $branch = Branch::where('id', $this->request->branch_id)->first();
 
         if (isset($branchManager->id) === isset($this->request->route('user')->id)) {

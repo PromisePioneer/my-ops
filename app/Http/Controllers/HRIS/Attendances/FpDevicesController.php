@@ -82,6 +82,8 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
     public function testConnection(FpDevice $fpDevice): JsonResponse
     {
+
+        ini_set('max_execution_time', 1);
         $zk = new ZKTeco($fpDevice->ip_address, 4370);
         $connected = $zk->connect();
         if ($connected) {

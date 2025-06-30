@@ -611,6 +611,12 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [UserProfileController::class, 'carriedStockPage']);
                 Route::get('/data', [UserProfileController::class, 'getCarriedStock']);
             });
+
+
+            Route::prefix('activity-log')->group(function () {
+               Route::get('/', [UserProfileController::class, 'logActivityPage']);
+               Route::get('/data', [UserProfileController::class, 'logActivityData']);
+            });
         });
     });
 
@@ -998,7 +1004,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [FpDevicesController::class, 'store']);
             Route::get('/{fpDevice}', [FpDevicesController::class, 'edit']);
 
-            Route::post('/test-connection/{fpDevice}', [FpDevicesController::class, 'testConnection']);
+            Route::get('/test-connection/{fpDevice}', [FpDevicesController::class, 'testConnection']);
             Route::post('/attendance-log/{fpDevice}', [FpDevicesController::class, 'getAttendances']);
 
             Route::get('/restart-device/{fpDevice}', [FpDevicesController::class, 'restartDevice']);

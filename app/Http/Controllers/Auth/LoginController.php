@@ -86,6 +86,7 @@ class LoginController extends Controller
 
     public function authenticated(Request $request, User $user): RedirectResponse|Redirector|Application
     {
+
         if ($request->user()->active === 0) {
             Auth::logout();
 
@@ -95,7 +96,7 @@ class LoginController extends Controller
         if ($user->hasAnyRole('Technichian', 'Accounting', 'Stocker', 'WKCA', 'KCA', 'NOC')) {
             return redirect('/utility/user-profile/profile-detail');
         }
-
+        activity()->causedBy(Auth::user())->log('Karyawan ' . Auth::user()->name . ' Melakukan Login');
         return redirect()->intended($this->redirectTo);
     }
 

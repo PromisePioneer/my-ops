@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\User;
 
-use App\Rules\UniqueLeaders;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -20,7 +19,7 @@ class UserRequest extends FormRequest
         return [
             'placement' => [
                 Rule::in('Pusat', 'Cabang'),
-                new UniqueLeaders($request),
+//                new UniqueLeaders($request),
             ],
             'branch_id' => [
                 Rule::exists('branches', 'id')

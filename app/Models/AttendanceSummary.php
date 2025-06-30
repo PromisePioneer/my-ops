@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AttendanceSummary extends Model
 {
-    use HasFactory;
 
     protected $table = 'attendances_summary';
     protected $fillable = [
@@ -30,5 +28,4 @@ class AttendanceSummary extends Model
     {
         return $this->belongsTo(WorkTime::class, 'work_time_id');
     }
-
 }

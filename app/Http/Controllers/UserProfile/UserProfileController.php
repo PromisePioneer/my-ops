@@ -14,13 +14,18 @@ use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Inventory\StockWithdrawal\Service\StockWithdrawalService;
 use App\Support\User\LeaveAndPermission\LeaveAndPermissionService;
 use App\Support\User\SP\SPService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Spatie\Activitylog\Models\Activity;
 
 #[AllowDynamicProperties] class UserProfileController extends Controller
 {
+
+    private static int $perPage = 10;
+
     public function __construct()
     {
         $this->identityInformation = new IdentityInformation();
@@ -107,6 +112,36 @@ use Illuminate\View\View;
     public function getCarriedStock(): JsonResponse
     {
         return response()->json($this->stockWithdrawalService->getCarriedStock());
+    }
+
+    public function logActivityPage(): View
+    {
+        return view('pages.utilities.user-profile.log-activity.index');
+    }
+
+    public function logActivityData(Request $request): JsonResponse
+    {
+        $query = Activity::query()->where('causer_id', $request->user()->id)
+            ->latest()
+            ->paginate(self::$perPage);
+
+        $data = $query->getCollection()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'causer' => $item->causer->name,
+                'event' => $item->event,
+                'description' => $item->description,
+                'before' => @$item->changes['old'],
+                'after' => @$item->changes['attributes'],
+                'created_at' => Carbon::parse($item->created_at)
+                    ->locale('id')
+                    ->settings(['formatFunction' => 'translatedFormat'])
+                    ->format('l, j F Y, h:i a'),
+            ];
+        });
+
+        $query->setCollection($data);
+        return response()->json($query);
     }
 
 }
