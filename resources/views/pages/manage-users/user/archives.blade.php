@@ -74,8 +74,7 @@
                                             <div
                                                 class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                                 <input class="form-check-input" type="checkbox"
-                                                       @click="toggleAllCheckBox()"
-                                                       :disabled="Number(deletePermission) !== 1">
+                                                       @click="toggleAllCheckBox()">
                                             </div>
                                         </th>
                                         <th>Informasi Umum</th>
@@ -108,8 +107,7 @@
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                      @click="selectCheckBox($event)">
                                                     <input class="form-check-input" type="checkbox" :value="user.id"
-                                                           :id="'checkbox-' + user.id"
-                                                           :disabled="Number(deletePermission) !== 1"/>
+                                                           :id="'checkbox-' + user.id"/>
                                                 </div>
                                             </td>
                                             <td>
@@ -128,7 +126,7 @@
                                                     </a>
                                                 </div>
                                                 <div class="d-flex flex-column">
-                                                    <a :href="Number(viewDetailPermission) === 1 ? `/manage-users/users/detail/${user.id}` : '#'"
+                                                    <a href="#"
                                                        class="text-gray-800 text-hover-primary mb-1">
                                                         <span x-text="`(${user.nik}) ${user.name}`"></span>
                                                     </a>

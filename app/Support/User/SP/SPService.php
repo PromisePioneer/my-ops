@@ -82,7 +82,7 @@ use function App\Helper\convertToRoman;
             return [
                 'id' => $item->id,
                 'branch_name' => $item->user->branch->name ?? null,
-                'user_id' => "({$item->user->nip}) {$item->user->name}",
+                'user_id' => "({$item->user?->nip}) {$item->user?->name}",
                 'sp_number' => $item->sp_number,
                 'date' => Carbon::parse($item->start_date)->format('d/m/Y') . ' - ' . Carbon::parse($item->end_date)->format('d/m/Y'),
                 'expired' => Carbon::parse($item->end_date)->greaterThan(Carbon::now()),
