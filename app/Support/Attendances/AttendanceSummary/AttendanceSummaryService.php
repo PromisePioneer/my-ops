@@ -116,8 +116,8 @@ use Illuminate\Http\Request;
 
             $employeeHolidayDates = $employeeHolidays->pluck('start_date')->toArray();
             $leaveDates = $this->getLeaveDates($user->leaveAndPermissions, $startDate, $endDate);
-            $notCheckIn = $user->attendancesSummary->where('clock_in', null)->count();
-            $notCheckOut = $user->attendancesSummary->where('clock_out', null)->count();
+            $notCheckInCount = $this->getNotCheckInCount($user->attendancesSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday);
+            $notCheckoutCount = $this->getNotCheckoutCount($user->attendancesSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday);
 
 
             return [
@@ -127,8 +127,8 @@ use Illuminate\Http\Request;
                 'profile_pic' => $user->profile_pic,
                 'role' => $user->roles[0]->name ?? '',
                 'total_minutes_late' => $this->totalLateCount($user, $weeklyLateCount),
-                'total_not_check_in' => $notCheckIn,
-                'total_not_check_out' => $notCheckOut,
+                'total_not_check_in' => $notCheckInCount,
+                'total_not_check_out' => $notCheckoutCount,
                 'total_present' => $user->attendancesSummary->count(),
                 'work_period_count' => $this->workPeriodTotal($periods, $weekHoliday, $employeeHolidayDates, $leaveDates),
                 'total_leaves' => $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti'),
@@ -174,13 +174,62 @@ use Illuminate\Http\Request;
     }
 
 
+    public function getNotCheckoutCount($attendanceSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday): int
+    {
+        $attendedDates = $attendanceSummary->where('clock_out', '!=', null)->where('clock_in', '!=', null)->pluck('date')->toArray();
+        $notCheckIn = $attendanceSummary->where('clock_out', '!=', null)->where('clock_in', null)->pluck('date')->toArray();
+        $existingDates = $attendanceSummary->pluck('date')->toArray(); // tambahkan ini
+
+        return collect($periods)
+            ->reject(function ($period) {
+                return $period->greaterThanOrEqualTo(Carbon::today());
+            })->reject(function ($period) use ($existingDates) {
+                // hanya proses yang punya data attendance
+                return !in_array($period->format('Y-m-d'), $existingDates);
+            })->reject(function ($period) use ($attendedDates) {
+                return in_array($period->format('Y-m-d'), $attendedDates);
+            })->reject(function ($period) use ($leaveDates) {
+                return in_array($period->format('Y-m-d'), $leaveDates);
+            })->reject(function ($period) use ($notCheckIn) {
+                return in_array($period->format('Y-m-d'), $notCheckIn);
+            })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
+                if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                    return true;
+                }
+                return $period?->dayName === $weekHoliday?->day;
+            })->count();
+    }
+
+
+    public function getNotCheckInCount($attendanceSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday): int
+    {
+        $attendedDates = $attendanceSummary->where('clock_out', '!=', null)->where('clock_in', '!=', null)->pluck('date')->toArray();
+        $notCheckOut = $attendanceSummary->where('clock_out', null)->pluck('date')->toArray();
+        $existingDates = $attendanceSummary->pluck('date')->toArray();
+
+        return collect($periods)
+            ->reject(function ($period) {
+                return $period->greaterThanOrEqualTo(Carbon::today());
+            })->reject(function ($period) use ($existingDates) {
+                return !in_array($period->format('Y-m-d'), $existingDates);
+            })->reject(function ($period) use ($leaveDates) {
+                return in_array($period->format('Y-m-d'), $leaveDates);
+            })->reject(function ($period) use ($attendedDates) {
+                return in_array($period->format('Y-m-d'), $attendedDates);
+            })->reject(function ($period) use ($notCheckOut) {
+                return in_array($period->format('Y-m-d'), $notCheckOut);
+            })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
+                if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                    return true;
+                }
+                return $period?->dayName === $weekHoliday?->day;
+            })->count();
+    }
+
+
     public function getAbsentCount($attendanceSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday): int
     {
         $attendedDates = $attendanceSummary->pluck('date')->toArray();
-
-
-
-        // dd($employeeHolidayDates);
 
         return collect($periods)
             ->reject(function ($period) {
