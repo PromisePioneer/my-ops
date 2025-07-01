@@ -13,7 +13,6 @@
                 <form id="form" @submit.prevent="save()" enctype="multipart/form-data">
                     <div class="card-body p-5">
                         <div class="row gx-10 mb-5">
-                            @if(empty(Auth::user()->branch_id))
                                 <div class="col-lg-6">
                                     <div class="form-group row mb-6">
                                         <label
@@ -26,7 +25,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endif
                             <div class="col-lg-6">
                                 <div class="form-group row mb-6">
                                     <label
@@ -259,10 +257,27 @@
                 stockQty: 0,
                 search: '',
                 async init() {
-                    await this.getBranches();
-                    await this.getItemCategories();
+                    await select2('.item-categories-select2', 'Pilih Kategori Barang', '/select2/item-categories-data');
                     await select2('.users-select2', 'Pilih Karyawan', '/select2/users-data');
+                    await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
                     await this.getSessions();
+                    await this.branchOnSelect();
+                    await this.itemCategoryOnSelect();
+                },
+                async branchOnSelect() {
+                    $('.branches-select2').on('select2:select', async (e) => {
+                        this.branchId = e.params.data.id;
+                        await this.getStockList();
+                        await this.getSessions();
+                    });
+                },
+                async itemCategoryOnSelect() {
+                    $('.item-categories-select2').on('select2:select', async (e) => {
+                        this.itemCategoryId = e.params.data.id;
+                        this.category4 = e.params.data.text === 'Kategori 4'
+                        await this.getStockList();
+                        await this.getSessions();
+                    });
                 },
                 async searchItemByCategory() {
 
@@ -312,24 +327,6 @@
                     this.stockDetail = null;
                     await this.getStockList();
                     await this.getSessions()
-                },
-                async getBranches() {
-                    $(".branches-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/select2/branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true,
-                        },
-                    }).on('select2:select', async (e) => {
-                        this.branchId = e.params.data.id;
-                        await this.getStockList();
-                        await this.getSessions();
-                    });
                 },
                 async getItemCategories() {
                     $(".item-categories-select2").select2({

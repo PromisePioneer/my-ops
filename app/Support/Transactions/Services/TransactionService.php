@@ -3,6 +3,7 @@
 namespace App\Support\Transactions\Services;
 
 use AllowDynamicProperties;
+use App\Enum\Transaction\TransactionType;
 use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Account;
@@ -33,14 +34,14 @@ use function App\Helper\formatDate;
         $this->transactionRepository = new TransactionRepository();
     }
 
-    public function generateTransactionNumber(Request $request): string
+    public static function generateTransactionNumber(Request $request): string
     {
         $latestTransaction = Transaction::where('branch_id', $request
             ->input('branch_id'))->latest()->first();
         $date = Carbon::parse($request->input('date'))->format('d');
         $month = Carbon::parse($request->input('date'))->format('m');
         $year = Carbon::parse($request->input('date'))->format('y');
-        if ($latestTransaction && $date === "01") {
+        if ($latestTransaction) {
             $convertInvNumberToArray = $latestTransaction->transaction_number;
             $startingNumber = $convertInvNumberToArray[6] . $convertInvNumberToArray[7] . $convertInvNumberToArray[8];
             $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
@@ -66,7 +67,9 @@ use function App\Helper\formatDate;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $data = Transaction::search($search);
+        $data = Transaction::search($search)->query(function ($query) use ($search) {
+            $query->where('type', '!=', TransactionType::INITIAL_INVENTORY_BALANCE->value);
+        });
         $filter = TransactionACLFilter::apply($data, $request)->paginate(self::$perPage);
         return self::formattedData($filter);
     }
@@ -74,9 +77,18 @@ use function App\Helper\formatDate;
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = Transaction::with('branch', 'branch.parent', 'item', 'item.unitType', 'debitAccount', 'creditAccount', 'confirmedBy', 'approvedBy', 'createdBy');
-        $filter = TransactionQueryFilter::apply($query, $request)
-            ->paginate(self::$perPage);
+        $query = Transaction::with([
+            'branch',
+            'branch.parent',
+            'item',
+            'item.unitType',
+            'debitAccount',
+            'creditAccount',
+            'confirmedBy',
+            'approvedBy',
+            'createdBy'
+        ])->where('type', '!=', TransactionType::INITIAL_INVENTORY_BALANCE->value);
+        $filter = TransactionQueryFilter::apply($query, $request)->paginate(self::$perPage);
 
         return self::formattedData($filter);
     }
@@ -95,10 +107,10 @@ use function App\Helper\formatDate;
                 'item_name' => $item->item?->name,
                 'qty' => $item->qty,
                 'unit_type' => $item->item?->unitType->name,
-                'debit_account_id' => $item->debitAccount->id,
-                'debit' => $item->debitAccount->code . ' ' . $item->debitAccount->name,
-                'credit_account_id' => $item->creditAccount->id,
-                'credit' => $item->creditAccount->code . ' ' . $item->creditAccount->name,
+                'debit_account_id' => $item->debitAccount?->id,
+                'debit' => $item->debitAccount?->code . ' ' . $item->debitAccount?->name,
+                'credit_account_id' => $item->creditAccount?->id,
+                'credit' => $item->creditAccount?->code . ' ' . $item->creditAccount?->name,
                 'detail' => $item->detail,
                 'total_price' => currencyFormat($item->total_price),
                 'locked_status' => $item->locked_status,

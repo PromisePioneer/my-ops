@@ -17,11 +17,6 @@ return new class extends Migration {
                 ->constrained('transactions')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('initial_balance_inventory_id')
-                ->nullable()
-                ->constrained('initial_inventory_balance')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->double('qty');
             $table->double('qty_in_meter')->nullable();
             $table->boolean('status')->default(false);

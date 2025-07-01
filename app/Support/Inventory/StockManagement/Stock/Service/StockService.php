@@ -115,9 +115,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function findByItemId(ItemCollection $itemCollection): LengthAwarePaginator
+    public function findByItemId(Request $request, ItemCollection $itemCollection): LengthAwarePaginator
     {
-        $query = $this->stockRepository->findByItemId($itemCollection)->paginate(self::$perPage);
+        $query = $this->stockRepository->findByItemId($request, $itemCollection)->paginate(self::$perPage);
         $data = $query->getCollection()->map(function ($item) {
             $unitType = $item->transaction?->item?->unitType?->name ?? $item->initialInventoryBalance->item?->unitType?->name;
 
@@ -144,8 +144,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
         if ($itemCategory->name !== 'Kategori 4') {
             $data = $query->getCollection()->map(function ($itemCatalog) {
-                $item = $itemCatalog?->stock?->transaction?->item
-                    ?? $itemCatalog?->stock?->initialInventoryBalance?->item;
+                $item = $itemCatalog?->stock?->transaction?->item;
                 return [
                     'id' => $itemCatalog->id,
                     'code' => $itemCatalog->code,

@@ -10,7 +10,7 @@ return new class extends Migration {
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('transaction_number');
+            $table->string('transaction_number')->nullable();
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->cascadeOnDelete();
@@ -24,16 +24,23 @@ return new class extends Migration {
                 ->constrained('item_collections')
                 ->cascadeOnDelete();
             $table->integer('qty')->nullable();
-            $table->enum('type', ['Default', 'Barang', 'Beban', 'Utang', 'Piutang']);
+            $table->enum('type', ['Default', 'Barang', 'Beban', 'Utang', 'Piutang', 'Saldo Awal Persediaan']);
             $table->decimal('unit_price', 15, 4);
             $table->decimal('total_price', 15, 4);
             $table->text('detail');
             $table->string('attachment');
             $table->string('tax_invoice')->nullable();
+            $table->foreignId('stock_account_id')
+                ->nullable()
+                ->constrained('accounts')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignId('debit_account_id')
+                ->nullable()
                 ->constrained('accounts')
                 ->cascadeOnDelete();
             $table->foreignId('credit_account_id')
+                ->nullable()
                 ->constrained('accounts')
                 ->cascadeOnDelete();
             $table->boolean('locked_status')

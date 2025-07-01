@@ -102,11 +102,10 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="inventory in initialInventoryBalances?.data" :key="inventory.id">
+                            <template x-for="(inventory, index) in initialInventoryBalances?.data" :key="index">
                                 <tr class="text-center">
                                     <td>
-                                        <template x-if="Number(inventory.status) === 0">
-
+                                        <template x-if="inventory.status === 'Diproses'">
                                             <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                  @click="selectCheckBox($event)">
                                                 <input class="form-check-input" type="checkbox"
@@ -118,10 +117,23 @@
                                     <td>
                                         <div class="d-flex flex-column text-center">
                                             <span x-text="inventory.branch_name"></span>
+                                            <span x-text="inventory.transaction_number"></span>
                                             <span x-text="inventory.date"></span>
                                             <hr>
-                                            <span class="text-decoration-underline"
-                                                  x-text="`${inventory.qty} ${inventory.unit_type} `"></span>
+                                            <div>
+                                                <template x-if="inventory.unit_type === 'Meter'">
+                                                    <div>
+                                                        <p class="text-decoration-underline m-0"
+                                                           x-text="`${inventory.qty} Haspel`"></p>
+                                                        <p class="text-decoration-underline m-0"
+                                                           x-text="`${inventory.qty_in_meter} Meter per Haspel`"></p>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                            <template x-if="inventory.unit_type !== 'Meter'">
+                                             <span class="text-decoration-underline"
+                                                   x-text="`${inventory.qty} ${inventory.unit_type}`"></span>
+                                            </template>
                                             <span x-text="inventory.item_name"></span>
                                             <span x-text="inventory.total_price"></span>
                                         </div>
@@ -139,7 +151,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <template x-if="inventory.status == 0">
+                                        <template x-if="inventory.status === 'Diproses'">
                                             <a :href="`/master/accounting/initial-inventory-balances/edit/${inventory.id}`"
                                                class="btn btn-light-primary btn-sm">
                                                 <i class="ki-duotone ki-pencil">
@@ -150,7 +162,7 @@
                                         </template>
 
 
-                                        <template x-if="inventory.status == 1">
+                                        <template x-if="inventory.status === 'Diterima'">
                                               <span class="badge badge-light-success">
                                             <i class="ki-duotone ki-check-square fs-2x text-success">
                                                 <span class="path1"></span>

@@ -48,15 +48,15 @@ use Throwable;
     }
 
 
-    public function generateAutomaticItemCode(DraftStock $draftStock): JsonResponse
+    public function generateAutomaticItemCode(Request $request, DraftStock $draftStock): JsonResponse
     {
-        return response()->json($this->itemCatalogService->generateAutomaticItemCode($draftStock));
+        return response()->json($this->itemCatalogService->generateAutomaticItemCode($request, $draftStock));
     }
 
 
-    public function findByItemId(ItemCollection $itemCollection): JsonResponse
+    public function findByItemId(Request $request, ItemCollection $itemCollection): JsonResponse
     {
-        return response()->json($this->itemCatalogService->findByItemId($itemCollection));
+        return response()->json($this->itemCatalogService->findByItemId($request, $itemCollection));
     }
 
     public function searchByItemId(Request $request, ItemCollection $itemCollection): JsonResponse

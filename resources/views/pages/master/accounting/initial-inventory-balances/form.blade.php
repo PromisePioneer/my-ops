@@ -31,7 +31,6 @@
                   enctype="multipart/form-data">
                 <div class="card-body">
                     <div class="row mb-10">
-                        @if(empty(Auth::user()->branch_id))
                             <div class="col-md-4">
                                 <label for="branch_id" class="required form-label">Cabang</label>
                                 <x-select2.index
@@ -41,12 +40,11 @@
                                     elementSelector="branches-select2"
                                 />
                             </div>
-                        @endif
                         <div class="col-md-4">
                             <label for="date" class="required form-label">Tanggal Pembelian</label>
                             <input type="date" id="date" name="date" class="form-control-solid form-control date"
                                    placeholder="Tanggal Pembelian"
-                                   value="{{ $initialInventoryBalance->date ?? '' }}">
+                                   value="{{ $transaction->date ?? '' }}">
                         </div>
                         <div class="col-md-4">
                             <label for="date" class="required form-label">Supplier</label>
@@ -65,7 +63,7 @@
                         </label>
                         <textarea class="form-control form-control-solid" name="detail" id="detail"
                                   placeholder="Ketarangan"
-                                  data-kt-autosize="true">{{ isset($initialInventoryBalance) ? $initialInventoryBalance->detail : null }}
+                                  data-kt-autosize="true">{{ isset($transaction) ? $transaction->detail : null }}
                         </textarea>
                     </div>
 
@@ -96,20 +94,26 @@
                         <div class="col-lg-4">
                             <label for="name" class="required form-label">Qty</label>
                             <input type="number" class="form-control form-control-solid" name="qty" id="qty"
-                                   placeholder="Kuantitas" value="{{  $initialInventoryBalance->qty ?? '' }}">
+                                   placeholder="Kuantitas" value="{{  $transaction->qty ?? '' }}">
                         </div>
                     </div>
 
 
                     <div class="row mb-10">
-                        <div class="col-lg-6">
+                        <div class="col-md-4" x-show="qtyInMeter" x-transition x-cloak>
+                            <label for="name" class="required form-label">Qty (Meter) Dalam 1 Haspel</label>
+                            <input type="number" class="form-control form-control-solid"
+                                   :name="`${qtyInMeter ? 'qty_in_meter' : ''}`"
+                                   value="{{ $transaction->qty_in_meter ?? ''}}" id="qty_in_meter">
+                        </div>
+                        <div :class="qtyInMeter ? 'col-md-4' : 'col-md-6'">
                             <label for="name" class="required form-label">Dokumentasi</label>
                             <input type="file" class="form-control form-control-solid"
                                    @change="previewAttachmentFile()"
                                    accept=".png, .jpg, .jpeg" x-ref="attachmentFile" name="attachment"
                                    id="attachment">
                         </div>
-                        <div class="col-lg-6">
+                        <div :class="qtyInMeter ? 'col-md-4' : 'col-md-6'">
                             <label for="name" class="required form-label">Akun Persediaan</label>
                             <x-select2.index
                                 class="form-select form-select-solid"
@@ -155,12 +159,12 @@
                 buttonLoading: false,
                 isAset: null,
                 editVal: '',
-                initialInventoryBalanceId: "{{ $initialInventoryBalance->id ?? '' }}",
-                branchId: "{{ $initialInventoryBalance->branch_id ?? '' }}",
-                supplierId: "{{ $initialInventoryBalance->contact_id ?? '' }}",
-                itemId: "{{ $initialInventoryBalance->item_id ?? '' }}",
-                stockAccountId: "{{ $initialInventoryBalance->stock_account_id ?? '' }}",
-                unitPrice: "{{ $initialInventoryBalance->unit_price ?? '' }}",
+                initialInventoryBalanceId: "{{ $transaction->id ?? '' }}",
+                branchId: "{{ $transaction->branch_id ?? '' }}",
+                supplierId: "{{ $transaction->contact_id ?? '' }}",
+                itemId: "{{ $transaction->item_id ?? '' }}",
+                stockAccountId: "{{ $transaction->stock_account_id ?? '' }}",
+                unitPrice: "{{ $transaction->unit_price ?? '' }}",
                 itemMustHaveCode: false,
                 hasSNOnItem: false,
                 isLandAsset: false,
@@ -170,6 +174,7 @@
                 buildingType: null,
                 PKP: false,
                 attachmentImgSrc: '',
+                qtyInMeter: '',
                 form: document.getElementById('form-initial-inventory-balance'),
                 itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
                 itemForm: document.getElementById('form-item'),
@@ -185,9 +190,8 @@
                     await select2('.items-select2', 'Pilih Barang', '/select2/goods-data', true, false, 'modal-item');
                     await select2('.unit-types-select2', 'Pilih Satuan', '/select2/unit-types-data', true, true);
                     await select2('.item-category-select2', 'Pilih Kategori Barang', '/select2/item-categories-data');
-
+                    await this.itemOnSelect();
                     await this.selectedSelect2Value();
-
                 },
                 async selectedSelect2Value() {
                     if (this.initialInventoryBalanceId) {
@@ -196,6 +200,11 @@
                         await selectedValue('selected-item', `/select2/selected-item/${this.itemId}`);
                         await selectedValue('selected-stock-account', `/select2/selected-account/${this.stockAccountId}`);
                     }
+                },
+                itemOnSelect() {
+                    $('.items-select2').on('select2:select', (e) => {
+                        this.qtyInMeter = e?.params?.data?.unit_type_name === 'Meter';
+                    });
                 },
                 async saveContact() {
                     this.buttonLoading = true;

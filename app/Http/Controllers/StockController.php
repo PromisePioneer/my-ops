@@ -32,10 +32,10 @@ use Illuminate\View\View;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', Stock::class);
-        return response()->json($this->stockService->data());
+        return response()->json($this->stockService->data($request));
     }
 
 

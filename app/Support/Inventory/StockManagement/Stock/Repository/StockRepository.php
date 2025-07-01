@@ -22,14 +22,11 @@ use Illuminate\Http\Request;
 
     public function findByDraftStock(DraftStock $draftStock): ?Stock
     {
-
-        $draftStock->load('transaction.item', 'initialInventoryBalance.item');
+        $draftStock->load('transaction.item');
         return Stock::where(function ($query) use ($draftStock) {
             $query->whereHas('transaction.item', function ($query) use ($draftStock) {
                 $query->where('id', $draftStock->transaction?->item->id);
-            })->orWhereHas('initialInventoryBalance.item', function ($query) use ($draftStock) {
-                $query->where('id', $draftStock->initialInventoryBalance?->item->id);
-            });
+            })->where('transaction_id', $draftStock->transaction_id);
         })->first();
     }
 
@@ -62,13 +59,15 @@ use Illuminate\Http\Request;
     }
 
 
-    public function findByItemId(ItemCollection $itemCollection)
+    public function findByItemId(Request $request, ItemCollection $itemCollection)
     {
-        return Stock::with(['transaction.item', 'initialInventoryBalance.item'])
-            ->where(function ($query) use ($itemCollection) {
-                $query->whereHas('transaction.item', function ($query) use ($itemCollection) {
-                    $query->where('id', $itemCollection->id);
-                })->orWhereHas('initialInventoryBalance.item', function ($query) use ($itemCollection) {
+        $branch = Branch::with('children')->find($request->user()->branch_id);
+        return Stock::with('transaction.item')
+            ->where(function ($query) use ($itemCollection, $request, $branch) {
+                $query->whereHas('transaction.item', function ($query) use ($itemCollection, $request, $branch) {
+                    if (!empty($request->user()->branch_id)) {
+                        $query->whereIn('branch_id', $branch->children->pluck('id'));
+                    }
                     $query->where('id', $itemCollection->id);
                 });
             });
@@ -90,45 +89,37 @@ use Illuminate\Http\Request;
 
     public function getStockByCategoryAndBranch(int|string $branchId, int|string $categoryId)
     {
-        $itemCategory = ItemCategory::find($categoryId);
-        if ($itemCategory->name !== 'Kategori 4') {
-            $stock = Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
-                ->where('branch_id', $branchId)
-                ->where(function ($query) use ($categoryId) {
-                    $query->whereHas('transaction.item.category', function ($query) use ($categoryId) {
-                        $query->where('id', $categoryId);
-                    })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($categoryId) {
-                        $query->where('id', $categoryId);
-                    });
-                })->first();
-
-            if (!empty($stock)) {
-                return $stock->itemCatalog()->where(function ($query) use ($branchId) {
-                    $code = [];
-                    $code2 = [];
-                    if (session()->has('stock_withdrawal_item')) {
-                        foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
-                            $code[] = $withDrawalItem['code'];
-                        }
-                    }
-
-                    if (session()->has('stock_mutation_items')) {
-                        foreach (session()->get('stock_mutation_items') as $mutationItem) {
-                            $code2[] = $mutationItem['code'];
-                        }
-                    }
-                    $query->whereNotIn('code', $code)->whereNotIn('code', $code2)->where('available_qty', '>', 0);
-                });
+        $code = [];
+        $code2 = [];
+        if (session()->has('stock_withdrawal_item')) {
+            foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
+                $code[] = $withDrawalItem['code'];
             }
         }
 
-        return Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
+        if (session()->has('stock_mutation_items')) {
+            foreach (session()->get('stock_mutation_items') as $mutationItem) {
+                $code2[] = $mutationItem['code'];
+            }
+        }
+        $itemCategory = ItemCategory::find($categoryId);
+        if ($itemCategory->name !== 'Kategori 4') {
+            return ItemCatalog::with(['stock.transaction.item', 'stock'])
+                ->whereHas('stock.transaction.item', function ($query) use ($branchId, $itemCategory) {
+                    $query->where('category_id', $itemCategory->id)
+                        ->where('stocks.branch_id', $branchId);
+                })->where(function ($query) use ($branchId, $code, $code2) {
+                    $query->whereNotIn('code', $code)
+                        ->whereNotIn('code', $code2)
+                        ->where('available_qty', '>', 0);
+                });
+        }
+
+        return Stock::with(['transaction.item', 'itemCatalog'])
             ->where('available_qty', '>', 0)
             ->where('branch_id', $branchId)
             ->where(function ($query) use ($categoryId) {
                 $query->whereHas('transaction.item.category', function ($query) use ($categoryId) {
-                    $query->where('id', $categoryId);
-                })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($categoryId) {
                     $query->where('id', $categoryId);
                 });
             });

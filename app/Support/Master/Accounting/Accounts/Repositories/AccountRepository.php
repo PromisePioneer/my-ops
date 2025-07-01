@@ -49,12 +49,9 @@ use Illuminate\Database\Eloquent\Builder;
     }
 
 
-    public static function findByTransactionOrInitialInventoryBalanceId(DraftStock $draftStock): Account
+    public static function findByTransactionId(DraftStock $draftStock): Account
     {
-        return Account::find(
-            $draftStock->transaction?->item?->asset_account_id
-            ?? $draftStock->initialInventoryBalance?->item?->asset_account_id
-        );
+        return Account::find($draftStock->transaction?->item?->asset_account_id);
     }
 
 

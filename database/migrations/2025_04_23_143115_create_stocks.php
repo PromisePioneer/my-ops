@@ -16,11 +16,6 @@ return new class extends Migration {
                 ->nullable()
                 ->constrained('transactions')
                 ->cascadeOnDelete();
-            $table->foreignId('initial_balance_inventory_id')
-                ->nullable()
-                ->constrained('initial_inventory_balance')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->cascadeOnDelete();

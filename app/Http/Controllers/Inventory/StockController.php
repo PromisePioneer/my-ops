@@ -191,9 +191,9 @@ use Illuminate\View\View;
     }
 
 
-    public function findByItemId(ItemCollection $itemCollection): JsonResponse
+    public function findByItemId(Request $request, ItemCollection $itemCollection): JsonResponse
     {
-        return response()->json($this->stockService->findByItemId($itemCollection));
+        return response()->json($this->stockService->findByItemId($request, $itemCollection));
     }
 
 

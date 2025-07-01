@@ -37,6 +37,7 @@ class InitialInventoryBalanceRequest extends FormRequest
             'qty' => ['required', 'numeric', 'min:0'],
             'attachment' => [Rule::requiredIf($request->route('initialInventoryBalance') === null), 'file', 'mimes:jpg,jpeg,png', 'max:2048'],
             'stock_account_id' => ['required', 'exists:accounts,id'],
+            'qty_in_meter' => [Rule::requiredIf($request->has('qty_in_meter')), 'numeric', 'min:0'],
         ];
     }
 
@@ -63,6 +64,7 @@ class InitialInventoryBalanceRequest extends FormRequest
             'attachment.max' => 'Dokumentasi tidak boleh lebih dari 2MB',
             'stock_account_id.required' => 'Akun stok tidak boleh kosong',
             'stock_account_id.exists' => 'Akun stok tidak ditemukan',
+            'qty_in_meter.required' => 'Jumlah Dalam Meter tidak boleh kosong',
 
         ];
     }

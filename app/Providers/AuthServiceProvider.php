@@ -16,7 +16,6 @@ use App\Models\Company;
 use App\Models\Department;
 use App\Models\EmployeeSchedule;
 use App\Models\Fab;
-use App\Models\InitialInventoryBalance;
 use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\LeaveAndPermission;
@@ -111,7 +110,6 @@ class AuthServiceProvider extends ServiceProvider
         EmployeeSchedule::class => EmployeeSchedulePolicy::class,
         Transaction::class => TransactionPolicy::class,
         ItemCollection::class => ItemCollectionPolicy::class,
-        InitialInventoryBalance::class => InitialInventoryBalancePolicy::class,
         RoleDefaultWorkTime::class => RoleDefaultWorkTimePolicy::class,
         BranchDefaultWorkTime::class => BranchDefaultWorkTimePolicy::class,
         BranchRoleDefaultWorkTime::class => BranchRoleDefaultWorkTimePolicy::class,

@@ -3,13 +3,15 @@
 namespace App\Support\Master\Operational\InitialInventoryBalance\Service;
 
 use AllowDynamicProperties;
+use App\Enum\Transaction\TransactionType;
 use App\Http\Requests\InitialInventoryBalanceRequest;
 use App\Models\AccountTransaction;
 use App\Models\DraftStock;
-use App\Models\InitialInventoryBalance;
+use App\Models\Master\Common\Branch;
 use App\Models\Stock;
+use App\Models\Transaction;
 use App\Support\HelperService\HandleFileUploadService;
-use App\Support\Master\Operational\InitialInventoryBalance\Repository\InitialInventoryBalanceRepository;
+use App\Support\Transactions\Repositories\TransactionRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -23,34 +25,52 @@ use function App\Helper\formatDate;
 
     public function __construct()
     {
-        $this->initialInventoryBalanceRepository = new InitialInventoryBalanceRepository();
+        $this->transactionRepository = new TransactionRepository();
         $this->handleUploadService = new HandleFileUploadService();
     }
 
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
-        $initialInventoryBalances = $this->initialInventoryBalanceRepository->data()->paginate(self::$perPage);
-        return self::formattedData($initialInventoryBalances);
+        $initialInventoryBalances = $this->transactionRepository->getInitialInventoryBalance($request);
+        $aclFilter = InitialInventoryBalanceACLFilter::apply($initialInventoryBalances, $request);
+        return self::formattedData($aclFilter->paginate(self::$perPage));
     }
 
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = $this->initialInventoryBalanceRepository->data();
+        $query = $this->transactionRepository->getInitialInventoryBalance($request);
         $filter = InitialInventoryBalanceQueryFilter::apply($query, $request);
-        return self::formattedData($filter->paginate(self::$perPage));
+        $aclFilter = InitialInventoryBalanceACLFilter::apply($filter, $request);
+        return self::formattedData($aclFilter->paginate(self::$perPage));
     }
 
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $initialInventoryBalances = $this->initialInventoryBalanceRepository->data();
-        if (!empty($search)) {
-            $initialInventoryBalances = $this->initialInventoryBalanceRepository->search($search);
+        $branch = $request->user()->branch_id;
+        if (!empty($branch)) {
+            $branch = Branch::with('children')
+                ->find($request->user()->branch_id)
+                ->children
+                ->pluck('id')
+                ->toArray();
         }
 
-        return self::formattedData($initialInventoryBalances->paginate(self::$perPage));
+        $itemCollections = Transaction::search($search)->query(function ($query) use ($search, $request, $branch) {
+            if (!empty($request->user()->branch_id)) {
+                $query->whereIn('branch_id', $branch);
+            }
+            $query->where('transactions.type', TransactionType::INITIAL_INVENTORY_BALANCE->value)
+                ->join('branches', 'transactions.branch_id', 'branches.id')
+                ->join('branches as parent_branches', 'parent_branches.id', '=', 'branches.parent_id')
+                ->join('contacts', 'transactions.contact_id', '=', 'contacts.id')
+                ->join('item_collections', 'transactions.item_id', '=', 'item_collections.id')
+                ->select('transactions.*', 'parent_branches.name', 'item_collections.name');
+        })->paginate(self::$perPage);
+
+        return self::formattedData($itemCollections);
     }
 
 
@@ -66,11 +86,13 @@ use function App\Helper\formatDate;
                 'qty' => $query->qty,
                 'unit_price' => $query->unit_price,
                 'unit_type' => $query->item->unitType->name,
-                'stock_account' => "{$query->stockAccount->code} {$query->stockAccount->name}",
+                'stock_account' => "{$query->stockAccount?->code} {$query->stockAccount?->name}",
                 'total_price' => currencyFormat($query->total_price),
                 'detail' => $query->detail,
                 'attachment' => $query->attachment,
-                'status' => $query->status
+                'status' => $query->status,
+                'qty_in_meter' => $query->qty_in_meter,
+                'transaction_number' => $query->transaction_number,
             ];
         });
 
@@ -87,33 +109,37 @@ use function App\Helper\formatDate;
         $unitPrice = (float)$formattedValue;
 
 
-        InitialInventoryBalance::create([
+        Transaction::create([
             'branch_id' => $request->branch_id,
             'date' => $request->input('date'),
             'contact_id' => $request->input('supplier_id'),
             'item_id' => $request->input('item_id'),
             'qty' => $request->input('qty'),
             'unit_price' => $unitPrice,
+            'type' => TransactionType::INITIAL_INVENTORY_BALANCE->value,
             'stock_account_id' => $request->input('stock_account_id'),
             'detail' => $request->input('detail'),
             'total_price' => $unitPrice * $request->input('qty'),
+            'qty_in_meter' => $request->input('qty_in_meter'),
             'attachment' => $this->handleUploadService->upload(
                 $request,
                 'documents/initial-inventory-balance/attachment/',
                 'attachment',
             ),
+            'locked_status' => true,
+            'created_by' => auth()->id(),
         ]);
     }
 
 
-    public function update(InitialInventoryBalanceRequest $request, InitialInventoryBalance $initialInventoryBalance): void
+    public function update(InitialInventoryBalanceRequest $request, Transaction $transaction): void
     {
         $formattedValue = str_replace('.', '', $request->input('unit_price'));
         $formattedValue = str_replace(',', '.', $formattedValue);
         $unitPrice = (float)$formattedValue;
 
 
-        $initialInventoryBalance->update([
+        $transaction->update([
             'branch_id' => $request->input('branch_id'),
             'date' => $request->input('date'),
             'contact_id' => $request->input('supplier_id'),
@@ -123,11 +149,12 @@ use function App\Helper\formatDate;
             'stock_account_id' => $request->input('stock_account_id'),
             'detail' => $request->input('detail'),
             'total_price' => $unitPrice * $request->input('qty'),
+            'qty_in_meter' => $request->input('qty_in_meter'),
             'attachment' => $this->handleUploadService->upload(
                 $request,
                 'documents/initial-inventory-balance/attachment/',
                 'attachment',
-                $initialInventoryBalance->attachment
+                $transaction->attachment
             ),
         ]);
     }
@@ -136,13 +163,13 @@ use function App\Helper\formatDate;
     /**
      * @throws Throwable
      */
-    public function confirm(Request $request, InitialInventoryBalance $initialInventoryBalance): void
+    public function confirm(Request $request, Transaction $transaction): void
     {
-        DB::transaction(function () use ($request, $initialInventoryBalance) {
+        DB::transaction(function () use ($request, $transaction) {
             $implodeID = implode(',', $request->get('id'));
             $explodeID = explode(',', $implodeID);
 
-            $query = $initialInventoryBalance->whereIn('id', $explodeID);
+            $query = $transaction->whereIn('id', $explodeID);
             $query->update(['status' => true]);
 
             $selectedInitialInventoryBalance = $query
@@ -152,13 +179,13 @@ use function App\Helper\formatDate;
 
                 if ($item->item->category->name !== 'Kategori 4') {
                     DraftStock::create([
-                        'initial_balance_inventory_id' => $item->id,
+                        'transaction_id' => $item->id,
                         'qty' => $item->qty,
                         'qty_in_meter' => $item->qty_in_meter
                     ]);
                 } else {
                     Stock::create([
-                        'initial_balance_inventory_id' => $item->id,
+                        'transaction_id' => $item->id,
                         'branch_id' => $item->branch_id,
                         'available_qty' => $item->qty,
                         'on_hold_qty' => 0,
@@ -169,7 +196,7 @@ use function App\Helper\formatDate;
 
                 AccountTransaction::create([
                     'branch_id' => $item->branch->parent->id,
-                    'initial_inventory_balance_id' => $item->id,
+                    'transaction_id' => $item->id,
                     'date' => $item->date,
                     'account_id' => $item->stock_account_id,
                     'description' => $item->detail,

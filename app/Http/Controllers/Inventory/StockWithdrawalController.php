@@ -22,8 +22,6 @@ use Throwable;
 
 #[AllowDynamicProperties] class StockWithdrawalController extends Controller
 {
-
-
     public function __construct()
     {
         $this->stockWithdrawalService = new StockWithdrawalService();
@@ -184,7 +182,7 @@ use Throwable;
 
     public function getStockWithdrawalItem(StockWithdrawalItem $stockWithdrawalItem): JsonResponse
     {
-        $itemCatalog = ItemCatalog::with('stock.transaction.item', 'stock.initialInventoryBalance.item')
+        $itemCatalog = ItemCatalog::with('stock.transaction.item')
             ->where('code', $stockWithdrawalItem->code)
             ->first();
         return response()->json([

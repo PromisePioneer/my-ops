@@ -42,7 +42,6 @@ class DatabaseSeeder extends Seeder
             RoleHierarchySeeder::class,
             InitialBalanceSeeder::class,
             TransactionSeeder::class,
-            InitialInventoryBalanceSeeder::class,
         ]);
     }
 }

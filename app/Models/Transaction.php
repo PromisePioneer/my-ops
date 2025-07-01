@@ -17,7 +17,7 @@ class Transaction extends Model
     protected $fillable = [
         'transaction_number',
         'branch_id',
-        'supplier_id',
+        'contact_id',
         'date',
         'item_id',
         'qty',
@@ -26,6 +26,7 @@ class Transaction extends Model
         'total_price',
         'detail',
         'debit_account_id',
+        'stock_account_id',
         'credit_account_id',
         'locked_status',
         'created_by',
@@ -36,6 +37,18 @@ class Transaction extends Model
         'tax_invoice',
         'qty_in_meter',
     ];
+
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'transaction_number' => $this->transaction_number,
+            'contacts.name' => '',
+            'item_collections.name' => '',
+            'branches.name' => '',
+            'parent_branches.name' => '',
+        ];
+    }
 
 
     public function branch(): BelongsTo
@@ -72,14 +85,6 @@ class Transaction extends Model
     }
 
 
-    public function toSearchableArray(): array
-    {
-        return [
-            'transaction_number' => $this->transaction_number,
-        ];
-    }
-
-
     public function draftStock(): HasMany
     {
         return $this->hasMany(DraftStock::class);
@@ -89,5 +94,11 @@ class Transaction extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Contact::class, 'contact_id');
+    }
+
+
+    public function stockAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'stock_account_id');
     }
 }

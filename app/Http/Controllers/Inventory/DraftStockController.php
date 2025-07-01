@@ -45,20 +45,18 @@ use Illuminate\View\View;
 
     public function show(DraftStock $draftStock): JsonResponse
     {
-        $draftStock->load('transaction', 'transaction.item', 'initialInventoryBalance.item');
+        $draftStock->load('transaction', 'transaction.item');
         return response()->json($draftStock);
     }
 
     public function detail(ItemCollection $itemCollection): View
     {
-        $itemCollection->load('transaction', 'initialInventoryBalance');
+        $itemCollection->load('transaction');
         $ifTransactionExists = $itemCollection->whereHas('transaction', function ($query) {
             $query->where('status', 'Diterima');
         })->exists();
-        $ifiInitialInventoryBalanceExists = $itemCollection->whereHas('initialInventoryBalance', function ($query) {
-            $query->where('status', 1);
-        })->exists();
-        if (empty($ifiInitialInventoryBalanceExists) && empty($ifTransactionExists)) {
+
+        if (empty($ifTransactionExists)) {
             return view('errors.404');
         }
 

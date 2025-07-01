@@ -13,12 +13,9 @@ class Stock extends Model
     protected $fillable = [
         'transaction_id',
         'branch_id',
-        'item_id',
-        'draft_stock_id',
         'on_hold_qty',
         'available_qty',
-        'available_qty',
-        'initial_balance_inventory_id',
+        'broken_qty',
     ];
 
 
@@ -43,9 +40,4 @@ class Stock extends Model
         return $this->hasMany(ItemCatalog::class, 'stock_id');
     }
 
-
-    public function initialInventoryBalance(): BelongsTo
-    {
-        return $this->belongsTo(InitialInventoryBalance::class, 'initial_balance_inventory_id');
-    }
 }

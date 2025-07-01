@@ -65,11 +65,14 @@ use Illuminate\Http\Request;
             ->with('parent', 'children')
             ->when(!empty($request->user()->branch_id), function ($query) use ($request) {
                 $query->where('id', $request->user()->branch_id);
-            })
-            ->whereNull('parent_id');
+            })->whereNull('parent_id');
+
+
 
         if (!empty($search)) {
-            $branch->where('name', 'like' . '%' . $search . '%');
+            $branch->whereHas('children', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })->orWhere('name', 'like', '%' . $search . '%');
         }
 
         return $branch->get();
