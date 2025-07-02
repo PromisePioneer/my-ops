@@ -64,16 +64,13 @@ class LoginController extends Controller
             $field = is_numeric($request->email) ? 'nip' : 'email';
         }
 
-        // Ubah input supaya sesuai field yang digunakan
         $request->merge([$field => $request->email]);
 
-        // Validasi manual sesuai field
         Validator::make($request->all(), [
-//            'email' => 'required|string', // ini adalah field input login (bisa nip/email)
+            'email' => 'required|string',
             'password' => 'required|string',
         ])->validate();
 
-        // Login
         if (Auth::attempt([$field => $request->$field, 'password' => $request->password], $request->filled('remember'))) {
             $request->session()->regenerate();
 
@@ -87,16 +84,10 @@ class LoginController extends Controller
     public function authenticated(Request $request, User $user): RedirectResponse|Redirector|Application
     {
 
-        if ($request->user()->active === 0) {
-            Auth::logout();
-
-            return redirect('login')->withErrors(['Your account is inactive']);
-        }
-
         if ($user->hasAnyRole('Technichian', 'Accounting', 'Stocker', 'WKCA', 'KCA', 'NOC')) {
             return redirect('/utility/user-profile/profile-detail');
         }
-        activity()->causedBy(Auth::user())->log('Karyawan ' . Auth::user()->name . ' Melakukan Login');
+        activity()->causedBy(Auth::user())->log(Auth::user()->nip . ' ' . Auth::user()->name . ' Melakukan Login');
         return redirect()->intended($this->redirectTo);
     }
 
