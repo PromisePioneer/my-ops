@@ -119,7 +119,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     {
         $query = $this->stockRepository->findByItemId($request, $itemCollection)->paginate(self::$perPage);
         $data = $query->getCollection()->map(function ($item) {
-            $unitType = $item->transaction?->item?->unitType?->name ?? $item->initialInventoryBalance->item?->unitType?->name;
+            $unitType = $item->transaction?->item?->unitType?->name;
 
             return [
                 'id' => $item->id,
@@ -181,9 +181,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
             return [
                 'id' => $stock->id,
-                'name' => $stock->transaction?->item->name ?? $stock->initialInventoryBalance?->item->name,
+                'name' => $stock->transaction?->item->name,
                 'qty' => $stock->available_qty - $qty,
-                'category_name' => $stock->transaction->item->category?->name ?? $stock->initialInventoryBalance->category?->name,
+                'category_name' => $stock->transaction->item->category?->name,
             ];
         });
 
@@ -192,82 +192,80 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     }
 
-    public function searchByCategoryAndBranch(?string $search, int $branchId, int $categoryId): LengthAwarePaginator
+    public function searchByCategoryAndBranch(?string $search, int $branchId, int $categoryId)
     {
         $query = $this->stockRepository->getStockByCategoryAndBranch($branchId, $categoryId);
+        $itemCategory = ItemCategory::find($categoryId);
 
-        $code = [];
-        $code2 = [];
-        if (session()->has('stock_withdrawal_item')) {
-            foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
-                $code[] = $withDrawalItem['code'];
+
+        if ($itemCategory->name !== 'Kategori 4') {
+            if (!empty($search)) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('stock.transaction.item', function ($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%");
+                    })->orWhere('code', 'like', "%{$search}%");
+                });
             }
+
+            $itemCatalog = $query->paginate(self::$perPage);
+            $data = $itemCatalog->getCollection()->map(function ($itemCatalog) {
+                $item = $itemCatalog?->stock?->transaction?->item;
+                return [
+                    'id' => $itemCatalog->id,
+                    'code' => $itemCatalog->code,
+                    'name' => $item->name,
+                    'item_id' => $item->id,
+                    'qty' => $itemCatalog->available_qty,
+                    'stock_id' => $itemCatalog->stock_id,
+                    'category_name' => $item->category?->name,
+                ];
+            });
+            $itemCatalog->setCollection($data);
+            return $itemCatalog;
         }
 
 
-        if (session()->has('stock_mutation_items')) {
-            foreach (session()->get('stock_mutation_items') as $itemMutation) {
-                $code2[] = $itemMutation['code'];
-            }
+        if (!empty($search)) {
+            $query->where(function ($query) use ($search) {
+                $query->whereHas('transaction.item', function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%");
+                });
+            });
         }
 
 
-        $data = $query->paginate(self::$perPage);
+        $stock = $query->paginate(self::$perPage);
 
-        $transformed = $data->getCollection()->flatMap(function ($stock) use ($code, $code2, $search) {
-            $item = $stock->transaction?->item ?? $stock->initialInventoryBalance?->item;
-            $itemCategoryName = $item?->category?->name;
-            $result = [];
 
-            if ($itemCategoryName !== 'Kategori 4') {
-                $filteredCatalogs = $stock->itemCatalog
-                    ->where('status', 'Tersedia')
-                    ->whereNotIn('code', $code)->whereNotIn('code', $code2);
-
-                if (!empty($search)) {
-                    $filteredCatalogs = $filteredCatalogs->filter(function ($catalog) use ($search) {
-                        $itemName = $catalog->stock->transaction?->item?->name ?? '';
-                        return stripos($catalog->code, $search) !== false || stripos($itemName, $search) !== false;
-                    });
-                }
-
-                foreach ($filteredCatalogs as $itemCatalog) {
-                    $result[] = [
-                        'id' => $itemCatalog->id,
-                        'code' => $itemCatalog->code,
-                        'name' => $item->name,
-                        'item_id' => $item->id,
-                        'qty' => $itemCatalog->available_qty,
-                        'stock_id' => $stock->id,
-                        'category_name' => $itemCategoryName,
-                    ];
-                }
-            } else {
-                $qty = 0;
-                if (session()->has('stock_withdrawal_item')) {
-                    foreach (session()->get('stock_withdrawal_item') as $stockWithdrawalItem) {
-                        if ($stock->id === (int)$stockWithdrawalItem['stock_id']) {
-                            $qty += $stockWithdrawalItem['qty'];
-                        }
+        $data = $stock->getCollection()->map(function ($stock) {
+            $qty = 0;
+            if (session()->has('stock_withdrawal_item')) {
+                foreach (session()->get('stock_withdrawal_item') as $stockWithdrawalItem) {
+                    if ($stock->id === (int)$stockWithdrawalItem['stock_id']) {
+                        $qty += $stockWithdrawalItem['qty'];
                     }
                 }
+            }
 
-                $stockActualQty = $stock->available_qty - $qty;
 
-                if (empty($search) || stripos($item->name, $search) !== false) {
-                    $result[] = [
-                        'id' => $stock->id,
-                        'name' => $item->name,
-                        'qty' => $stockActualQty,
-                        'category_name' => $itemCategoryName,
-                    ];
+            if (session()->has('stock_mutation_items')) {
+                foreach (session()->get('stock_mutation_items') as $stockMutationItem) {
+                    if ($stock->id === (int)$stockMutationItem['stock_id']) {
+                        $qty += $stockMutationItem['qty'];
+                    }
                 }
             }
 
-            return $result;
+            return [
+                'id' => $stock->id,
+                'name' => $stock->transaction?->item->name,
+                'qty' => $stock->available_qty - $qty,
+                'category_name' => $stock->transaction->item->category?->name,
+            ];
         });
 
-        return $data->setCollection(collect($transformed));
+        $stock->setCollection($data ?? []);
+        return $stock;
     }
 
 }

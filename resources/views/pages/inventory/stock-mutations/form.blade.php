@@ -290,6 +290,26 @@
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
                     await select2('.item-categories-select2', 'Pilih Kategori Barang', '/select2/item-categories-data');
                 },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        this.stockList = [];
+                        this.isLoading = true;
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                    branch_id: this.branchId,
+                                    category_id: this.itemCategoryId,
+                                }
+                            });
+                            this.stockList = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
+                    }
+                },
                 async branchOnSelect() {
                     $('#from_branch').on('select2:select', async (e) => {
                         this.branchId = e.params.data.id;

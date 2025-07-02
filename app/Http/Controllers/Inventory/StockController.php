@@ -206,7 +206,7 @@ use Illuminate\View\View;
 
     public function showStock(Stock $stock): JsonResponse
     {
-        $stock->load('transaction.item', 'initialInventoryBalance.item');
+        $stock->load('transaction.item');
         return response()->json($stock);
     }
 

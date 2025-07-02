@@ -20,6 +20,7 @@ use Illuminate\Database\Query\Builder;
     {
         return StockWithdrawalItem::doesntHave('returnedItem')->sum('qty');
     }
+
     public function findByStockWithdrawal(StockWithdrawal $stockWithdrawal)
     {
         return StockWithdrawalItem::with('stock', 'stock.itemCatalog')
@@ -29,7 +30,7 @@ use Illuminate\Database\Query\Builder;
 
     public function getCarriedStock(): EloquentBuilder
     {
-        return StockWithdrawalItem::with('stockWithdrawal', 'stockWithdrawal.branch', 'stock.transaction.item', 'stock.initialInventoryBalance.item')
+        return StockWithdrawalItem::with(['stockWithdrawal', 'stockWithdrawal.branch', 'stock.transaction.item'])
             ->doesntHave('returnedItem');
     }
 
