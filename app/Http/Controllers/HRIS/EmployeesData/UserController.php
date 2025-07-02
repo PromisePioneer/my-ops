@@ -121,6 +121,9 @@ use Throwable;
         $this->authorize('delete', User::class);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
+        $user->update([
+            'absent_id' => null
+        ]);
         $user->whereIn('id', $explodeID)->delete();
 
         return response()->json(['message' => 'data berhasil dihapus']);

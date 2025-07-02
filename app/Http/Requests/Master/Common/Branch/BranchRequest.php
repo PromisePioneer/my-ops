@@ -17,9 +17,9 @@ class BranchRequest extends FormRequest
     {
         return [
             'code' => [
-                Rule::requiredIf($request->has('parent_id')),
-//                Rule::unique('branches', 'code')
-//                    ->ignore($this->route('branch')),
+                Rule::requiredIf(!$request->has('parent_id')),
+            //    Rule::unique('branches', 'code')
+            //        ->ignore($this->route('branch')),
             ],
             'name' => [
                 'required',

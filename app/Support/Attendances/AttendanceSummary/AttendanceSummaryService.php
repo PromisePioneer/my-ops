@@ -5,6 +5,7 @@ namespace App\Support\Attendances\AttendanceSummary;
 use AllowDynamicProperties;
 use App\Models\EmployeeSchedule;
 use App\Models\WeekHoliday;
+use App\Models\WorkTime;
 use App\Support\Attendances\AttendanceSummary\Repository\AttendancesSummaryRepository;
 use App\Support\Attendances\EmployeeSchedule\Repository\EmployeeScheduleRepository;
 use App\Support\Attendances\WeekHoliday\Repository\WeekHolidayRepository;
@@ -35,7 +36,7 @@ use Illuminate\Http\Request;
     {
         $query = $this->attendancesSummaryRepository->getAttendancesSummary($this->startDate, $this->endDate);
         $attendanceSummary = AttendancesACLFilter::apply($query, $request)->paginate(self::$perPage);
-        $weeklyLateCount = $this->weeklyLateCount($attendanceSummary);
+        $weeklyLateCount = $this->weeklyLateCount($attendanceSummary, $this->startDate, $this->endDate);
         $userIds = $attendanceSummary->getCollection()->pluck('id');
         $absentIds = $attendanceSummary->getCollection()->pluck('absent_id');
         $weekHolidays = $this->weekHolidayRepository->getBasedOnUserId($userIds);
@@ -63,12 +64,12 @@ use Illuminate\Http\Request;
             $query->where('name', 'like', '%' . $search . '%');
         }
         $attendanceSummary = AttendancesACLFilter::apply($query, $request)->paginate(self::$perPage);
-        $weeklyLateCount = $this->weeklyLateCount($attendanceSummary);
         $userIds = $attendanceSummary->getCollection()->pluck('id');
         $absentIds = $attendanceSummary->getCollection()->pluck('absent_id');
         $weekHolidays = $this->weekHolidayRepository->getBasedOnUserId($userIds);
         $employeeSchedules = $this->employeeScheduleRepository->getBasedOnPeriodsAndAbsentId($startDate, $endDate, $absentIds);
         $periods = CarbonPeriod::create($startDate, $endDate)->toArray();
+        $weeklyLateCount = $this->weeklyLateCount($attendanceSummary, $startDate, $endDate);
 
 
         return self::formattedData($weeklyLateCount, $attendanceSummary, $startDate, $endDate, $weekHolidays, $employeeSchedules, $periods, $request);
@@ -85,7 +86,7 @@ use Illuminate\Http\Request;
 
         $filterQuery = AttendanceQueryFilter::apply($query, $request);
         $attendanceSummary = AttendancesACLFilter::apply($filterQuery, $request)->paginate(self::$perPage);
-        $weeklyLateCount = $this->weeklyLateCount($attendanceSummary);
+        $weeklyLateCount = $this->weeklyLateCount($attendanceSummary, $startDate, $endDate);
         $userIds = $attendanceSummary->getCollection()->pluck('id');
         $absentIds = $attendanceSummary->getCollection()->pluck('absent_id');
         $weekHolidays = $this->weekHolidayRepository->getBasedOnUserId($userIds);
@@ -116,8 +117,8 @@ use Illuminate\Http\Request;
 
             $employeeHolidayDates = $employeeHolidays->pluck('start_date')->toArray();
             $leaveDates = $this->getLeaveDates($user->leaveAndPermissions, $startDate, $endDate);
-            $notCheckIn = $user->attendancesSummary->where('clock_in', null)->count();
-            $notCheckOut = $user->attendancesSummary->where('clock_out', null)->count();
+            $notCheckInCount = $this->getNotCheckInCount($user->attendancesSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday);
+            $notCheckoutCount = $this->getNotCheckoutCount($user->attendancesSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday);
 
 
             return [
@@ -127,8 +128,8 @@ use Illuminate\Http\Request;
                 'profile_pic' => $user->profile_pic,
                 'role' => $user->roles[0]->name ?? '',
                 'total_minutes_late' => $this->totalLateCount($user, $weeklyLateCount),
-                'total_not_check_in' => $notCheckIn,
-                'total_not_check_out' => $notCheckOut,
+                'total_not_check_in' => $notCheckInCount,
+                'total_not_check_out' => $notCheckoutCount,
                 'total_present' => $user->attendancesSummary->count(),
                 'work_period_count' => $this->workPeriodTotal($periods, $weekHoliday, $employeeHolidayDates, $leaveDates),
                 'total_leaves' => $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti'),
@@ -174,13 +175,62 @@ use Illuminate\Http\Request;
     }
 
 
+    public function getNotCheckoutCount($attendanceSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday): int
+    {
+        $attendedDates = $attendanceSummary->where('clock_out', '!=', null)->where('clock_in', '!=', null)->pluck('date')->toArray();
+        $notCheckIn = $attendanceSummary->where('clock_out', '!=', null)->where('clock_in', null)->pluck('date')->toArray();
+        $existingDates = $attendanceSummary->pluck('date')->toArray(); // tambahkan ini
+
+        return collect($periods)
+            ->reject(function ($period) {
+                return $period->greaterThanOrEqualTo(Carbon::today());
+            })->reject(function ($period) use ($existingDates) {
+                // hanya proses yang punya data attendance
+                return !in_array($period->format('Y-m-d'), $existingDates);
+            })->reject(function ($period) use ($attendedDates) {
+                return in_array($period->format('Y-m-d'), $attendedDates);
+            })->reject(function ($period) use ($leaveDates) {
+                return in_array($period->format('Y-m-d'), $leaveDates);
+            })->reject(function ($period) use ($notCheckIn) {
+                return in_array($period->format('Y-m-d'), $notCheckIn);
+            })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
+                if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                    return true;
+                }
+                return $period?->dayName === $weekHoliday?->day;
+            })->count();
+    }
+
+
+    public function getNotCheckInCount($attendanceSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday): int
+    {
+        $attendedDates = $attendanceSummary->where('clock_out', '!=', null)->where('clock_in', '!=', null)->pluck('date')->toArray();
+        $notCheckOut = $attendanceSummary->where('clock_out', null)->pluck('date')->toArray();
+        $existingDates = $attendanceSummary->pluck('date')->toArray();
+
+        return collect($periods)
+            ->reject(function ($period) {
+                return $period->greaterThanOrEqualTo(Carbon::today());
+            })->reject(function ($period) use ($existingDates) {
+                return !in_array($period->format('Y-m-d'), $existingDates);
+            })->reject(function ($period) use ($leaveDates) {
+                return in_array($period->format('Y-m-d'), $leaveDates);
+            })->reject(function ($period) use ($attendedDates) {
+                return in_array($period->format('Y-m-d'), $attendedDates);
+            })->reject(function ($period) use ($notCheckOut) {
+                return in_array($period->format('Y-m-d'), $notCheckOut);
+            })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
+                if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                    return true;
+                }
+                return $period?->dayName === $weekHoliday?->day;
+            })->count();
+    }
+
+
     public function getAbsentCount($attendanceSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday): int
     {
         $attendedDates = $attendanceSummary->pluck('date')->toArray();
-
-
-
-        // dd($employeeHolidayDates);
 
         return collect($periods)
             ->reject(function ($period) {
@@ -261,51 +311,69 @@ use Illuminate\Http\Request;
     }
 
 
-    public function weeklyLateCount($users): array
+    public function weeklyLateCount($users, $startDate, $endDate): array
     {
+
 
         $weeklyLatenessMap = [];
         foreach ($users as $user) {
-            $attendances = $user->attendancesSummary;
-            $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) {
-                $date = Carbon::parse($item->date);
-                $diffInDays = $this->startDate->diffInDays($date);
-                $groupNumber = (int)($diffInDays / 7);
-                return $this->startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
-            });
 
-            foreach ($attendancesGroupedByWeek as $weekEndDate => $weekAttendances) {
+
+            $period = CarbonPeriod::create($startDate, $endDate);
+            $dates = [];
+            foreach ($period as $date) {
+                $formattedDate = $date->format('Y-m-d');
+                $dates[$formattedDate] = collect([
+                    'attendancesDate' => $formattedDate,
+                    'attendanceData' => $user->attendancesSummary->keyBy('date')->get($formattedDate),
+                ]);
+            }
+            $datesCollection = collect($dates)->values();
+            $weeklyAttendances = collect();
+            $totalDays = $datesCollection->count();
+            $chunkSize = 7;
+
+
+            for ($i = 0; $i < $totalDays; $i += $chunkSize) {
+                $chunk = $datesCollection->slice($i, $chunkSize);
+                $lastDateInChunk = Carbon::parse($chunk->last()['attendancesDate']);
+
+                if ($i + $chunkSize >= $totalDays) {
+                    $key = $endDate->toDateString();
+                } else {
+                    $key = $lastDateInChunk->toDateString();
+                }
+
+                $weeklyAttendances->put($key, $chunk);
+            }
+
+            foreach ($weeklyAttendances as $weekEndDate => $weekDays) {
                 $weekLatenessTotal = 0;
+                $weekLatenessDetails = [];
 
-                foreach ($weekAttendances as $attendance) {
-                    $workTime = $attendance->workTime;
-                    if (!$workTime || !$attendance->clock_in) {
-                        continue;
+                foreach ($weekDays as $day) {
+                    $userWorktime = null;
+                    if (isset($day['attendanceData'])) {
+                        $userWorktime = WorkTime::where('id', $day['attendanceData']->work_time_id)->first();
                     }
 
-                    $expectedCheckIn = Carbon::parse("{$attendance->date} {$workTime->clock_in}");
-                    $actualCheckIn = Carbon::parse($attendance->clock_in);
+                    if (!empty($userWorktime) && !empty($day['attendanceData']?->clock_in)) {
+                        $workDate = $day['attendanceData']->date;
+                        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
+                        $actualCheckIn = Carbon::parse($day['attendanceData']->clock_in);
+
+                        $newExpectedCheckIn = null;
+                        if ($userWorktime->name === "Malam") {
+                            $newExpectedCheckIn = $expectedCheckIn->copy()->addDay();
+                        }
 
 
-                    $newExpectedCheckIn = null;
-                    if ($workTime->name === 'Malam') {
-                        $newExpectedCheckIn = $expectedCheckIn->copy()->addDay();
-                    }
-
-                    $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
-                        ->whereDate('start_date', $attendance->date)
-                        ->first();
-
-                    $weekHoliday = WeekHoliday::where('user_id', $user->id)
-                        ->where('day', Carbon::parse($attendance->date)->dayName)
-                        ->first();
-
-                    if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                        if (($employeeSchedule?->status !== 'L') || !$weekHoliday) {
-                            $latenessInMinutes = $newExpectedCheckIn ?
+                        if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
+                            $lateness = $newExpectedCheckIn ?
                                 $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
                                 $expectedCheckIn->diffInMinutes($actualCheckIn);
-                            $weekLatenessTotal += (int)CarbonInterval::minutes($latenessInMinutes)->format('%i');
+                            $weekLatenessDetails[$day['attendancesDate']] = $lateness;
+                            $weekLatenessTotal += (int)CarbonInterval::minutes($lateness)->format('%i');
                         }
                     }
                 }
