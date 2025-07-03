@@ -283,43 +283,43 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-                {{--               @canany(['Lihat Menu Stok Barang', ''])--}}
-                <x-menu-sections>Inventory</x-menu-sections>
-                <x-dropdown-menu :active="request()->is('inventory/*')">
-                    @slot('parentIcon')
-                        <i class="ki-duotone ki-dollar fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                        </i>
-                    @endslot
-                    @slot('menuTitle')
-                        Inventory Controller
-                    @endslot
-                    @slot('menuItem')
-                        <x-dropdown-menu-item
-                            :active="request()->is('inventory/stocks')"
-                            href="{{ url('inventory/stocks') }}">
-                            Stok Barang
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->is('inventory/draft-stocks*')"
-                            href="{{ url('inventory/draft-stocks') }}">
-                            Pengkodean Barang
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->is('inventory/stock-withdrawals*')"
-                            href="{{ url('inventory/stock-withdrawals') }}">
-                            Pemakaian Barang
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->is('inventory/stock-mutations*')"
-                            href="{{ url('inventory/stock-mutations') }}">
-                            Mutasi Barang
-                        </x-dropdown-menu-item>
-                    @endslot
-                </x-dropdown-menu>
-                {{--                @endcan--}}
+                @canany(['Lihat Menu Stok Barang'])
+                    <x-menu-sections>Inventory</x-menu-sections>
+                    <x-dropdown-menu :active="request()->is('inventory/*')">
+                        @slot('parentIcon')
+                            <i class="ki-duotone ki-dollar fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+                        @endslot
+                        @slot('menuTitle')
+                            Inventory Controller
+                        @endslot
+                        @slot('menuItem')
+                            <x-dropdown-menu-item
+                                :active="request()->is('inventory/stocks')"
+                                href="{{ url('inventory/stocks') }}">
+                                Stok Barang
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->is('inventory/draft-stocks*')"
+                                href="{{ url('inventory/draft-stocks') }}">
+                                Pengkodean Barang
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->is('inventory/stock-withdrawals*')"
+                                href="{{ url('inventory/stock-withdrawals') }}">
+                                Pemakaian Barang
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->is('inventory/stock-mutations*')"
+                                href="{{ url('inventory/stock-mutations') }}">
+                                Mutasi Barang
+                            </x-dropdown-menu-item>
+                        @endslot
+                    </x-dropdown-menu>
+                @endcanany
 
 
                 @canany(['Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo'])
@@ -470,11 +470,11 @@
                                     Profil Perusahaan
                                 </x-dropdown-menu-item>
                             @endcan
-{{--                            <x-dropdown-menu-item--}}
-{{--                                :active="request()->segment(2) === 'activity-log'"--}}
-{{--                                href="{{ url('utility/activity-log') }}">--}}
-{{--                                Riwayat Aktifitas--}}
-{{--                            </x-dropdown-menu-item>--}}
+                            {{--                            <x-dropdown-menu-item--}}
+                            {{--                                :active="request()->segment(2) === 'activity-log'"--}}
+                            {{--                                href="{{ url('utility/activity-log') }}">--}}
+                            {{--                                Riwayat Aktifitas--}}
+                            {{--                            </x-dropdown-menu-item>--}}
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
