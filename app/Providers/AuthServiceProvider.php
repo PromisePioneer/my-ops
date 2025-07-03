@@ -6,6 +6,7 @@ namespace App\Providers;
 use App\Models\Account;
 use App\Models\AccountCategory;
 use App\Models\AccountTransaction;
+use App\Models\Activity;
 use App\Models\Area;
 use App\Models\Asset;
 use App\Models\AttendanceSummary;
@@ -36,6 +37,7 @@ use App\Models\User;
 use App\Models\WorkTime;
 use App\Policies\AccountCategoryPolicy;
 use App\Policies\AccountPolicy;
+use App\Policies\ActivityLogPolicy;
 use App\Policies\AreaPolicy;
 use App\Policies\AssetPolicy;
 use App\Policies\AttendanceSummaryPolicy;
@@ -49,7 +51,6 @@ use App\Policies\DepartmentPolicy;
 use App\Policies\EmployeeSchedulePolicy;
 use App\Policies\FabPolicy;
 use App\Policies\InitialBalancePolicy;
-use App\Policies\InitialInventoryBalancePolicy;
 use App\Policies\ItemCategoryPolicy;
 use App\Policies\ItemCollectionPolicy;
 use App\Policies\LeaveAndPermissionPolicy;
@@ -115,6 +116,7 @@ class AuthServiceProvider extends ServiceProvider
         BranchRoleDefaultWorkTime::class => BranchRoleDefaultWorkTimePolicy::class,
         StockWithdrawal::class => StockWithdrawalPolicy::class,
         ItemCategory::class => ItemCategoryPolicy::class,
+        Activity::class => ActivityLogPolicy::class,
     ];
 
     /**

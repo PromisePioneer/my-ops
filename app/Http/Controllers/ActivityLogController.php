@@ -23,6 +23,7 @@ use Spatie\Activitylog\Models\Activity;
 
     public function index(): View
     {
+        $this->authorize('view', Activity::class);
         $startDate = $this->startDate;
         $endDate = $this->endDate;
         return view('pages.utilities.activity-log.index', compact('startDate', 'endDate'));

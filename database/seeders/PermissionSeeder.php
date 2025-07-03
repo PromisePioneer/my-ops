@@ -68,6 +68,7 @@ class PermissionSeeder extends Seeder
 
         //utility
         $this->companyProfile();
+        $this->activityLog();
 
 
         //payroll
@@ -1064,6 +1065,17 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             'Lihat Menu Stok Yang Harus Di Order',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    private function activityLog(): void
+    {
+        $permissions = [
+            'Lihat Menu Riwayat Aktifitas User',
         ];
 
         foreach ($permissions as $permission) {

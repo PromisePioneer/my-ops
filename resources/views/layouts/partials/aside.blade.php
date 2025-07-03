@@ -451,7 +451,7 @@
                     <x-menu-sections>Utilitas</x-menu-sections>
                 @endcanany
 
-                @canany('Lihat Menu Profil Perusahaan')
+                @canany(['Lihat Menu Profil Perusahaan', 'Lihat Menu Riwayat Aktifitas User'])
                     <x-dropdown-menu :active="request()->segment(1) === 'utility'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-abstract-29 fs-2">
@@ -470,11 +470,13 @@
                                     Profil Perusahaan
                                 </x-dropdown-menu-item>
                             @endcan
-                            {{--                            <x-dropdown-menu-item--}}
-                            {{--                                :active="request()->segment(2) === 'activity-log'"--}}
-                            {{--                                href="{{ url('utility/activity-log') }}">--}}
-                            {{--                                Riwayat Aktifitas--}}
-                            {{--                            </x-dropdown-menu-item>--}}
+                            @can('Lihat Menu Riwayat Aktifitas User')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'activity-log'"
+                                    href="{{ url('utility/activity-log') }}">
+                                    Riwayat Aktifitas
+                                </x-dropdown-menu-item>
+                            @endcan
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
