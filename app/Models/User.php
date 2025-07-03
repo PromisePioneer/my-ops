@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Master\Common\Branch;
+use App\Observers\EmployeeObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,6 +20,7 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Contracts\Activity;
 use Spatie\Permission\Traits\HasRoles;
+
 
 class User extends Authenticatable
 {
@@ -173,28 +176,49 @@ class User extends Authenticatable
         return self::with('branch', 'roles', 'company');
     }
 
-    public function tapActivity(Activity $activity)
+    public function tapActivity(Activity $activity, $eventName): void
     {
         $properties = $activity->properties->toArray();
 
         $renameKeys = [
             'branch_id' => 'Cabang',
             'absent_id' => 'ID Absen',
-            'company_name' => 'Nama Perusahaan',
+            'company_id' => 'Nama Perusahaan',
             'attendance_date' => 'Tanggal Masuk',
-            'full_name' => 'Nama Lengkap',
+            'name' => 'Nama Lengkap',
             'email' => 'Email',
             'nip' => 'NIK',
             'placement' => 'Penempatan',
+            'deleted_at' => 'Waktu Menghapus',
         ];
+
+
+        if ($eventName == 'restored') {
+            $eventName = 'Pulihkan Data';
+        }
+
+
+        if ($eventName === 'updated') {
+            $eventName = 'Mengubah Data';
+        }
+
+
+        if ($eventName === 'created') {
+            $eventName = 'Membuat Data';
+        }
+
+
+        if ($eventName === 'deleted') {
+            $eventName = 'Hapus Data';
+        }
 
 
         $relationResolvers = [
-            'Cabang' => fn($id) => Branch::find($id)->name,
+            'Cabang' => fn($id) => Branch::find($id)?->name,
             'Nama Perusahaan' => fn($id) => Company::find($id)->name,
         ];
 
-        $transformKeys = function ($data) use ($renameKeys, $relationResolvers) {
+        $transformKeys = function ($data) use ($renameKeys, $relationResolvers, $eventName) {
             return collect($data)
                 ->mapWithKeys(function ($value, $key) use ($renameKeys, $relationResolvers) {
                     $newKey = $renameKeys[$key] ?? $key;
@@ -206,7 +230,10 @@ class User extends Authenticatable
                 });
         };
 
-        return $activity->properties = collect([
+
+        $activity->event = $eventName;
+        $activity->description = "$eventName Karyawan";
+        $activity->properties = collect([
             'attributes' => isset($properties['attributes']) ? $transformKeys($properties['attributes']) : null,
             'old' => isset($properties['old']) ? $transformKeys($properties['old']) : null,
         ]);
@@ -217,7 +244,9 @@ class User extends Authenticatable
     {
         return LogOptions::defaults()
             ->logFillable()
-            ->logOnlyDirty()->logExcept(['password']);
+            ->logOnlyDirty()
+            ->logExcept(['password', 'profile_pic'])
+            ->dontSubmitEmptyLogs();
     }
 
 

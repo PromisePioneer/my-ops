@@ -252,17 +252,17 @@ use function App\Helper\formatDate;
     }
 
 
-    public function restore(Request $request, User $user): ?bool
+    public function restore(Request $request): void
     {
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        return $user->whereIn('id', $explodeID)->restore();
+        foreach ($request->get('id') as $id) {
+            User::onlyTrashed()->find($id)->restore();
+        }
     }
 
 
-    public function forceDelete(Request $request, User $user): void
+    public function forceDelete(Request $request, User $user)
     {
-        $contacts = $user->with(['transaction', 'offeringLetter', 'initialInventoryBalance'])->whereIn('id', $request->get('id'))
+        return $user->with(['transaction', 'offeringLetter', 'initialInventoryBalance'])->whereIn('id', $request->get('id'))
             ->onlyTrashed()
             ->forceDelete();
     }

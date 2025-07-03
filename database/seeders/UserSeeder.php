@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
 
 
         //super admin
-        $superAdmin = User::factory()->create([
+        $superAdmin = User::create([
             'absent_id' => 999,
             'nip' => 112,
             'join_date' => $faker->date(),
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
 
 
         //director
-        $director = User::factory()->create([
+        $director = User::create([
             'branch_id' => null,
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 1,
@@ -53,7 +53,7 @@ class UserSeeder extends Seeder
 
 
         //general manager
-        $generalManager = User::factory()->create([
+        $generalManager = User::create([
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 4,
             'join_date' => $faker->date(),
@@ -92,7 +92,7 @@ class UserSeeder extends Seeder
 
 
         //operational manager
-        $operationalManager = User::factory()->create([
+        $operationalManager = User::create([
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 2,
             'join_date' => fake()->date(),
@@ -107,7 +107,7 @@ class UserSeeder extends Seeder
         $operationalManager->assignRole($operationalManagerRole->name);
 
 
-        $legalCommissioner = User::factory()->create([
+        $legalCommissioner = User::create([
             'absent_id' => 2,
             'nip' => 2,
             'join_date' => fake()->date(),
@@ -121,7 +121,7 @@ class UserSeeder extends Seeder
         $legalCommissionerRole = Role::where('name', 'Legal & Corporate Commissioner')->first();
         $legalCommissioner->assignRole($legalCommissionerRole->name);
 
-        $hrOperationalStaff = User::factory()->create([
+        $hrOperationalStaff = User::create([
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 2,
             'join_date' => fake()->date(),
@@ -135,7 +135,7 @@ class UserSeeder extends Seeder
         $hrOperationalStaffRole = Role::where('name', 'HR & Operational Staff')->first();
         $hrOperationalStaff->assignRole($hrOperationalStaffRole->name);
 
-        $backboneTeamSupervisor = User::factory()->create([
+        $backboneTeamSupervisor = User::create([
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 2,
             'join_date' => fake()->date(),
@@ -155,7 +155,7 @@ class UserSeeder extends Seeder
     {
 
         //warehouse supervisor
-        $warehouseSupervisor = User::factory()->create([
+        $warehouseSupervisor = User::create([
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 4,
             'join_date' => fake()->date(),
@@ -170,7 +170,7 @@ class UserSeeder extends Seeder
         $warehouseSupervisor->assignRole($generalManagerRole->name);
 
         for ($i = 0; $i < 5; $i++) {
-            $warehouseStockerStaff = User::factory()->create([
+            $warehouseStockerStaff = User::create([
                 'absent_id' => fake()->randomNumber('3'),
                 'nip' => 4,
                 'join_date' => fake()->date(),
@@ -185,7 +185,7 @@ class UserSeeder extends Seeder
             $warehouseStockerStaff->assignRole($warehouseStockerRole->name);
 
 
-            $warehouseSecurityStaff = User::factory()->create([
+            $warehouseSecurityStaff = User::create([
                 'absent_id' => fake()->randomNumber('3'),
                 'nip' => 4,
                 'join_date' => fake()->date(),
@@ -204,7 +204,7 @@ class UserSeeder extends Seeder
 
     public function noc(): void
     {
-        $nocSupervisor = User::factory()->create([
+        $nocSupervisor = User::create([
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 4,
             'join_date' => fake()->date(),
@@ -220,7 +220,7 @@ class UserSeeder extends Seeder
 
 
         for ($i = 0; $i < 5; $i++) {
-            $noc = User::factory()->create([
+            $noc = User::create([
                 'absent_id' => fake()->randomNumber('3'),
                 'nip' => 4,
                 'join_date' => fake()->date(),
@@ -241,7 +241,7 @@ class UserSeeder extends Seeder
         $branches = Branch::whereNull('parent_id')->get();
         foreach ($branches as $branch) {
             //branch manager
-            $branchManager = User::factory()->create([
+            $branchManager = User::create([
                 'branch_id' => $branch->id,
                 'absent_id' => fake()->randomNumber('3'),
                 'nip' => 4,
@@ -257,7 +257,7 @@ class UserSeeder extends Seeder
 
 
             //branch accounting staff
-            $faStaff = User::factory()->create([
+            $faStaff = User::create([
                 'branch_id' => $branch->id,
                 'absent_id' => fake()->randomNumber('3'),
                 'nip' => 4,
@@ -272,7 +272,7 @@ class UserSeeder extends Seeder
             $faStaff->assignRole($faStaffRole->name);
 
 
-            $headEngineer = User::factory()->create([
+            $headEngineer = User::create([
                 'branch_id' => $branch->id,
                 'absent_id' => fake()->randomNumber('3'),
                 'nip' => 4,
@@ -286,7 +286,7 @@ class UserSeeder extends Seeder
             $headEngineerRole = Role::where('name', 'Head Engineer')->first();
             $headEngineer->assignRole($headEngineerRole->name);
 
-            $stocker = User::factory()->create([
+            $stocker = User::create([
                 'branch_id' => $branch->id,
                 'absent_id' => fake()->randomNumber('3'),
                 'nip' => 4,
@@ -302,7 +302,7 @@ class UserSeeder extends Seeder
 
 
             for ($i = 0; $i < 5; $i++) {
-                $engineer = User::factory()->create([
+                $engineer = User::create([
                     'branch_id' => $branch->id,
                     'absent_id' => fake()->randomNumber('3'),
                     'nip' => 4,
@@ -322,7 +322,7 @@ class UserSeeder extends Seeder
     private function financeEmployee(): void
     {
         //fa & tax manager
-        $accountingManager = User::factory()->create([
+        $accountingManager = User::create([
             'absent_id' => 3,
             'nip' => 3,
             'join_date' => fake()->date(),
@@ -337,7 +337,7 @@ class UserSeeder extends Seeder
         $accountingManagerRole = Role::where('name', 'FA & Tax Manager')->first();
         $accountingManager->assignRole($accountingManagerRole->name);
 
-        $taxAdminSupervisor = User::factory()->create([
+        $taxAdminSupervisor = User::create([
             'branch_id' => null,
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 4,
@@ -352,7 +352,7 @@ class UserSeeder extends Seeder
         $taxAdminSupervisor->assignRole($taxAdminSupervisorRole->name);
 
 
-        $billingAdminSupervisor = User::factory()->create([
+        $billingAdminSupervisor = User::create([
             'branch_id' => null,
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 4,
@@ -366,7 +366,7 @@ class UserSeeder extends Seeder
         $billingAdminSupervisorRole = Role::where('name', 'Billing Admin Supervisor')->first();
         $billingAdminSupervisor->assignRole($billingAdminSupervisorRole->name);
 
-        $inventoryControllerSupervisor = User::factory()->create([
+        $inventoryControllerSupervisor = User::create([
             'branch_id' => null,
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 4,
@@ -381,7 +381,7 @@ class UserSeeder extends Seeder
         $inventoryControllerSupervisor->assignRole($inventoryControllerSupervisorRole->name);
 
 
-        $customerPaymentSupervisor = User::factory()->create([
+        $customerPaymentSupervisor = User::create([
             'branch_id' => null,
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 4,
@@ -396,7 +396,7 @@ class UserSeeder extends Seeder
         $customerPaymentSupervisor->assignRole($customerPaymentSupervisorRole->name);
 
 
-        $financeAccountingSupervisor = User::factory()->create([
+        $financeAccountingSupervisor = User::create([
             'branch_id' => null,
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 4,
@@ -410,7 +410,7 @@ class UserSeeder extends Seeder
         $financeAccountingSupervisorRole = Role::where('name', 'Finance & Accounting Supervisor')->first();
         $financeAccountingSupervisor->assignRole($financeAccountingSupervisorRole->name);
 
-        $faSeniorStaff = User::factory()->create([
+        $faSeniorStaff = User::create([
             'branch_id' => null,
             'absent_id' => fake()->randomNumber('3'),
             'nip' => 4,

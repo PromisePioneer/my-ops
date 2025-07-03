@@ -17,6 +17,7 @@ use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\FabController
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\OfferingLetterController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\PurchaseOrderController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
@@ -588,6 +589,14 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{companyProfile}', [CompanyProfileController::class, 'update']);
         });
 
+
+        Route::prefix('/activity-log')->group(function () {
+            Route::get('/', [ActivityLogController::class, 'index']);
+            Route::get('/data', [ActivityLogController::class, 'data']);
+            Route::get('/search', [ActivityLogController::class, 'search']);
+            Route::get('/filter', [ActivityLogController::class, 'filter']);
+        });
+
         Route::prefix('user-profile')->group(function () {
             Route::get('/profile-detail', [UserProfileController::class, 'index']);
             Route::get('/notification-detail', [UserProfileController::class, 'notificationDetail']);
@@ -614,8 +623,8 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
             Route::prefix('activity-log')->group(function () {
-               Route::get('/', [UserProfileController::class, 'logActivityPage']);
-               Route::get('/data', [UserProfileController::class, 'logActivityData']);
+                Route::get('/', [UserProfileController::class, 'logActivityPage']);
+                Route::get('/data', [UserProfileController::class, 'logActivityData']);
             });
         });
     });

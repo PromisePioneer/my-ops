@@ -119,12 +119,8 @@ use Throwable;
     public function destroy(Request $request, User $user): JsonResponse
     {
         $this->authorize('delete', User::class);
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $user->update([
-            'absent_id' => null
-        ]);
-        $user->whereIn('id', $explodeID)->delete();
+        $user->whereIn('id', $request->get('id'))->update(['absent_id' => null]);
+        $user->destroy($request->get('id'));
 
         return response()->json(['message' => 'data berhasil dihapus']);
     }
@@ -225,10 +221,9 @@ use Throwable;
     }
 
 
-    public function restore(Request $request, User $user): JsonResponse
+    public function restore(Request $request): JsonResponse
     {
-        $this->authorize('viewArchives', $user);
-        $this->userService->restore($request, $user);
+        $this->userService->restore($request);
         return response()->json(['message' => 'data berhasil dipulihkan']);
     }
 
