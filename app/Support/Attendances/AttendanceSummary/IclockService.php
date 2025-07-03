@@ -217,11 +217,11 @@ class IclockService
                     ->causedBy(User::where('absent_id', $attendanceData['employee_id'])->first()->id)
                     ->withProperties([
                         'attributes' => [
-                            'employee_id' => $attendanceData['employee_id'],
-                            'date' => formatDate($attendanceData['timestamp']),
-                            'clock_in' => Carbon::parse($attendanceData['timestamp'])->format('l, j F Y h:i A'),
+                            'ID Absen' => $attendanceData['employee_id'],
+                            'Tanggal' => formatDate($date),
+                            'Waktu' => $date->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y, h:i a'),
                             'Shift' => $shift->workTime?->name ?? $shift->name,
-                            'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name,
+                            'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name . ' - ' . FpDevice::with('branch')->where('serial_number', $attendanceData['sn'])->first()->branch->name,
                         ]
                     ])->log('Clock In');
             }
@@ -245,12 +245,13 @@ class IclockService
             ])->event('Absen')
                 ->causedBy(User::where('absent_id', $attendanceData['employee_id'])->first()->id)->withProperties([
                     'attributes' => [
-                        'TANGGAL ABSEN' => $date->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y, h:i a'),
-                        'ID ABSEN' => $attendanceData['employee_id'],
-                        'BATAS CHECKIN' => $shift->time_to_checkin . ' - ' . $shift->end_time_to_checkin,
-                        'BATAS CHECKOUT' => $shift->time_to_checkout . ' - ' . $shift->end_time_to_checkout,
-                        'SHIFT SEHARUSNYA' => "$shift->name ({$shift->clock_in} - {$shift->clock_out})",
-                        'ABSEN DI' => $attendanceData[''],
+                        'Tanggal' => $date->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y, h:i a'),
+                        'ID Absen' => $attendanceData['employee_id'],
+                        'Batas Checkin' => $shift->time_to_checkin . ' - ' . $shift->end_time_to_checkin,
+                        'Batas Checkout' => $shift->time_to_checkout . ' - ' . $shift->end_time_to_checkout,
+                        'Shift Seharusnya' => "$shift->name ({$shift->clock_in} - {$shift->clock_out})",
+                        'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name . ' - ' . FpDevice::with('branch')
+                                ->where('serial_number', $attendanceData['sn'])->first()->branch->name,
                     ]
                 ])->log('Absen dilewati karena tidak sesuai dengan jadwal');
         }
