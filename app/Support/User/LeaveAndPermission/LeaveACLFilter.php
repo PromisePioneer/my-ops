@@ -21,61 +21,7 @@ class LeaveACLFilter
         }
 
 
-        if ($request->user()->hasRole('Operational Manager')) {
-            $query->whereHas('user.roles', function ($query) {
-                $query->whereIn('name', [
-                    'Customer Service Leader',
-                    'Customer Service Staff',
-                    'Head Engineer',
-                    'Senior Engineer',
-                    'Engineer',
-                    'KU Head Engineer',
-                    'KU Engineer',
-                    'Quality Controller Supervisor',
-                    'Backbone Team Supervisor',
-                    'Trainer & Quality Control Staff',
-                    'Stocker Supervisor',
-                    'Programmer',
-                    'After Sales Customer Service',
-                    'Project Controller & Vendor Supervisor',
-                    'Warehouse Security',
-                    'Graphic Designer & Socmed Admin',
-                    'Warehouse Supervisor',
-                    'Customer Service Supervisor',
-                ]);
-            })->whereHas('user', function ($query) use ($request) {
-                $query->where('branch_id', 1)
-                    ->orWhere('branch_id', null);
-            });
-        }
 
-
-        if ($request->user()->hasRole('FA & Tax Manager')) {
-            $query->whereHas('user.roles', function ($query) {
-                $query->whereIn('name', [
-                    'Tax Admin Supervisor',
-                    'Customer Payment Supervisor',
-                    'Finance & Accounting Staff',
-                    'Electrical Senior Engineer',
-                    'NOC Supervisor',
-                    'Customer Service Staff',
-                    'Billing Admin Supervisor',
-                    'Finance & Accounting Supervisor',
-                    'Stocker Staff',
-                    'Warehouse Security',
-                    'NOC Staff',
-                    'Inventory Controller Supervisor',
-                    'FA Senior Staff',
-                    'HR & Operational Staff',
-                    'Welding Senior Engineer',
-                    'Warehouse Stocker Staff',
-                    'Customer Service Leader',
-                ]);
-            })->whereHas('user', function ($query) use ($request) {
-                $query->where('branch_id', 1)
-                    ->orWhere('branch_id', null);
-            });;
-        }
 
 
         if ($request->user()->hasAnyRole(['Head Engineer', 'Senior Engineer'])) {
@@ -102,31 +48,6 @@ class LeaveACLFilter
             })->where(function ($query) use ($request) {
                 $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
                     ->where('active', 1);
-            });
-        }
-
-
-        if ($request->user()->hasRole('Customer Service Supervisor')) {
-            $query->whereHas('user.roles', function ($query) {
-                $query->whereIn('name', [
-                    'Customer Service Leader',
-                    'Customer Service Staff',
-                    'Head Engineer',
-                    'Senior Engineer',
-                    'Engineer',
-                    'KU Head Engineer',
-                    'KU Engineer',
-                    'Quality Controller Supervisor',
-                    'Backbone Team Supervisor',
-                    'Trainer & Quality Control Staff',
-                    'Stocker Supervisor',
-                    'Programmer',
-                    'After Sales Customer Service',
-                    'Project Controller & Vendor Supervisor',
-                    'Warehouse Security',
-                    'Graphic Designer & Socmed Admin',
-                    'Warehouse Supervisor'
-                ]);
             });
         }
 
