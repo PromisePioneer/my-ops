@@ -220,10 +220,10 @@ class IclockService
                             'employee_id' => $attendanceData['employee_id'],
                             'date' => formatDate($attendanceData['timestamp']),
                             'clock_in' => Carbon::parse($attendanceData['timestamp'])->format('l, j F Y h:i A'),
-                            'work_time_id' => $shift->workTime?->name ?? $shift->name,
+                            'Shift' => $shift->workTime?->name ?? $shift->name,
                             'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name,
                         ]
-                    ])->log('Clock Out');
+                    ])->log('Clock In');
             }
             if (!$attendancesSummary->clock_out && $isCheckOut) {
                 $attendancesSummary->clock_out = $date;
@@ -231,7 +231,7 @@ class IclockService
                     ->causedBy(User::where('absent_id', $attendanceData['employee_id'])->first()->id)
                     ->withProperties([
                         $attendanceData
-                    ])->log('Clock out');
+                    ])->log('Clock Out');
             }
             $attendancesSummary->save();
         } else {
