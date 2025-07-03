@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Activitylog\Contracts\Activity;
 use Throwable;
 use function App\Helper\formatDate;
 
@@ -111,8 +112,6 @@ use function App\Helper\formatDate;
                     'day' => $request->day
                 ]);
             }
-
-
         });
     }
 

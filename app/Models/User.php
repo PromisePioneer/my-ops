@@ -16,11 +16,13 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Scout\Searchable;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Contracts\Activity;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable, Searchable, SoftDeletes, LogsActivity;
+
     protected $fillable = [
         'branch_id',
         'absent_id',
@@ -171,22 +173,52 @@ class User extends Authenticatable
         return self::with('branch', 'roles', 'company');
     }
 
+    public function tapActivity(Activity $activity)
+    {
+        $properties = $activity->properties->toArray();
+
+        $renameKeys = [
+            'branch_id' => 'Cabang',
+            'absent_id' => 'ID Absen',
+            'company_name' => 'Nama Perusahaan',
+            'attendance_date' => 'Tanggal Masuk',
+            'full_name' => 'Nama Lengkap',
+            'email' => 'Email',
+            'nip' => 'NIK',
+            'placement' => 'Penempatan',
+        ];
+
+
+        $relationResolvers = [
+            'Cabang' => fn($id) => Branch::find($id)->name,
+            'Nama Perusahaan' => fn($id) => Company::find($id)->name,
+        ];
+
+        $transformKeys = function ($data) use ($renameKeys, $relationResolvers) {
+            return collect($data)
+                ->mapWithKeys(function ($value, $key) use ($renameKeys, $relationResolvers) {
+                    $newKey = $renameKeys[$key] ?? $key;
+                    if (array_key_exists($key, $relationResolvers)) {
+                        $value = $relationResolvers[$key]($value);
+                    }
+
+                    return [$newKey => $value];
+                });
+        };
+
+        return $activity->properties = collect([
+            'attributes' => isset($properties['attributes']) ? $transformKeys($properties['attributes']) : null,
+            'old' => isset($properties['old']) ? $transformKeys($properties['old']) : null,
+        ]);
+    }
+
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logFillable()
-            ->logOnlyDirty()
-            ->logOnly([
-                'branch_id',
-                'absent_id',
-                'company_id',
-                'join_date',
-                'name',
-                'email',
-                'nip',
-                'last_login',
-                'profile_pic',
-                'placement',
-            ]);
+            ->logOnlyDirty()->logExcept(['password']);
     }
+
+
 }
