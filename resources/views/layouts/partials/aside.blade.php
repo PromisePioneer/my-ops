@@ -470,11 +470,11 @@
                                     Profil Perusahaan
                                 </x-dropdown-menu-item>
                             @endcan
-                            <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'activity-log'"
-                                href="{{ url('utility/activity-log') }}">
-                                Riwayat Aktifitas
-                            </x-dropdown-menu-item>
+{{--                            <x-dropdown-menu-item--}}
+{{--                                :active="request()->segment(2) === 'activity-log'"--}}
+{{--                                href="{{ url('utility/activity-log') }}">--}}
+{{--                                Riwayat Aktifitas--}}
+{{--                            </x-dropdown-menu-item>--}}
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
