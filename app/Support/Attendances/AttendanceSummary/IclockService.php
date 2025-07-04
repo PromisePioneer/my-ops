@@ -230,7 +230,13 @@ class IclockService
                 activity()
                     ->causedBy(User::where('absent_id', $attendanceData['employee_id'])->first()->id)
                     ->withProperties([
-                        $attendanceData
+                        'attributes' => [
+                            'ID Absen' => $attendanceData['employee_id'],
+                            'Tanggal' => formatDate($date),
+                            'Waktu' => $date->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y, h:i a'),
+                            'Shift' => $shift->workTime?->name ?? $shift->name,
+                            'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name . ' - ' . FpDevice::with('branch')->where('serial_number', $attendanceData['sn'])->first()->branch->name,
+                        ]
                     ])->log('Clock Out');
             }
             $attendancesSummary->save();
