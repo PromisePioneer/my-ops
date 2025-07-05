@@ -184,8 +184,10 @@
                         </table>
                     </div>
                     <div class="holiday-note mt-3">
+                        <template x-if="!isLoading && nationalHolidays.length === 0">
+                            <h2 class="text-white fw-bold text-center text-uppercase">Tidak Ada Libur Nasional Bulan ini</h2>
+                        </template>
                         <template x-for="holiday in nationalHolidays" :key="holiday.id">
-
                             <p class="mb-1 text-white" x-text="`${holiday.date} : ${holiday.description}`"></p>
                         </template>
                     </div>
@@ -466,7 +468,6 @@
 
                         return 'text-center border border-black shift-s p-0';
                     }
-
 
 
                     if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Malam') {
