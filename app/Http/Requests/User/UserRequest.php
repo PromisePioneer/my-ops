@@ -69,6 +69,7 @@ class UserRequest extends FormRequest
             'absent_id.max' => 'Absent tidak boleh lebih dari 3 karakter',
             'placement.required_if' => 'Penempatan tidak boleh kosong',
             'company_id.required' => 'Perusahaan tidak boleh kosong',
+            'absent_id.unique' => 'ID Absen sudah terdaftar di Karyawan lain (Jika Karyawan Resign Harap Datanya)',
         ];
     }
 }
