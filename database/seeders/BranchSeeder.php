@@ -78,6 +78,12 @@ class BranchSeeder extends Seeder
             'parent_id' => $mainBranch->id,
         ]);
 
+        Branch::create([
+            'name' => 'Pop Babe',
+            'address' => '-',
+            'parent_id' => $mainBranch->id,
+        ]);
+
     }
 
 

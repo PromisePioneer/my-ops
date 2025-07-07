@@ -24,7 +24,7 @@ class TransactionSeeder extends Seeder
         $unitPrice1 = 300000;
         Transaction::create([
             'transaction_number' => '12345435',
-            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 11)->first()->id,
+            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
             'contact_id' => Contact::where('tax_type', 'PKP')->first()->id,
             'date' => Carbon::now()->format('Y-m-d'),
             'item_id' => ItemCollection::where('name', 'Box ODC')->first()->id,
@@ -46,7 +46,7 @@ class TransactionSeeder extends Seeder
         $unitPrice2 = 300000;
         Transaction::create([
             'transaction_number' => '12345435',
-            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 11)->first()->id,
+            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
             'contact_id' => Contact::where('tax_type', 'PKP')->first()->id,
             'date' => Carbon::now()->format('Y-m-d'),
             'item_id' => ItemCollection::where('name', 'Pigtail')->first()->id,
@@ -68,7 +68,7 @@ class TransactionSeeder extends Seeder
         $unitPrice3 = 200000;
         Transaction::create([
             'transaction_number' => '12345435',
-            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 11)->first()->id,
+            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
             'contact_id' => Contact::where('tax_type', 'NON PKP')->first()->id,
             'date' => Carbon::now()->format('Y-m-d'),
             'item_id' => ItemCollection::where('name', 'GPON')->first()->id,
@@ -89,7 +89,7 @@ class TransactionSeeder extends Seeder
         $unitPrice4 = 5000000;
         Transaction::create([
             'transaction_number' => '12345435',
-            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 11)->first()->id,
+            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
             'contact_id' => Contact::where('tax_type', 'NON PKP')->first()->id,
             'date' => Carbon::parse('07-07-2020 00:00:00')->format('Y-m-d'),
             'item_id' => ItemCollection::where('name', 'KU 96 Core')->first()->id,
@@ -110,7 +110,7 @@ class TransactionSeeder extends Seeder
         $unitPrice5 = 20000000;
         Transaction::create([
             'transaction_number' => '12345435',
-            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 11)->first()->id,
+            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
             'contact_id' => Contact::where('tax_type', 'NON PKP')->first()->id,
             'date' => Carbon::now()->format('Y-m-d'),
             'item_id' => ItemCollection::where('name', 'Splicer')->first()->id,

@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DepartmentSeeder::class,
             BranchSeeder::class,
+            FpDeviceSeeder::class,
             AccountCategorySeeder::class,
             AccountSeeder::class,
             CompanySeeder::class,
@@ -26,7 +27,6 @@ class DatabaseSeeder extends Seeder
             LetterHeadSeeder::class,
             UnitTypesSeeder::class,
             WorkTimeSeeder::class,
-            FpDeviceSeeder::class,
             RoleHasDepartmentSeeder::class,
             PayrollScheduleSeeder::class,
             BPJSKetSeeder::class,
