@@ -270,7 +270,7 @@
                         await showAlert('success', 'Data berhasil disimpan');
                         this.formCreate.reset();
                         this.modalCreate.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -286,7 +286,7 @@
                         await showAlert('success', 'Data berhasil disimpan');
                         this.formCreateChildren.reset();
                         this.modalCreateChildren.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -308,7 +308,7 @@
                         await showAlert('success', 'Data berhasil diubah')
                         this.formEditChildren.reset();
                         this.modalEditChildren.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]));
@@ -325,7 +325,7 @@
                         await showAlert('success', 'Data berhasil diubah')
                         this.formEdit.reset();
                         this.modalEdit.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]));
@@ -338,7 +338,7 @@
                         try {
                             await axios.post(`/master/accounting/accounts/destroy`, new FormData(this.deleteForm));
                             await showAlert('success', 'Data sukses dihapus');
-                            await this.init();
+                            await this.successResponse();
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
@@ -352,7 +352,7 @@
                         await showAlert('success', 'Data berhasil disimpan');
                         this.formImport.reset();
                         this.modalImport.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]));
@@ -372,6 +372,15 @@
                         this.isLoading = false;
                     }
                 },
+                async successResponse() {
+                    this.editVal = '';
+                    const resp = await axios.get(`${this.accounts.path}?page=${this.accounts.current_page}`, {
+                        params: {
+                            search: this.search,
+                        }
+                    });
+                    this.accounts = resp.data
+                }
             }
         }
     </script>
