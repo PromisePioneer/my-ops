@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
     {
         $accounts = Account::with('children', 'accountTransaction')
             ->where('parent_id', null)
+            ->orderBy('code')
             ->paginate(self::$perPage);
         return self::formatAccounts($accounts);
     }
@@ -173,6 +174,23 @@ use Illuminate\Http\Request;
                 'text' => $c->code . ' ' . $c->name,
             ];
         })->toArray();
+    }
+
+    public function parentAccount(Request $request)
+    {
+        $search = $request->input('search');
+        $query = Account::search($search)
+            ->query(fn($query) => $this->accountRepository->getParentAccount($query))
+            ->get();
+
+        return $query->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'text' => $c->code . ' ' . $c->name,
+            ];
+        })->toArray();
+
+
     }
 
 

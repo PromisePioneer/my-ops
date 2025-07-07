@@ -156,4 +156,9 @@ use Illuminate\View\View;
         return response()->json($this->accountService->kasAccounts($request));
     }
 
+    public function parentAccounts(Request $request)
+    {
+        return response()->json($this->accountService->parentAccount($request));
+    }
+
 }

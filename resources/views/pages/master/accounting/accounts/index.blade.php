@@ -181,6 +181,7 @@
         </div>
     </div>
     @include('components.toast')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script>
@@ -211,6 +212,7 @@
                 modalEditChildren: new bootstrap.Modal(document.getElementById('modal-edit-children')),
                 async init() {
                     await this.getAccountData();
+                    await select2('.parent-account-select2', 'Pilih Akun Induk', '/select2/parent-accounts-data')
                 },
                 toggleAllCheckBox() {
                     this.selectAll = true;
@@ -296,6 +298,7 @@
                     console.log(id)
                     const resp = await axios.get(`/master/accounting/accounts/edit/${id}`);
                     this.editVal = resp.data;
+                    await selectedValue('parent_id', `/select2/selected-account/${this.editVal.parent_id}`);
                 },
                 async update(id) {
                     this.buttonLoading = true;

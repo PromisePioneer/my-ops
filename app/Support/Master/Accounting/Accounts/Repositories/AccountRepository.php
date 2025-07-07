@@ -64,4 +64,9 @@ use Illuminate\Database\Eloquent\Builder;
     {
         return $this->account->query()->find($id);
     }
+
+    public function getParentAccount($query)
+    {
+        return $query->where('parent_id', null)->orderBy('code');
+    }
 }

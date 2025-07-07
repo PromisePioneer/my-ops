@@ -1285,6 +1285,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-item/{item}', [ItemCollectionController::class, 'selectedItem']);
         Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
 
+        Route::get('/parent-accounts-data', [AccountController::class, 'parentAccounts']);
         Route::get('/asset-accounts-data', [AccountController::class, 'assetAccounts']);
         Route::get('/kas-and-leverages-accounts-data', [AccountController::class, 'kasAndLeverageAccounts']);
         Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
