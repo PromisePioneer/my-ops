@@ -90,6 +90,15 @@ use function App\Helper\formatDate;
                 'receiver_name' => $query->receiver->name,
                 'sender_signature' => $query->sender_signature,
                 'status' => $query->status,
+                'items' => $query->stockMutationItems->map(function ($item) {
+                    $item->load('stock.transaction.item', 'itemCatalog');
+                    return [
+                        'id' => $item->id,
+                        'code' => $item->itemCatalog?->code ?? null,
+                        'name' => $item->stock->transaction->item->name,
+                        'qty' => "$item->qty {$item->stock->transaction->item->unitType->name}",
+                    ];
+                })
             ];
         });
 

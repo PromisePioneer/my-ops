@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 
     public function data(): LengthAwarePaginator
     {
-        $accounts = Account::with('children', 'accountTransaction')
+        $accounts = Account::with('children')
             ->where('parent_id', null)
             ->orderBy('code')
             ->paginate(self::$perPage);

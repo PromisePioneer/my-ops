@@ -2,7 +2,9 @@
 
 namespace App\Helper;
 
+use App\Models\Menu;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 function convertToRoman(int $number): string
 {
@@ -71,4 +73,10 @@ function randomDigits(): string
 function currencyFormat($currency): string
 {
     return 'Rp ' . number_format($currency, 2, ',', '.');
+}
+
+
+function menus(): Collection
+{
+    return Menu::with('children')->where('parent_id', null)->get();
 }

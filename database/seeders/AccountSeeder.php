@@ -23,28 +23,147 @@ class AccountSeeder extends Seeder
         $modal = AccountCategory::where('name', 'Modal')->first()->id;
 
 
-        $id1 = Account::create([
+        $this->kasAccount($asetLancar);
+        $this->persediaan($asetLancar);
+        $this->piutangUsaha($asetLancar);
+        $this->biayaDibayarDimuka($asetLancar);
+        $this->pajakDibayarDimuka();
+        $this->tanah($asetTetap);
+        $this->bangunan($asetTetap);
+        $this->kendaraan($asetTetap);
+        $this->mesin($asetTetap);
+        $this->peralatanInventarisKantor($asetTetap);
+        $this->peralatanInventarisJaringan($asetTetap);
+        $this->akumulasiPenyusutanAsetTetap($asetTetap);
+        $this->utangUsaha($utangLancar);
+        $this->utangDepositAlat($utangLancar);
+        $this->utangPajak($utangLancar);
+        $this->pendapatanDiterimaDimuka($utangLancar);
+        $this->biayaYangMasihHarusDibayar($utangLancar);
+        $this->utangLancarLainnya($utangLancar);
+        $this->utangBank($utangJangkaPanjang);
+        $this->utangKendaraan($utangJangkaPanjang);
+        $this->utangJangkaPanjangLainnya($utangJangkaPanjang);
+        $this->modal();
+        $this->labaDitahan($modal);
+        $this->labaRugiBersihPeriodeBerjalan($modal);
+        $this->dividen();
+        $this->pendapatanJasaLayananInternet();
+        $this->pendapatanJasaLayananJaringanTelkom();
+        $this->pendapatanLainnya();
+        $this->bebanPokokPendapatan();
+        $this->bebanPenjualan();
+        $this->bebanKaryawan();
+        $this->bebanUtilitas();
+        $this->bebanSuppliesKantor();
+        $this->bebangAngkutKirim();
+        $this->bebanPerjalananDinas();
+        $this->bebanTransportasiKendaraanAtauMesin();
+        $this->bebanPemeliharaanAset();
+        $this->bebanSewa();
+        $this->bebanLainLain();
+        $this->bebanPenyusutan();
+        $this->bebanBunga();
+        $this->bebanPajakPenghasilan();
+    }
+
+    private function kasAccount($asetLancar): void
+    {
+        $parentAccount = Account::create([
             'code' => '111',
             'name' => 'Kas dan Setara Kas',
             'trial_balance_type' => 'debit',
             'category_id' => $asetLancar,
         ]);
 
-        $id2 = Account::create([
+        Account::create([
+            'name' => 'Kas Tunai',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Peti Brankas',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Rek. Mandiri 1720004378305',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Rek. BRK Syariah 1040801781',
+            'code' => $parentAccount->code . '-' . '04',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+    }
+
+    private function persediaan(mixed $asetLancar): void
+    {
+        $parentAccount = Account::create([
             'code' => '112',
-            'name' => 'Persediaan Barang Jaringan',
+            'name' => 'Persediaan',
             'trial_balance_type' => 'debit',
             'category_id' => $asetLancar,
         ]);
 
-        $id3 = Account::create([
+
+        Account::create([
+            'name' => 'Persediaan Perlengkapan Jaringan',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+        Account::create([
+            'name' => 'Persediaan Aset',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Persediaan Lainnya',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+    }
+
+    private function piutangUsaha(mixed $asetLancar): void
+    {
+        $parentAccount = Account::create([
             'code' => '113',
             'name' => 'Piutang Usaha',
             'trial_balance_type' => 'debit',
             'category_id' => $asetLancar,
         ]);
 
-        $id4 = Account::create([
+        Account::create([
+            'name' => 'Piutang Pelanggan',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => 3,
+        ]);
+
+        Account::create([
+            'name' => 'Piutang Karyawan',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Piutang Lainnya',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+    }
+
+    private function biayaDibayarDimuka(mixed $asetLancar): void
+    {
+        $parentAccount = Account::create([
             'code' => '114',
             'name' => 'Biaya dibayar dimuka',
             'trial_balance_type' => 'debit',
@@ -52,654 +171,713 @@ class AccountSeeder extends Seeder
         ]);
 
 
-        $id5 = Account::create([
+        Account::create([
+            'name' => 'Sewa dibayar dimuka',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Biaya dibayar dimuka lainnya',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+    }
+
+    private function pajakDibayarDimuka(): void
+    {
+        $parentAccount = Account::create([
             'code' => '115',
             'name' => 'Pajak dibayar dimuka',
             'trial_balance_type' => 'debit',
             'category_id' => 1,
         ]);
 
-        $id6 = Account::create([
+        Account::create([
+            'name' => 'PPn Masukan',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Kredit PPh 23',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Kredit Angsuran PPh 25',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+    }
+
+    private function tanah($asetTetap): void
+    {
+        Account::create([
             'code' => '121',
             'name' => 'Tanah',
             'trial_balance_type' => 'debit',
             'category_id' => $asetTetap
         ]);
+    }
 
-        $id7 = Account::create([
+    private function bangunan($asetTetap): void
+    {
+        Account::create([
             'code' => '122',
             'name' => 'Bangunan',
             'trial_balance_type' => 'debit',
             'category_id' => $asetTetap
         ]);
+    }
 
-        $id8 = Account::create([
+    private function kendaraan($asetTetap): void
+    {
+        Account::create([
             'code' => '123',
             'name' => 'Kendaraan',
             'trial_balance_type' => 'debit',
             'category_id' => $asetTetap
         ]);
+    }
 
-        $id9 = Account::create([
+    private function mesin($asetTetap): void
+    {
+        Account::create([
             'code' => '124',
             'name' => 'Mesin',
             'trial_balance_type' => 'debit',
             'category_id' => $asetTetap
         ]);
+    }
 
-        $id10 = Account::create([
+    private function peralatanInventarisKantor($asetTetap): void
+    {
+        Account::create([
             'code' => '125',
             'name' => 'Peralatan & Inventaris Kantor',
             'trial_balance_type' => 'debit',
             'category_id' => $asetTetap
         ]);
+    }
 
-        $id11 = Account::create([
+    private function peralatanInventarisJaringan($asetTetap): void
+    {
+        Account::create([
             'code' => '126',
             'name' => 'Peralatan & Inventaris Jaringan',
             'trial_balance_type' => 'debit',
             'category_id' => $asetTetap
         ]);
+    }
 
-        $id12 = Account::create([
+    private function akumulasiPenyusutanAsetTetap($asetTetap): void
+    {
+        Account::create([
             'code' => '130',
             'name' => 'Akumulasi Penyusutan Aset Tetap',
             'trial_balance_type' => 'credit',
             'category_id' => $asetTetap
         ]);
+    }
 
-        $id13 = Account::create([
+    private function utangUsaha($utangLancar): void
+    {
+        Account::create([
             'code' => '211',
             'name' => 'Utang Usaha',
             'trial_balance_type' => 'credit',
             'category_id' => $utangLancar,
         ]);
+    }
 
-        $id14 = Account::create([
+    private function utangDepositAlat($utangLancar): void
+    {
+        Account::create([
             'code' => '212',
             'name' => 'Utang Deposit Alat',
             'trial_balance_type' => 'credit',
             'category_id' => $utangLancar,
         ]);
+    }
 
-        $id15 = Account::create([
+    private function utangPajak($utangLancar): void
+    {
+        Account::create([
             'code' => '213',
             'name' => 'Utang Pajak',
             'trial_balance_type' => 'credit',
             'category_id' => $utangLancar,
         ]);
+    }
 
-        $id16 = Account::create([
+    private function pendapatanDiterimaDimuka(mixed $utangLancar): void
+    {
+        Account::create([
             'code' => '214',
             'name' => 'Pendapatan Diterima Dimuka',
             'trial_balance_type' => 'credit',
             'category_id' => $utangLancar,
         ]);
+    }
 
-        $id17 = Account::create([
+    private function biayaYangMasihHarusDibayar(mixed $utangLancar): void
+    {
+        $parentAccount = Account::create([
             'code' => '215',
             'name' => 'Biaya yang masih harus dibayar',
             'trial_balance_type' => 'credit',
             'category_id' => $utangLancar,
         ]);
 
-        $id18 = Account::create([
+
+        Account::create([
+            'name' => 'Utang Gaji',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+        Account::create([
+            'name' => 'BHP Telekomunikasi',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Kontribusi KPU/USO',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+    }
+
+    private function utangLancarLainnya(mixed $utangLancar): void
+    {
+        Account::create([
             'code' => '216',
             'name' => 'Utang lancar lainnya',
             'trial_balance_type' => 'credit',
             'category_id' => $utangLancar,
         ]);
 
-        $id19 = Account::create([
-            'code' => '221',
-            'name' => 'Utang Bank',
+    }
+
+    private function utangBank(mixed $utangJangkaPanjang): void
+    {
+        Account::create([
+            'code' => '216',
+            'name' => 'Utang lancar lainnya',
             'trial_balance_type' => 'credit',
             'category_id' => $utangJangkaPanjang,
         ]);
 
-        $id20 = Account::create([
+    }
+
+    private function utangKendaraan(mixed $utangJangkaPanjang): void
+    {
+        Account::create([
             'code' => '222',
             'name' => 'Utang Kendaraan',
             'trial_balance_type' => 'credit',
             'category_id' => $utangJangkaPanjang,
         ]);
+    }
 
-        $id21 = Account::create([
+    private function utangJangkaPanjangLainnya(mixed $utangJangkaPanjang): void
+    {
+        Account::create([
             'code' => '223',
             'name' => 'Utang Jangka panjang lainnya',
             'trial_balance_type' => 'credit',
             'category_id' => $utangJangkaPanjang,
         ]);
+    }
 
-        $id22 = Account::create([
+    private function modal(): void
+    {
+        Account::create([
             'code' => '300',
             'name' => 'Modal',
             'trial_balance_type' => 'credit'
         ]);
+    }
 
-        $id25 = Account::create([
+    private function labaDitahan($modal): void
+    {
+        Account::create([
             'code' => '312',
-            'name' => 'Saldo laba ditahan',
+            'name' => 'Laba Ditahan / (Akumulasi Defisit)',
             'trial_balance_type' => 'credit',
             'category_id' => $modal,
         ]);
+    }
 
-        $id26 = Account::create([
+    private function labaRugiBersihPeriodeBerjalan($modal): void
+    {
+        Account::create([
             'code' => '313',
-            'name' => 'Laba bersih periode berjalan',
+            'name' => ' Laba / (Rugi) Bersih Periode Berjalan',
             'trial_balance_type' => 'credit',
             'category_id' => $modal,
         ]);
+    }
 
-        $id27 = Account::create([
+    private function dividen(): void
+    {
+        Account::create([
             'code' => '320',
             'name' => 'Dividen',
             'trial_balance_type' => 'debit',
         ]);
+    }
 
-        $id28 = Account::create([
+    private function pendapatanJasaLayananInternet(): void
+    {
+        $parentAccount = Account::create([
             'code' => '401',
             'name' => 'Pendapatan Jasa Layanan Internet',
         ]);
 
-        $id29 = Account::create([
+
+        Account::create([
+            'name' => 'Pendapatan Jasa Layanan Internet (Retail)',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Pendapatan Jasa Layanan Internet (Corporate)',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+    }
+
+    private function pendapatanJasaLayananJaringanTelkom(): void
+    {
+
+        $parentAccount = Account::create([
             'code' => '402',
             'name' => 'Pendapatan Jasa Layanan Jaringan Telekomunikasi',
         ]);
 
-        $id30 = Account::create([
+        Account::create([
+            'name' => 'Pendapatan Jasa Layanan JarTel (Jartaplok)',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => ' Pendapatan Jasa Layanan JarTel (Jartup)',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+    }
+
+    private function pendapatanLainnya(): void
+    {
+        $parentAccount = Account::create([
             'code' => '403',
             'name' => 'Pendapatan Lainnya',
         ]);
 
-        $id31 = Account::create([
+
+        Account::create([
+            'name' => 'Pendapatan Administrasi Pendaftaran',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Pendapatan Dari Penjualan Alat/Perangkat',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Pendapatan Bunga Bank',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Pendapatan/Penjualan Lainnya',
+            'code' => $parentAccount->code . '-' . '04',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+    }
+
+    private function bebanPokokPendapatan(): void
+    {
+        $parentAccount = Account::create([
             'code' => '500',
             'name' => 'Beban Pokok Pendapatan',
         ]);
 
-        $id32 = Account::create([
+
+        Account::create([
+            'name' => 'Beban Uplink (IP Transit)',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Interkoneksi (Metro-Net)',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Pokok Lainnya',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+    }
+
+    private function bebanPenjualan(): void
+    {
+        $parentAccount = Account::create([
             'code' => '501',
             'name' => 'Beban Penjualan',
             'trial_balance_type' => 'debit',
 
         ]);
 
-        $id33 = Account::create([
+
+        Account::create([
+            'name' => 'Beban Perlengkapan Jaringan',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Jasa Maintenance Jaringan',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+        Account::create([
+            'name' => ' Beban Promosi & Pemasaran',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban atas Restitusi Jaringan',
+            'code' => $parentAccount->code . '-' . '04',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban BHP Telekomunikasi & Kontribusi USO',
+            'code' => $parentAccount->code . '-' . '04',
+            'parent_id' => $parentAccount->id,
+        ]);
+    }
+
+    private function bebanKaryawan(): void
+    {
+        $parentAccount = Account::create([
             'code' => '502',
             'name' => 'Beban Karyawan',
             'trial_balance_type' => 'debit',
 
         ]);
 
-        $id34 = Account::create([
+
+        Account::create([
+            'name' => 'Beban Gaji Karyawan',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban BPJS Ketenagakerjaan',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban BPJS Kesehatan',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+    }
+
+    private function bebanUtilitas(): void
+    {
+        $parentAccount = Account::create([
             'code' => '503',
             'name' => 'Beban Utilitas',
             'trial_balance_type' => 'debit',
-
         ]);
 
-        $id35 = Account::create([
+
+        Account::create([
+            'name' => 'Beban Listrik',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Telpon',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Air',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Gas',
+            'code' => $parentAccount->code . '-' . '04',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+    }
+
+    private function bebanSuppliesKantor(): void
+    {
+        $parentAccount = Account::create([
             'code' => '504',
             'name' => 'Beban Supplies Kantor',
             'trial_balance_type' => 'debit',
-
         ]);
 
-        $id36 = Account::create([
+
+        Account::create([
+            'name' => 'Beban Perlengkapan Kantor',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Perlengkapan Lainnya',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+    }
+
+    private function bebangAngkutKirim(): void
+    {
+        $parentAccount = Account::create([
             'code' => '505',
             'name' => 'Beban Angkut/Kirim',
             'trial_balance_type' => 'debit',
-
         ]);
 
-        $id37 = Account::create([
+
+        Account::create([
+            'name' => ' Beban Angkut Barang',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => ' Beban Kirim Dokumen',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => ' Beban Angkut/Kirim Lainnya',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+    }
+
+    private function bebanPerjalananDinas(): void
+    {
+        $parentAccount = Account::create([
             'code' => '506',
             'name' => 'Beban Perjalanan Dinas',
             'trial_balance_type' => 'debit',
         ]);
 
-        $id38 = Account::create([
+        Account::create([
+            'name' => ' Beban Transportasi',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => ' Beban Penginapan',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Perjalanan Dinas Lainnya',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+    }
+
+    private function bebanTransportasiKendaraanAtauMesin(): void
+    {
+        $parentAccount = Account::create([
             'code' => '507',
             'name' => 'Beban Transportasi Kendaraan/Mesin',
             'trial_balance_type' => 'debit',
-
         ]);
 
-        $id39 = Account::create([
+
+        Account::create([
+            'name' => ' BBM Kendaraan R4 Kantor',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+        Account::create([
+            'name' => 'BBM Kendaraan R4 Kantor Operasional Lapangan',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+        Account::create([
+            'name' => 'BBM Kendaraan R3 Kantor Operasional Lapangan',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+        Account::create([
+            'name' => 'BBM Kendaraan R2 Operasional',
+            'code' => $parentAccount->code . '-' . '04',
+            'parent_id' => $parentAccount->id,
+        ]);
+        Account::create([
+            'name' => 'Beban Mesin Genset',
+            'code' => $parentAccount->code . '-' . '05',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+    }
+
+    private function bebanPemeliharaanAset(): void
+    {
+        $parentAccount = Account::create([
             'code' => '508',
             'name' => 'Beban Pemeliharaan Aset',
             'trial_balance_type' => 'debit',
-
         ]);
 
-        $id40 = Account::create([
+
+        Account::create([
+            'name' => ' Beban Pemeliharaan Bangunan',
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Pemeliharaan Kendaraan',
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Pemeliharaan Mesin',
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Pemeliharaan Aset Kantor',
+            'code' => $parentAccount->code . '-' . '04',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Account::create([
+            'name' => 'Beban Pemeliharaan Jaringan',
+            'code' => $parentAccount->code . '-' . '05',
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+    }
+
+    private function bebanSewa(): void
+    {
+        Account::create([
             'code' => '510',
             'name' => 'Beban Sewa',
             'trial_balance_type' => 'debit',
         ]);
 
-        $id41 = Account::create([
+    }
+
+    private function bebanLainLain(): void
+    {
+
+        $parentAccount = Account::create([
             'code' => '511',
             'name' => 'Beban Lain-lain',
             'trial_balance_type' => 'debit',
         ]);
-
-        $id42 = Account::create([
-            'code' => '512',
-            'name' => 'Beban Penyusutan',
-            'trial_balance_type' => 'debit',
-        ]);
-
-        $id43 = Account::create([
-            'code' => '513',
-            'name' => 'Beban Bunga',
-            'trial_balance_type' => 'debit',
-        ]);
-
-        $id44 = Account::create([
-            'code' => '514',
-            'name' => 'Beban Pajak Penghasilan',
-            'trial_balance_type' => 'debit',
-        ]);
-
-
-        //1
-        Account::create([
-            'name' => 'Kas Tunai',
-            'code' => $id1->code . '-' . '01',
-            'parent_id' => 1,
-        ]);
-
-        Account::create([
-            'name' => 'Rekening Cabang',
-            'code' => $id1->code . '-' . '02',
-            'parent_id' => 1,
-        ]);
-
-        Account::create([
-            'name' => 'Rekening Pendapatan',
-            'code' => $id1->code . '-' . '03',
-            'parent_id' => 1,
-        ]);
-
-        Account::create([
-            'name' => 'Rekening Mayatama Pusat',
-            'code' => $id1->code . '-' . '04',
-            'parent_id' => 1,
-        ]);
-
-        Account::create([
-            'name' => 'Peti Brankas',
-            'code' => $id1->code . '-' . '05',
-            'parent_id' => 1,
-        ]);
-
-        //2
-        Account::create([
-            'name' => 'Persediaan Perlengkapan Jaringan',
-            'code' => $id2->code . '-' . '01',
-            'parent_id' => 2,
-        ]);
-
-
-        Account::create([
-            'name' => 'Persediaan Aset',
-            'code' => $id2->code . '-' . '03',
-            'parent_id' => 2,
-        ]);
-
-        Account::create([
-            'name' => 'Persediaan Lainnya',
-            'code' => $id2->code . '-' . '03',
-            'parent_id' => 2,
-        ]);
-
-        //3
-        Account::create([
-            'name' => 'Piutang Pelanggan',
-            'code' => $id3->code . '-' . '01',
-            'parent_id' => 3,
-        ]);
-
-        Account::create([
-            'name' => 'Piutang Lainnya',
-            'code' => $id3->code . '-' . '02',
-            'parent_id' => 3,
-        ]);
-
-        //4
-        Account::create([
-            'name' => 'Sewa dibayar dimuka',
-            'code' => $id4->code . '-' . '01',
-            'parent_id' => 4,
-        ]);
-
-        Account::create([
-            'name' => 'Sewa dibayar dimuka lainnya',
-            'code' => $id4->code . '-' . '02',
-            'parent_id' => 4,
-        ]);
-
-        //5
-        Account::create([
-            'name' => 'PPn Masukan',
-            'code' => $id5->code . '-' . '01',
-            'parent_id' => 5,
-        ]);
-
-        Account::create([
-            'name' => 'Kredit PPh 23',
-            'code' => $id5->code . '-' . '02',
-            'parent_id' => 5,
-        ]);
-
-        Account::create([
-            'name' => 'Kredit Angsuran PPh 25',
-            'code' => $id5->code . '-' . '03',
-            'parent_id' => 5,
-        ]);
-
-        //6
-        Account::create([
-            'name' => 'Utang PPn',
-            'code' => $id15->code . '-' . '01',
-            'parent_id' => 15,
-        ]);
-
-        Account::create([
-            'name' => 'Utang PPh Pasal 21',
-            'code' => $id15->code . '-' . '02',
-            'parent_id' => 15,
-        ]);
-
-        Account::create([
-            'name' => 'Utang PPh Pasal 23',
-            'code' => $id15->code . '-' . '03',
-            'parent_id' => 15,
-        ]);
-
-        Account::create([
-            'name' => 'Utang PPh Pasal 29',
-            'code' => $id15->code . '-' . '04',
-            'parent_id' => 15,
-        ]);
-
-        Account::create([
-            'name' => 'Utang PPh Pasal 4 ayat (2)',
-            'code' => $id15->code . '-' . '05',
-            'parent_id' => 15,
-        ]);
-
-        Account::create([
-            'name' => 'Utang Gaji',
-            'code' => $id17->code . '-' . '01',
-            'parent_id' => 17,
-        ]);
-
-        Account::create([
-            'name' => 'BHP Telekomunikasi',
-            'code' => $id17->code . '-' . '02',
-            'parent_id' => 17,
-        ]);
-
-        Account::create([
-            'name' => 'Kontribusi KPU/USO',
-            'code' => $id17->code . '-' . '03',
-            'parent_id' => 17,
-        ]);
-
-        Account::create([
-            'name' => 'Pendapatan Layanan Internet Broadband',
-            'code' => $id28->code . '-' . '01',
-            'parent_id' => 28,
-        ]);
-
-        Account::create([
-            'name' => 'Pendapatan Layanan Internet Dedicated',
-            'code' => $id28->code . '-' . '02',
-            'parent_id' => 28,
-        ]);
-
-        Account::create([
-            'name' => 'Pendapatan Layanan Jartaplok',
-            'code' => $id29->code . '-' . '01',
-            'parent_id' => 29,
-        ]);
-
-        Account::create([
-            'name' => 'Pendapatan Layanan Jartup',
-            'code' => $id29->code . '-' . '02',
-            'parent_id' => 29,
-        ]);
-
-        Account::create([
-            'name' => 'Pendapatan Administrasi Pendaftaran',
-            'code' => $id30->code . '-' . '01',
-            'parent_id' => 30,
-        ]);
-
-        Account::create([
-            'name' => 'Penjualan Alat dan Perangkat',
-            'code' => $id30->code . '-' . '02',
-            'parent_id' => 30,
-        ]);
-
-        Account::create([
-            'name' => 'Pendapatan Bunga Bank',
-            'code' => $id30->code . '-' . '03',
-            'parent_id' => 30,
-        ]);
-
-        Account::create([
-            'name' => 'Pendapatan/Penjualan Jasa Lainnya',
-            'code' => $id30->code . '-' . '04',
-            'parent_id' => 30,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Uplink',
-            'code' => $id31->code . '-' . '01',
-            'parent_id' => 31,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Interkoneksi',
-            'code' => $id31->code . '-' . '02',
-            'parent_id' => 31,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Pokok Lainnya',
-            'code' => $id31->code . '-' . '03',
-            'parent_id' => 31,
-        ]);
-
-        Account::create([
-            'name' => 'Perlengkapan Jaringan',
-            'code' => $id32->code . '-' . '01',
-            'parent_id' => 32,
-        ]);
-
-        Account::create([
-            'name' => 'Jasa Vendor',
-            'code' => $id32->code . '-' . '02',
-            'parent_id' => 32,
-        ]);
-
-        Account::create([
-            'name' => 'BHP Tel & KPU/USO',
-            'code' => $id32->code . '-' . '03',
-            'parent_id' => 32,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Gaji Karyawan',
-            'code' => $id33->code . '-' . '01',
-            'parent_id' => 33,
-        ]);
-
-        Account::create([
-            'name' => 'Beban BPJS Ketenagakerjaan',
-            'code' => $id33->code . '-' . '02',
-            'parent_id' => 33,
-        ]);
-
-        Account::create([
-            'name' => 'Beban BPJS Kesehatan',
-            'code' => $id33->code . '-' . '03',
-            'parent_id' => 33,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Listrik',
-            'code' => $id34->code . '-' . '01',
-            'parent_id' => 34,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Telpon',
-            'code' => $id34->code . '-' . '02',
-            'parent_id' => 34,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Air',
-            'code' => $id34->code . '-' . '03',
-            'parent_id' => 34,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Gas',
-            'code' => $id34->code . '-' . '04',
-            'parent_id' => 34,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Perlengkapan Kantor',
-            'code' => $id35->code . '-' . '01',
-            'parent_id' => 35,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Perlengkapan Lainnya',
-            'code' => $id35->code . '-' . '02',
-            'parent_id' => 35,
-        ]);
-
-        Account::create([
-            'name' => ' Beban Angkut Barang',
-            'code' => $id36->code . '-' . '01',
-            'parent_id' => 36,
-        ]);
-
-        Account::create([
-            'name' => ' Beban Kirim Dokumen',
-            'code' => $id36->code . '-' . '02',
-            'parent_id' => 36,
-        ]);
-
-        Account::create([
-            'name' => ' Beban Angkut/Kirim Lainnya',
-            'code' => $id36->code . '-' . '03',
-            'parent_id' => 36,
-        ]);
-
-        Account::create([
-            'name' => ' Beban Transportasi',
-            'code' => $id37->code . '-' . '01',
-            'parent_id' => 37,
-        ]);
-
-        Account::create([
-            'name' => ' Beban Penginapan',
-            'code' => $id37->code . '-' . '02',
-            'parent_id' => 37,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Perjalanan Dinas Lainnya',
-            'code' => $id37->code . '-' . '03',
-            'parent_id' => 37,
-        ]);
-
-        Account::create([
-            'name' => ' BBM Kendaraan R4 Kantor',
-            'code' => $id38->code . '-' . '01',
-            'parent_id' => 38,
-        ]);
-        Account::create([
-            'name' => 'BBM Kendaraan R4 Kantor Operasional Lapangan',
-            'code' => $id38->code . '-' . '02',
-            'parent_id' => 38,
-        ]);
-        Account::create([
-            'name' => 'BBM Kendaraan R3 Kantor Operasional Lapangan',
-            'code' => $id38->code . '-' . '03',
-            'parent_id' => 38,
-        ]);
-        Account::create([
-            'name' => 'BBM Kendaraan R2 Operasional',
-            'code' => $id38->code . '-' . '04',
-            'parent_id' => 38,
-        ]);
-        Account::create([
-            'name' => 'Beban Mesin Genset',
-            'code' => $id38->code . '-' . '05',
-            'parent_id' => 38,
-        ]);
-
-        Account::create([
-            'name' => ' Beban Pemeliharaan Bangunan',
-            'code' => $id39->code . '-' . '01',
-            'parent_id' => 39,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Pemeliharaan Kendaraan',
-            'code' => $id39->code . '-' . '02',
-            'parent_id' => 39,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Pemeliharaan Mesin',
-            'code' => $id39->code . '-' . '03',
-            'parent_id' => 39,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Pemeliharaan Aset Kantor',
-            'code' => $id39->code . '-' . '04',
-            'parent_id' => 39,
-        ]);
-
-        Account::create([
-            'name' => 'Beban Pemeliharaan Jaringan',
-            'code' => $id39->code . '-' . '05',
-            'parent_id' => 39,
-        ]);
-
         Account::create([
             'name' => 'Retribusi',
-            'code' => $id41->code . '-' . '01',
-            'parent_id' => 41,
+            'code' => $parentAccount->code . '-' . '01',
+            'parent_id' => $parentAccount->id,
         ]);
 
         Account::create([
             'name' => 'Beban Pelatihan & Pengembangan SDM',
-            'code' => $id41->code . '-' . '02',
-            'parent_id' => 41,
+            'code' => $parentAccount->code . '-' . '02',
+            'parent_id' => $parentAccount->id,
         ]);
 
         Account::create([
             'name' => 'Beban Entertainment',
-            'code' => $id41->code . '-' . '03',
-            'parent_id' => 41,
+            'code' => $parentAccount->code . '-' . '03',
+            'parent_id' => $parentAccount->id,
         ]);
 
         Account::create([
             'name' => 'Beban Diluar Usaha Lainnya',
-            'code' => $id41->code . '-' . '04',
-            'parent_id' => 41,
+            'code' => $parentAccount->code . '-' . '04',
+            'parent_id' => $parentAccount->id,
         ]);
     }
+
+    private function bebanPenyusutan(): void
+    {
+        Account::create([
+            'code' => '512',
+            'name' => 'Beban Penyusutan',
+            'trial_balance_type' => 'debit',
+        ]);
+    }
+
+    private function bebanBunga(): void
+    {
+        Account::create([
+            'code' => '513',
+            'name' => 'Beban Bunga',
+            'trial_balance_type' => 'debit',
+        ]);
+    }
+
+    private function bebanPajakPenghasilan(): void
+    {
+        Account::create([
+            'code' => '514',
+            'name' => 'Beban Pajak Penghasilan',
+            'trial_balance_type' => 'debit',
+        ]);
+    }
+
+
 }

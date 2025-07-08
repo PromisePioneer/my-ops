@@ -43,6 +43,7 @@ class PermissionSeeder extends Seeder
         $this->stock();
         $this->stockWithdrawal();
         $this->mustReorderItem();
+        $this->stockMutation();
 
         // journal
         $this->generalJournal();
@@ -954,6 +955,24 @@ class PermissionSeeder extends Seeder
         ];
 
         foreach ($boq as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+
+    public function stockMutation(): void
+    {
+        $permissions = [
+            'Lihat Menu Mutasi Barang',
+            'Tambah Data Mutasi Barang',
+            'Batalkan Pengiriman Barang',
+            'Lihat Detail Mutasi Barang',
+            'Terima Mutasi Barang',
+            'Hapus Data Mutasi Barang',
+        ];
+
+
+        foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
     }

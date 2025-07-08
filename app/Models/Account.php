@@ -62,68 +62,6 @@ class Account extends Model
         return $this->hasMany(AccountTransaction::class, 'account_id');
     }
 
-    // eloquent
-    public function getAccount(Request $request): array
-    {
-        $search = $request->input('search');
-        $query = self::orderby('name', 'asc')
-            ->select('id', 'name')
-            ->limit(5);
-
-        if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
-        }
-        $account = $query->get();
-
-        return $account->map(function ($c) {
-            return [
-                'id' => $c->id,
-                'text' => $c->name,
-            ];
-        })->toArray();
-    }
-
-
-    public function getParentAccount(Request $request): array
-    {
-        $search = $request->input('search');
-        $query = self::orderby('name', 'asc')
-            ->whereNull('parent_id')
-            ->select('id', 'name');
-
-        if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
-        }
-        $account = $query->get();
-
-        return $account->map(function ($c) {
-            return [
-                'id' => $c->id,
-                'text' => $c->name,
-            ];
-        })->toArray();
-    }
-
-
-    public function getAccounts(Request $request): array
-    {
-        $search = $request->input('search');
-        $query = self::orderby('code')
-            ->select('id', 'name', 'code');
-
-        if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
-        }
-        $account = $query->get();
-
-        return $account->map(function ($c) {
-            return [
-                'id' => $c->id,
-                'text' => $c->code . ' ' . $c->name,
-            ];
-        })->toArray();
-    }
-
 
     public function getSelectedAccount(int $accountId): array
     {

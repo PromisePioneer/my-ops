@@ -86,6 +86,7 @@ use App\Http\Controllers\Master\Common\UnitTypeController;
 use App\Http\Controllers\Master\Common\WorkTimeController;
 use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\Transaction\InitialInventoryBalanceController;
 use App\Http\Controllers\Transaction\TransactionController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
@@ -584,6 +585,12 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{letterHead}', [LetterHeadController::class, 'update']);
         });
 
+
+        Route::prefix('/menus')->group(function () {
+            Route::get('/', [MenuController::class, 'index']);
+            Route::get('/data', [MenuController::class, 'data']);
+        });
+
         Route::prefix('company-profile')->group(function () {
             Route::get('/', [CompanyProfileController::class, 'index']);
             Route::post('/update/{companyProfile}', [CompanyProfileController::class, 'update']);
@@ -692,6 +699,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/get-stock-detail/{stock}', [StockController::class, 'showStock']);
             Route::get('/', [StockController::class, 'index']);
             Route::get('/data', [StockController::class, 'data']);
+            Route::get('/search', [StockController::class, 'search']);
             Route::get('/data/{itemCollection}', [StockController::class, 'findByItemId']);
             Route::get('/show/{itemCollection}', [StockController::class, 'show']);
             Route::get('/detail/{stock}', [StockController::class, 'detail']);

@@ -39,6 +39,7 @@ class ItemCollection extends Model
             'name' => $this->name,
         ];
     }
+
     public function unitType(): BelongsTo
     {
         return $this->belongsTo(UnitType::class, 'unit_type_id');
@@ -60,9 +61,4 @@ class ItemCollection extends Model
         return $this->hasMany(Transaction::class, 'item_id');
     }
 
-
-    public function initialInventoryBalance(): HasMany
-    {
-        return $this->hasMany(InitialInventoryBalance::class, 'item_id');
-    }
 }

@@ -30,6 +30,7 @@ use App\Models\OfferingLetter;
 use App\Models\PurchaseOrder;
 use App\Models\RoleDefaultWorkTime;
 use App\Models\SP;
+use App\Models\StockMutation;
 use App\Models\StockWithdrawal;
 use App\Models\TaxSetting;
 use App\Models\Transaction;
@@ -63,6 +64,7 @@ use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
 use App\Policies\SKLPolicy;
 use App\Policies\SpPolicy;
+use App\Policies\StockMutationPolicy;
 use App\Policies\StockWithdrawalPolicy;
 use App\Policies\TaxSettingPolicy;
 use App\Policies\TransactionPolicy;
@@ -117,6 +119,7 @@ class AuthServiceProvider extends ServiceProvider
         StockWithdrawal::class => StockWithdrawalPolicy::class,
         ItemCategory::class => ItemCategoryPolicy::class,
         Activity::class => ActivityLogPolicy::class,
+        StockMutation::class => StockMutationPolicy::class,
     ];
 
     /**
