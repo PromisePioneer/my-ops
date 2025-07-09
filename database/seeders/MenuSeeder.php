@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Menu;
+use App\Models\MenuSection;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -16,14 +17,9 @@ class MenuSeeder extends Seeder
         $this->dashboard();
 
 
-        $masterData = Menu::create([
-            'name' => 'Master Data',
-            'type' => 'Section',
-        ]);
-
-        $this->commonMasterData($masterData);
-        $this->accountingMasterData($masterData);
-        $this->operationalMasterData($masterData);
+        $this->commonMasterData();
+        $this->accountingMasterData();
+        $this->operationalMasterData();
 
         $this->inventoryController();
 
@@ -36,6 +32,9 @@ class MenuSeeder extends Seeder
         $this->incomeTransactions();
 
         $this->utilities();
+
+        $this->employeeManagement();
+        $this->attendanceManagement();
 
 
     }
@@ -51,11 +50,11 @@ class MenuSeeder extends Seeder
                             <span class="path3"></span>
                             <span class="path4"></span>
                         </i>',
-            'parent_id' => null,
+            'section_id' => MenuSection::where('name', 'Dashboard')->first()->id,
         ]);
     }
 
-    private function commonMasterData($masterData): void
+    private function commonMasterData(): void
     {
 
         $parentAccount = Menu::create([
@@ -64,7 +63,7 @@ class MenuSeeder extends Seeder
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i>',
-            'parent_id' => $masterData->id,
+            'section_id' => MenuSection::where('name', 'Master Data')->first()->id,
         ]);
 
         Menu::create([
@@ -145,7 +144,7 @@ class MenuSeeder extends Seeder
         ]);
     }
 
-    private function accountingMasterData($masterData): void
+    private function accountingMasterData(): void
     {
         $parentAccount = Menu::create([
             'name' => 'Master Keuangan',
@@ -153,7 +152,7 @@ class MenuSeeder extends Seeder
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i>',
-            'parent_id' => $masterData->id,
+            'section_id' => MenuSection::where('name', 'Master Data')->first()->id
         ]);
 
 
@@ -210,7 +209,7 @@ class MenuSeeder extends Seeder
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i>',
-            'parent_id' => null,
+            'section_id' => MenuSection::where('name', 'Master Data')->first()->id
         ]);
 
 
@@ -248,7 +247,7 @@ class MenuSeeder extends Seeder
                             <span class="path2"></span>
                             <span class="path3"></span>
                         </i>',
-            'parent_id' => null,
+            'section_id' => MenuSection::where('name', 'Inventory')->first()->id,
         ]);
 
         Menu::create([
@@ -337,7 +336,7 @@ class MenuSeeder extends Seeder
                           <span class="path3"></span>
                           <span class="path4"></span>
                        </i>',
-            'parent_id' => null,
+            'section_id' => MenuSection::where('name', 'Transaksi')->first()->id,
         ]);
     }
 
@@ -350,7 +349,7 @@ class MenuSeeder extends Seeder
                                 <span class="path2"></span>
                                 <span class="path3"></span>
                             </i>',
-            'parent_id' => null,
+            'section_id' => MenuSection::where('name', 'Transaksi')->first()->id,
         ]);
 
         Menu::create([
@@ -407,7 +406,7 @@ class MenuSeeder extends Seeder
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i>',
-            'parent_id' => null,
+            'section_id' => MenuSection::where('name', 'Utilitas')->first()->id,
         ]);
 
 
@@ -429,6 +428,119 @@ class MenuSeeder extends Seeder
         Menu::create([
             'name' => 'Menu Management',
             'link' => 'utility/menus',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+    }
+
+    private function employeeManagement(): void
+    {
+        $parentAccount = Menu::create([
+            'name' => 'Manajemen Karyawan',
+            'icon' => '<i class="ki-duotone ki-abstract-29 fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>',
+            'section_id' => MenuSection::where('name', 'Manajemen Karyawan')->first()->id,
+        ]);
+
+
+        Menu::create([
+            'name' => 'Data Karyawan',
+            'link' => 'manage-users/users',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Menu::create([
+            'name' => 'Hak Akses',
+            'link' => 'manage-users/permissions',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+        Menu::create([
+            'name' => 'Manajemen Cuti',
+            'link' => 'manage-users/leaves',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Menu::create([
+            'name' => 'Surat Peringatan',
+            'link' => 'manage-users/sp',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Menu::create([
+            'name' => 'Kontrak Karyawan',
+            'link' => 'manage-users/contract-management',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Menu::create([
+            'name' => 'SK Karyawan',
+            'link' => 'manage-users/sk',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+        Menu::create([
+            'name' => 'Struktur Jabatan',
+            'link' => 'manage-users/role-hierarchy',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+    }
+
+    private function attendanceManagement()
+    {
+        $parentAccount = Menu::create([
+            'name' => 'Manajemen Absensi',
+            'icon' => '<i class="ki-duotone ki-abstract-29 fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>',
+            'section_id' => MenuSection::where('name', 'Manajemen Karyawan')->first()->id,
+        ]);
+
+
+        Menu::create([
+            'name' => 'Libur Nasional',
+            'link' => 'adms/national-holiday',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Menu::create([
+            'name' => 'Mesin Absensi',
+            'link' => 'adms/fp-devices',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+
+        Menu::create([
+            'name' => 'Pengaturan Jam Kerja',
+            'link' => 'adms/work-time-settings',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Menu::create([
+            'name' => 'Pengaturan Jadwal Libur',
+            'link' => 'adms/employee-schedules',
+            'icon' => null,
+            'parent_id' => $parentAccount->id,
+        ]);
+
+        Menu::create([
+            'name' => 'Riwayat Absensi',
+            'link' => 'adms/attendances-summary',
             'icon' => null,
             'parent_id' => $parentAccount->id,
         ]);

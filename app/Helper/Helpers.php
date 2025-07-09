@@ -3,6 +3,7 @@
 namespace App\Helper;
 
 use App\Models\Menu;
+use App\Models\MenuSection;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -78,5 +79,9 @@ function currencyFormat($currency): string
 
 function menus(): Collection
 {
-    return Menu::with('children')->get();
+    return MenuSection::with(['menus.children' => function ($query) {
+            $query->orderBy('order', 'ASC');
+        }]
+    )->get();
+
 }

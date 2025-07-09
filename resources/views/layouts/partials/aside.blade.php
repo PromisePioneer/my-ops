@@ -33,16 +33,16 @@
                             </span>
                         </a>
                         <div
-                            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px"
-                            data-kt-menu="true">
+                                class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px"
+                                data-kt-menu="true">
                             <div class="menu-item px-3">
                                 <div class="menu-content d-flex align-items-center px-3">
 
                                     <div class="d-flex flex-column">
                                         <div
-                                            class="fw-bolder d-flex align-items-center fs-5">{{ Auth::user()->name }}
+                                                class="fw-bolder d-flex align-items-center fs-5">{{ Auth::user()->name }}
                                             <span
-                                                class="badge badge-light-primary fw-bolder fs-8 px-2 py-1 ms-2">{{ Auth::user()->roles[0]->name }}</span>
+                                                    class="badge badge-light-primary fw-bolder fs-8 px-2 py-1 ms-2">{{ Auth::user()->roles[0]->name }}</span>
                                         </div>
                                         <a href="#"
                                            class="fw-bold text-muted text-hover-primary fs-7">{{ Auth::user()->email }}</a>
@@ -81,68 +81,60 @@
              data-kt-scroll-dependencies="{default: '#kt_aside_toolbar, #kt_aside_footer', lg: '#kt_header, #kt_aside_toolbar, #kt_aside_footer'}"
              data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="5px">
             <div
-                class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
-                id="#kt_aside_menu" data-kt-menu="true">
+                    class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
+                    id="#kt_aside_menu" data-kt-menu="true">
 
                 @foreach(menus() as $menu)
-                    {{-- Section Menu --}}
-                    @if($menu->type === 'Section')
-                        <x-menu-sections>{{ $menu->name }}</x-menu-sections>
-                    @endif
-
-                    {{-- Single Menu Item (no children) --}}
-                    @if($menu->type === 'Menu' && $menu->parent_id === null && !$menu->children()->exists())
-                        <x-single-menu-item
-                            :active="Request::segment(1) === $menu->link"
-                            href="{{ url($menu->link) }}">
-                            @slot('parentIcon')
-                                {!! $menu->icon !!}
-                            @endslot
-                            @slot('menuTitle')
-                                {{ $menu->name }}
-                            @endslot
-                        </x-single-menu-item>
-                    @endif
-
-                    {{-- Dropdown Menu (with children) --}}
-                    @if($menu->type === 'Menu' && $menu->parent_id === null && $menu->children()->exists())
-                        <x-dropdown-menu
-                            :active="in_array(request()->path(), $menu->children()->pluck('link')->toArray())">
-                            @slot('parentIcon')
-                                {!! $menu->icon !!}
-                            @endslot
-                            @slot('menuTitle')
-                                {{ $menu->name }}
-                            @endslot
-                            @slot('menuItem')
-                                @foreach($menu->children as $childMenu)
-                                    <x-dropdown-menu-item
-                                        :active="$childMenu->link == request()->path()"
-                                        href="{{ url($childMenu->link) }}">
-                                        {{ $childMenu->name }}
-                                    </x-dropdown-menu-item>
-
-                                    @foreach($childMenu->children as $childMenu)
+                    <x-menu-sections>{{ $menu->name ?? null }}</x-menu-sections>
+                    @foreach($menu?->menus as $menuList)
+                        @if($menuList->parent_id === null && !$menuList->children()->exists())
+                            <x-single-menu-item
+                                    :active="Request::segment(1) === $menuList->link"
+                                    href="{{ url($menuList->link) }}"
+                            >
+                                @slot('parentIcon')
+                                    {!! $menuList->icon !!}
+                                @endslot
+                                @slot('menuTitle')
+                                    {{ $menuList->name }}
+                                @endslot
+                            </x-single-menu-item>
+                        @else
+                            <x-dropdown-menu
+                                    :active="in_array(request()->path(), $menuList->children()->pluck('link')->toArray())">
+                                @slot('parentIcon')
+                                    {!! $menuList->icon !!}
+                                @endslot
+                                @slot('menuTitle')
+                                    {{ $menuList->name }}
+                                @endslot
+                                @slot('menuItem')
+                                    @foreach($menuList->children as $childMenu)
                                         <x-dropdown-menu-item
-                                            :active="$childMenu->link == request()->path()"
-                                            href="{{ url($childMenu->link) }}">
+                                                :active="$childMenu->link == request()->path()"
+                                                href="{{ url($childMenu->link) }}">
                                             {{ $childMenu->name }}
                                         </x-dropdown-menu-item>
+
+                                        @foreach($childMenu->children as $childMenu)
+                                            @can($childMenu->permissions)
+                                                <x-dropdown-menu-item
+                                                        :active="$childMenu->link == request()->path()"
+                                                        href="{{ url($childMenu->link) }}"
+                                                >
+                                                    {{ $childMenu->name }}
+                                                </x-dropdown-menu-item>
+                                            @endcan
+                                        @endforeach
                                     @endforeach
-                                @endforeach
-                            @endslot
-                        </x-dropdown-menu>
-                    @endif
+                                @endslot
+                            </x-dropdown-menu>
+                        @endif
+                    @endforeach
+
                 @endforeach
                 {{--                <x-menu-sections>Dashboard</x-menu-sections>--}}
-                {{--                <x-single-menu-item :active="request()->segment(1) === 'home'"--}}
-                {{--                                    href="{{ url('home') }}">--}}
-                {{--                    @slot('parentIcon')--}}
-                {{--                    @endslot--}}
-                {{--                    @slot('menuTitle')--}}
-                {{--                        Dashboard--}}
-                {{--                    @endslot--}}
-                {{--                </x-single-menu-item>--}}
+
                 {{--                @canany(['Lihat Menu Supplier', 'Lihat Menu Kategori Barang', 'Lihat Menu Kode Joint Closure','Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL',  'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area','Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset', 'Lihat Menu Jam Kerja'])--}}
                 {{--                    <x-menu-sections>Master Data</x-menu-sections>--}}
                 {{--                @endcanany--}}

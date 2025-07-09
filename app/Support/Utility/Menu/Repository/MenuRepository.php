@@ -2,9 +2,11 @@
 
 namespace App\Support\Utility\Menu\Repository;
 
+use AllowDynamicProperties;
 use App\Models\Menu;
+use Illuminate\Database\Eloquent\Builder;
 
-class MenuRepository
+#[AllowDynamicProperties] class MenuRepository
 {
     public function __construct()
     {
@@ -12,8 +14,10 @@ class MenuRepository
     }
 
 
-    public function data()
+    public function data(): Builder
     {
-        return $this->menu->with('children')->whereNull('parent_id');
+        return $this->menu->with(['children' => function ($query) {
+            $query->orderBy('order');
+        }])->whereNull('parent_id');
     }
 }

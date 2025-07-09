@@ -12,6 +12,7 @@ class Menu extends Model
     protected $fillable = [
         'name',
         'parent_id',
+        'section_id',
         'link',
         'icon',
     ];
@@ -27,4 +28,17 @@ class Menu extends Model
     {
         return $this->hasMany(Menu::class, 'parent_id');
     }
+
+
+    public function section(): BelongsTo
+    {
+        return $this->belongsTo(MenuSection::class, 'section_id');
+    }
+
+
+    public function permissions(): HasMany
+    {
+        return $this->hasMany(MenuPermission::class, 'menu_id');
+    }
+
 }

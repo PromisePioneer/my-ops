@@ -3,6 +3,7 @@
 @section('breadcrumbs', 'Utilitas - Menu Management')
 @section('content')
     <div x-data="menuData()">
+        @include('pages.utilities.menu.form')
         <div class="row">
             <template x-for="menu in menus" :key="menu.id">
                 <div class="col-md-6">
@@ -19,7 +20,9 @@
                                             <div
                                                 x-text="childMenu.name"></div>
                                             <div class="d-flex align-items-center">
-                                                <button class="btn btn-light-primary btn-sm me-2">
+                                                <button class="btn btn-light-primary btn-sm me-2"
+                                                        data-bs-target="#modal-menu" data-bs-toggle="modal"
+                                                        @click="edit(childMenu.id)">
                                                     <x-icons.edit/>
                                                 </button>
                                                 <button class="btn btn-light-danger btn-sm">
@@ -36,6 +39,8 @@
             </template>
         </div>
     </div>
+    @include('components.select2.script')
+    @include('components.toast')
 @endsection
 
 @push('script')
@@ -44,11 +49,17 @@
     <script>
         function menuData() {
             return {
+                buttonLoading: false,
                 menus: [],
                 search: '',
                 sortableInstances: [],
+                permissions: [],
+                editVal: '',
+                form: document.getElementById('form-menu'),
+                modal: new bootstrap.Modal(document.getElementById('modal-menu')),
                 async init() {
                     await this.getMenuData();
+                    await select2('.permissions-select2', 'Pilih Hak Akses', '/select2/permissions-data', false, false, null, true);
                     this.$nextTick(() => {
                         this.initializeSortable();
                     });
@@ -124,12 +135,54 @@
                     if (parent && parent.children) {
                         const [movedItem] = parent.children.splice(oldIndex, 1);
                         parent.children.splice(newIndex, 0, movedItem);
-
+                        await axios.get(`/utility/menus/reorder/`, {
+                            params: {
+                                children: parent.children,
+                            }
+                        });
+                        window.location.reload();
                         console.log(`Reordered child in parent ${parentId} from ${oldIndex} to ${newIndex}`);
                     }
                 },
                 async searchData() {
                     // Implementation for search functionality
+                },
+                async edit(id) {
+                    try {
+                        const resp = await axios.get(`/utility/menus/edit/${id}`);
+                        this.editVal = resp.data;
+                        await this.selectedPermissions(resp.data.id);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                },
+                async save(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/utility/menus/store/${id}`, new FormData(this.form))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.form.reset();
+                        this.modal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async selectedPermissions(id) {
+                    const selectedEl = $(`#selected-permission`);
+                    const response = await axios.get(`/select2/selected-menu-permissions/${id}`);
+
+
+                    response.data.forEach((permission) => {
+                        const option = new Option(permission.name, permission.id, true, true);
+                        selectedEl.append(option).trigger('change').trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
+                    })
                 }
             }
         }
