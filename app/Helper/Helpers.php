@@ -78,5 +78,5 @@ function currencyFormat($currency): string
 
 function menus(): Collection
 {
-    return Menu::with('children')->where('parent_id', null)->get();
+    return Menu::with('children')->get();
 }

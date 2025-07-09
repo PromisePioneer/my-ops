@@ -13,7 +13,9 @@ return new class extends Migration {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('parent_id')->nullable()->constrained('menus')->cascadeOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('menus')
+                ->cascadeOnDelete();
+            $table->enum('type', ['Section', 'Menu'])->default('Menu');
             $table->string('link')->nullable();
             $table->text('icon')->nullable();
             $table->timestamps();

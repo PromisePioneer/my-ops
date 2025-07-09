@@ -85,7 +85,13 @@
                 id="#kt_aside_menu" data-kt-menu="true">
 
                 @foreach(menus() as $menu)
-                    @if($menu->parent_id === null && !$menu->children()->exists())
+                    {{-- Section Menu --}}
+                    @if($menu->type === 'Section')
+                        <x-menu-sections>{{ $menu->name }}</x-menu-sections>
+                    @endif
+
+                    {{-- Single Menu Item (no children) --}}
+                    @if($menu->type === 'Menu' && $menu->parent_id === null && !$menu->children()->exists())
                         <x-single-menu-item
                             :active="Request::segment(1) === $menu->link"
                             href="{{ url($menu->link) }}">
@@ -98,18 +104,12 @@
                         </x-single-menu-item>
                     @endif
 
-
-                    @if($menu->parent_id === null && $menu->children()->exists())
-                        @php
-//                            dd($menu->children()->pluck('link')->toArray());
-                        @endphp
-                        <x-dropdown-menu :active="in_array(request()->path(), $menu->children()->pluck('link')->toArray() )">
-
+                    {{-- Dropdown Menu (with children) --}}
+                    @if($menu->type === 'Menu' && $menu->parent_id === null && $menu->children()->exists())
+                        <x-dropdown-menu
+                            :active="in_array(request()->path(), $menu->children()->pluck('link')->toArray())">
                             @slot('parentIcon')
-                                <i class="ki-duotone ki-element-7 fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>
+                                {!! $menu->icon !!}
                             @endslot
                             @slot('menuTitle')
                                 {{ $menu->name }}
@@ -118,16 +118,22 @@
                                 @foreach($menu->children as $childMenu)
                                     <x-dropdown-menu-item
                                         :active="$childMenu->link == request()->path()"
-                                        href="{{  url($childMenu->link) }}">
+                                        href="{{ url($childMenu->link) }}">
                                         {{ $childMenu->name }}
                                     </x-dropdown-menu-item>
+
+                                    @foreach($childMenu->children as $childMenu)
+                                        <x-dropdown-menu-item
+                                            :active="$childMenu->link == request()->path()"
+                                            href="{{ url($childMenu->link) }}">
+                                            {{ $childMenu->name }}
+                                        </x-dropdown-menu-item>
+                                    @endforeach
                                 @endforeach
                             @endslot
                         </x-dropdown-menu>
-
                     @endif
                 @endforeach
-
                 {{--                <x-menu-sections>Dashboard</x-menu-sections>--}}
                 {{--                <x-single-menu-item :active="request()->segment(1) === 'home'"--}}
                 {{--                                    href="{{ url('home') }}">--}}

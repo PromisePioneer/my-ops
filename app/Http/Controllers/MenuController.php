@@ -23,4 +23,12 @@ use Illuminate\Http\Request;
     {
         return response()->json($this->menuService->data());
     }
+
+
+    public function move(Menu $menu, int $oldParentId, int $newParentId)
+    {
+        $menu->update([
+            'parent_id' => $newParentId,
+        ]);
+    }
 }

@@ -589,6 +589,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('/menus')->group(function () {
             Route::get('/', [MenuController::class, 'index']);
             Route::get('/data', [MenuController::class, 'data']);
+            Route::post('/move/{menu}/{oldParentId}/{newParentId}', [MenuController::class, 'move']);
         });
 
         Route::prefix('company-profile')->group(function () {

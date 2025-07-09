@@ -15,9 +15,15 @@ class MenuSeeder extends Seeder
     {
         $this->dashboard();
 
-        $this->commonMasterData();
-        $this->accountingMasterData();
-        $this->operationalMasterData();
+
+        $masterData = Menu::create([
+            'name' => 'Master Data',
+            'type' => 'Section',
+        ]);
+
+        $this->commonMasterData($masterData);
+        $this->accountingMasterData($masterData);
+        $this->operationalMasterData($masterData);
 
         $this->inventoryController();
 
@@ -49,7 +55,7 @@ class MenuSeeder extends Seeder
         ]);
     }
 
-    private function commonMasterData(): void
+    private function commonMasterData($masterData): void
     {
 
         $parentAccount = Menu::create([
@@ -58,7 +64,7 @@ class MenuSeeder extends Seeder
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i>',
-            'parent_id' => null,
+            'parent_id' => $masterData->id,
         ]);
 
         Menu::create([
@@ -139,7 +145,7 @@ class MenuSeeder extends Seeder
         ]);
     }
 
-    private function accountingMasterData(): void
+    private function accountingMasterData($masterData): void
     {
         $parentAccount = Menu::create([
             'name' => 'Master Keuangan',
@@ -147,7 +153,7 @@ class MenuSeeder extends Seeder
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i>',
-            'parent_id' => null,
+            'parent_id' => $masterData->id,
         ]);
 
 
