@@ -194,9 +194,9 @@ use Throwable;
     }
 
 
-    public function getAssetData(): JsonResponse
+    public function getAssetData(Request $request): JsonResponse
     {
-        return response()->json($this->itemCollectionService->assetData());
+        return response()->json($this->itemCollectionService->assetData($request));
     }
 
 

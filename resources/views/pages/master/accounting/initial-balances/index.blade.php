@@ -433,9 +433,16 @@
                     });
                 },
                 disabledAccountButton(branchId, account) {
-                    if (account?.sub_accounts?.length > 0 || account?.sub_accounts?.length === 0) {
+                    if(account?.sub_accounts === []){
                         return true;
                     }
+
+
+                    if (account?.sub_accounts?.length > 0) {
+                        return true;
+                    }
+
+
 
 
                     if (this.branchId) {

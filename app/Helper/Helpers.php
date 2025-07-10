@@ -77,11 +77,3 @@ function currencyFormat($currency): string
 }
 
 
-function menus(): Collection
-{
-    return MenuSection::with(['menus.children' => function ($query) {
-            $query->orderBy('order', 'ASC');
-        }]
-    )->get();
-
-}

@@ -86,8 +86,6 @@ use App\Http\Controllers\Master\Common\UnitTypeController;
 use App\Http\Controllers\Master\Common\WorkTimeController;
 use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
-use App\Http\Controllers\MenuController;
-use App\Http\Controllers\MenuPermissionController;
 use App\Http\Controllers\Transaction\InitialInventoryBalanceController;
 use App\Http\Controllers\Transaction\TransactionController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
@@ -584,16 +582,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('letter-head')->group(function () {
             Route::get('/', [LetterHeadController::class, 'index']);
             Route::post('/update/{letterHead}', [LetterHeadController::class, 'update']);
-        });
-
-
-        Route::prefix('/menus')->group(function () {
-            Route::get('/', [MenuController::class, 'index']);
-            Route::get('/data', [MenuController::class, 'data']);
-            Route::post('/move/{menu}/{oldParentId}/{newParentId}', [MenuController::class, 'move']);
-            Route::get('/reorder', [MenuController::class, 'reorder']);
-            Route::get('/edit/{menu}', [MenuController::class, 'edit']);
-            Route::post('/store/{menu}', [MenuPermissionController::class, 'store']);
         });
 
         Route::prefix('company-profile')->group(function () {
@@ -1300,7 +1288,6 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
         Route::get('/permissions-data', [PermissionController::class, 'getPermissions']);
-        Route::get('/selected-menu-permissions/{menu}', [MenuPermissionController::class, 'getSelectedPermission']);
 
         Route::get('/parent-accounts-data', [AccountController::class, 'parentAccounts']);
         Route::get('/asset-accounts-data', [AccountController::class, 'assetAccounts']);

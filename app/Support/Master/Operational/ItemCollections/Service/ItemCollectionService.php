@@ -77,9 +77,18 @@ use Throwable;
     }
 
 
-    public function assetData()
+    public function assetData(Request $request)
     {
-        $items = $this->itemCollectionRepository->getAssetData()->get();
+        $search = $request->input('search');
+        $items = ItemCollection::search($search)->query(function ($query) {
+            $this->itemCollectionRepository->getAssetData($query);
+        })->get();
+        return $items->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name
+            ];
+        });
         return $items->map(function ($item) {
             return [
                 'id' => $item->id,
