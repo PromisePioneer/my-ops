@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Master\Common;
+namespace App\Support\Master\Common\BroadbandPacket;
 
 use AllowDynamicProperties;
 use App\Models\BroadbandPacket;
@@ -11,9 +11,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
 {
     private static int $perPage = 10;
 
+
+    public function __construct()
+    {
+        $this->broadbandPacket = new BroadbandPacket();
+    }
+
     public function data(): LengthAwarePaginator
     {
-        $data = BroadbandPacket::orderBy('name')->paginate(self::$perPage);
+        $data = $this->broadbandPacket->orderBy('price')->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -29,7 +35,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function formattedData(LengthAwarePaginator $broadbandPacket): LengthAwarePaginator
     {
-        $data = $broadbandPacket->getCollection()->map(function ($item) {
+        $data = $broadbandPacket->getCollection()->map(callback: function ($item) {
             return [
                 'id' => $item->id,
                 'name' => $item->name,

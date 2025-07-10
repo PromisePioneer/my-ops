@@ -7,15 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class Area extends Model
 {
+
+    use Searchable;
+
     protected $table = 'areas';
     protected $fillable = [
         'department_id',
         'branch_id',
         'name',
     ];
+
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'departments.name' => '',
+            'branches.name' => '',
+        ];
+    }
 
 
     public function branch(): BelongsTo

@@ -28,8 +28,8 @@
                             @endcan
                             @can('Filter Data Aset Berdasarkan Cabang')
                                 <button
-                                        class="btn btn-light-info btn-sm"
-                                        id="assets-filter">
+                                    class="btn btn-light-info btn-sm"
+                                    id="assets-filter">
                                     <x-icons.filter/>
                                     Filter
                                 </button>
@@ -180,6 +180,7 @@
                 async init() {
                     await this.getAssetsData();
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
+                    await select2('.items-select2', 'Pilih Barang', '/select2/goods-data');
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -261,6 +262,7 @@
                             params: {
                                 search: this.search,
                                 branch_id: $('#branch_id').val(),
+                                item_id: $('#item_id').val(),
                             },
                             headers: {'Content-Type': 'application/json'}
                         });

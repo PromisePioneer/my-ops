@@ -8,11 +8,19 @@ use App\Models\DraftStock;
 use App\Support\Master\Accounting\Accounts\Interface\AccountRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 
-#[AllowDynamicProperties] class AccountRepository implements AccountRepositoryInterface
+#[AllowDynamicProperties] class AccountRepository
 {
     public function __construct()
     {
         $this->account = new Account();
+    }
+
+
+    public function dataQuery()
+    {
+        return Account::with('children')
+            ->where('parent_id', null)
+            ->orderBy('code');
     }
 
 

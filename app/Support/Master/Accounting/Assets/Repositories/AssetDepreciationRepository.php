@@ -3,13 +3,22 @@
 namespace App\Support\Master\Accounting\Assets\Repositories;
 
 use AllowDynamicProperties;
+use App\Models\Asset;
 use App\Models\AssetDepreciation;
+use Illuminate\Database\Eloquent\Builder;
 
 #[AllowDynamicProperties] class AssetDepreciationRepository
 {
     public function __construct()
     {
         $this->assetDepreciation = new AssetDepreciation();
+    }
+
+
+    public function findByAssetId(int $assetId): Builder
+    {
+        return $this->assetDepreciation->with('asset')
+            ->where('asset_id', $assetId);
     }
 
 

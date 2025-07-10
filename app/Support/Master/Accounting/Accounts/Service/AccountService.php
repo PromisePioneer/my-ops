@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
-#[AllowDynamicProperties] class AccountService implements AccountServiceInterface
+#[AllowDynamicProperties] class AccountService
 {
     private static int $perPage = 10;
 
@@ -22,27 +22,13 @@ use Illuminate\Http\Request;
 
     public function data(): LengthAwarePaginator
     {
-        $accounts = Account::with('children')
-            ->where('parent_id', null)
-            ->orderBy('code')
-            ->paginate(self::$perPage);
+        $accounts = $this->accountRepository->dataQuery()->paginate(self::$perPage);
         return self::formatAccounts($accounts);
     }
 
     public static function formatAccounts(LengthAwarePaginator $accounts): LengthAwarePaginator
     {
         $formattedAccounts = $accounts->getCollection()->map(static function ($account) {
-            if ($account->children->count() > 0) {
-                $initialBalance = $account->children->sum(function ($transaction) {
-                    return $transaction->accountTransaction()
-                        ->whereYear('date', Carbon::now()->subYear())->sum('amount');
-                });
-            } else {
-                $initialBalance = $account->accountTransaction()
-                    ->whereYear('date', Carbon::now()->subYear())->sum('amount');
-            }
-
-
             return [
                 'account_id' => $account->id,
                 'account_code' => $account->code,
@@ -76,11 +62,6 @@ use Illuminate\Http\Request;
         }
         $accounts = $query->paginate(self::$perPage);
         return self::formatAccounts($accounts);
-    }
-
-
-    public function filter()
-    {
     }
 
 
@@ -176,7 +157,7 @@ use Illuminate\Http\Request;
         })->toArray();
     }
 
-    public function parentAccount(Request $request)
+    public function parentAccount(Request $request): array
     {
         $search = $request->input('search');
         $query = Account::search($search)

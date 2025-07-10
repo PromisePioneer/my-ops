@@ -2,8 +2,10 @@
 
 namespace App\Support\Master\Operational\InitialInventoryBalance\Repository;
 
+use App\Enum\Transaction\TransactionType;
 use App\Models\InitialInventoryBalance;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class InitialInventoryBalanceRepository
 {
@@ -13,14 +15,18 @@ class InitialInventoryBalanceRepository
     }
 
 
-    public function search(string $search): Builder
+    public function search(Request $request, $query, $branch): Builder
     {
-        return $this->data()->whereHas('branch', function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        })->orWhereHas('supplier', function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        })->orWhereHas('item', function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        });
+
+        if (!empty($request->user()->branch_id)) {
+            $query->whereIn('branch_id', $branch);
+        }
+
+        return $query->where('transactions.type', TransactionType::INITIAL_INVENTORY_BALANCE->value)
+            ->join('branches', 'transactions.branch_id', 'branches.id')
+            ->join('branches as parent_branches', 'parent_branches.id', '=', 'branches.parent_id')
+            ->join('contacts', 'transactions.contact_id', '=', 'contacts.id')
+            ->join('item_collections', 'transactions.item_id', '=', 'item_collections.id')
+            ->select('transactions.*', 'parent_branches.name', 'item_collections.name');
     }
 }

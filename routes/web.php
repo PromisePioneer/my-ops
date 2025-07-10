@@ -504,7 +504,8 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [AssetController::class, 'index']);
                 Route::get('/data', [AssetController::class, 'data']);
                 Route::get('/create', [AssetController::class, 'create']);
-                Route::get('/{asset}', [AssetController::class, 'edit']);
+                Route::get('/filter', [AssetController::class, 'filter']);
+                Route::get('/edit/{asset}', [AssetController::class, 'edit']);
                 Route::get('/data', [AssetController::class, 'data']);
                 Route::get('/search', [AssetController::class, 'search']);
                 Route::get('/debit-account/data', [AssetController::class, 'getDebitAccount']);
@@ -522,6 +523,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [InitialInventoryBalanceController::class, 'index']);
                 Route::get('/data', [InitialInventoryBalanceController::class, 'data']);
                 Route::get('/create', [InitialInventoryBalanceController::class, 'create']);
+                Route::get('/filter', [InitialInventoryBalanceController::class, 'filter']);
                 Route::get('/edit/{transaction}', [InitialInventoryBalanceController::class, 'edit']);
                 Route::get('/search', [InitialInventoryBalanceController::class, 'search']);
                 Route::post('/', [InitialInventoryBalanceController::class, 'store']);

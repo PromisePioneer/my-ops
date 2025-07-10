@@ -12,7 +12,7 @@ use App\Models\Master\Common\Branch;
 use App\Models\Stock;
 use App\Models\TaxSetting;
 use App\Models\Transaction;
-use App\Support\AccountTransactions\AccountTransactionService;
+use App\Support\AccountTransactions\Service\AccountTransactionService;
 use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Transactions\Repositories\TransactionRepository;
 use Carbon\Carbon;

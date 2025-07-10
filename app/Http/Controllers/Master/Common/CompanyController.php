@@ -20,8 +20,10 @@ use Illuminate\View\View;
     public function __construct()
     {
         $this->companyRepository = new CompanyRepository();
+        $this->company = new Company();
 
     }
+
     /**
      * @throws AuthorizationException
      */
@@ -38,7 +40,7 @@ use Illuminate\View\View;
     public function data(): JsonResponse
     {
         $this->authorize('view', Company::class);
-        $company = Company::paginate(self::$perPage);
+        $company = $this->companyRepository->getCompanies()->paginate(self::$perPage);
         return response()->json($company);
     }
 
@@ -50,7 +52,7 @@ use Illuminate\View\View;
     {
         $this->authorize('view', Company::class);
         $search = $request->input('search');
-        $companies = Company::search($search)->paginate(self::$perPage);
+        $companies = $this->company->search($search)->paginate(self::$perPage);
         return response()->json($companies);
     }
 
@@ -61,7 +63,8 @@ use Illuminate\View\View;
     public function store(CompanyRequest $request): JsonResponse
     {
         $this->authorize('create', Company::class);
-        return response()->json(Company::create($request->validated()));
+        $this->company->create($request->validated());
+        return response()->json(['message' => 'data berhasil disimpan.']);
     }
 
 
@@ -91,9 +94,7 @@ use Illuminate\View\View;
     public function destroy(Request $request, Company $company): JsonResponse
     {
         $this->authorize('delete', $company);
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $company->whereIn('id', $explodeID)->delete();
+        $company->whereIn('id', $request->get('id'))->delete();
 
         return response()->json([
             'message' => 'data berhasil dihapus',

@@ -11,6 +11,10 @@ use App\Models\Master\Common\Branch;
 use App\Models\Stock;
 use App\Models\Transaction;
 use App\Support\HelperService\HandleFileUploadService;
+use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
+use App\Support\Master\Accounting\InitialBalances\Repositories\InitialBalanceRepository;
+use App\Support\Master\Common\Branch\Repository\BranchRepository;
+use App\Support\Master\Operational\InitialInventoryBalance\Repository\InitialInventoryBalanceRepository;
 use App\Support\Transactions\Repositories\TransactionRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -26,7 +30,13 @@ use function App\Helper\formatDate;
     public function __construct()
     {
         $this->transactionRepository = new TransactionRepository();
+        $this->transaction = new Transaction();
+        $this->branchRepository = new BranchRepository();
         $this->handleUploadService = new HandleFileUploadService();
+        $this->initialInventoryBalanceRepository = new InitialInventoryBalanceRepository();
+        $this->draftStock = new DraftStock();
+        $this->stock = new Stock();
+        $this->accountTransaction = new AccountTransaction();
     }
 
 
@@ -51,23 +61,15 @@ use function App\Helper\formatDate;
         $search = $request->input('search');
         $branch = $request->user()->branch_id;
         if (!empty($branch)) {
-            $branch = Branch::with('children')
-                ->find($request->user()->branch_id)
+            $branch = $this->branchRepository
+                ->findById($request->user()->branch_id)
                 ->children
                 ->pluck('id')
                 ->toArray();
         }
 
         $itemCollections = Transaction::search($search)->query(function ($query) use ($search, $request, $branch) {
-            if (!empty($request->user()->branch_id)) {
-                $query->whereIn('branch_id', $branch);
-            }
-            $query->where('transactions.type', TransactionType::INITIAL_INVENTORY_BALANCE->value)
-                ->join('branches', 'transactions.branch_id', 'branches.id')
-                ->join('branches as parent_branches', 'parent_branches.id', '=', 'branches.parent_id')
-                ->join('contacts', 'transactions.contact_id', '=', 'contacts.id')
-                ->join('item_collections', 'transactions.item_id', '=', 'item_collections.id')
-                ->select('transactions.*', 'parent_branches.name', 'item_collections.name');
+            $this->initialInventoryBalanceRepository->search($request, $query, $branch);
         })->paginate(self::$perPage);
 
         return self::formattedData($itemCollections);
@@ -109,7 +111,7 @@ use function App\Helper\formatDate;
         $unitPrice = (float)$formattedValue;
 
 
-        Transaction::create([
+        $this->transaction->create([
             'branch_id' => $request->branch_id,
             'date' => $request->input('date'),
             'contact_id' => $request->input('supplier_id'),
@@ -166,48 +168,45 @@ use function App\Helper\formatDate;
     public function confirm(Request $request, Transaction $transaction): void
     {
         DB::transaction(function () use ($request, $transaction) {
-            $implodeID = implode(',', $request->get('id'));
-            $explodeID = explode(',', $implodeID);
-
-            $query = $transaction->whereIn('id', $explodeID);
+            $query = $transaction->whereIn('id', $request->get('id'));
             $query->update(['status' => true]);
+            $selectedInitialInventoryBalance = $query->with([
+                'branch',
+                'supplier',
+                'item',
+                'stockAccount',
+                'branch.parent'
+            ])->get();
 
-            $selectedInitialInventoryBalance = $query
-                ->with(['branch', 'supplier', 'item', 'stockAccount', 'branch.parent'])
-                ->get();
-            foreach ($selectedInitialInventoryBalance as $item) {
-
-                if ($item->item->category->name !== 'Kategori 4') {
-                    DraftStock::create([
-                        'transaction_id' => $item->id,
-                        'qty' => $item->qty,
-                        'qty_in_meter' => $item->qty_in_meter
+            foreach ($selectedInitialInventoryBalance as $initialInventoryBalance) {
+                if ($initialInventoryBalance->item->category->name !== 'Kategori 4') {
+                    $this->draftStock->create([
+                        'transaction_id' => $initialInventoryBalance->id,
+                        'qty' => $initialInventoryBalance->qty,
+                        'qty_in_meter' => $initialInventoryBalance->qty_in_meter
                     ]);
                 } else {
-                    Stock::create([
-                        'transaction_id' => $item->id,
-                        'branch_id' => $item->branch_id,
-                        'available_qty' => $item->qty,
+                    $this->stock->create([
+                        'transaction_id' => $initialInventoryBalance->id,
+                        'branch_id' => $initialInventoryBalance->branch_id,
+                        'available_qty' => $initialInventoryBalance->qty,
                         'on_hold_qty' => 0,
                         'broken_qty' => 0
                     ]);
                 }
 
-
-                AccountTransaction::create([
-                    'branch_id' => $item->branch->parent->id,
-                    'transaction_id' => $item->id,
-                    'date' => $item->date,
-                    'account_id' => $item->stock_account_id,
-                    'description' => $item->detail,
+                $this->accountTransaction->create([
+                    'branch_id' => $initialInventoryBalance->branch->parent->id,
+                    'transaction_id' => $initialInventoryBalance->id,
+                    'date' => $initialInventoryBalance->date,
+                    'account_id' => $initialInventoryBalance->stock_account_id,
+                    'description' => $initialInventoryBalance->detail,
                     'transaction_type' => 'SA',
                     'entries_type' => 'debit',
-                    'amount' => $item->total_price,
+                    'amount' => $initialInventoryBalance->total_price,
                 ]);
             }
-
         });
-
     }
 
 

@@ -17,6 +17,7 @@ use Illuminate\View\View;
     public function __construct()
     {
         $this->accountCategoryService = new AccountCategoryService();
+        $this->accountCategory = new AccountCategory();
     }
 
     /**
@@ -51,7 +52,7 @@ use Illuminate\View\View;
     public function store(AccountCategoryRequest $request): JsonResponse
     {
         $this->authorize('create', AccountCategory::class);
-        AccountCategory::updateOrCreate([
+        $this->accountCategory->updateOrCreate([
             'name' => $request->name,
         ]);
 
@@ -64,7 +65,7 @@ use Illuminate\View\View;
     public function storeChild(AccountCategoryRequest $request, AccountCategory $accountCategory): JsonResponse
     {
         $this->authorize('create', AccountCategory::class);
-        AccountCategory::create([
+        $this->accountCategory->updateOrCreate([
             'name' => $request->name,
             'parent_id' => $accountCategory->id
         ]);
@@ -78,8 +79,8 @@ use Illuminate\View\View;
     public function edit(AccountCategory $accountCategory): JsonResponse
     {
         $this->authorize('update', $accountCategory);
-        $data = AccountCategory::where('id', $accountCategory->id)->with('parent')->first();
-        return response()->json($data);
+        $accountCategory->load('parent');
+        return response()->json($accountCategory);
     }
 
 

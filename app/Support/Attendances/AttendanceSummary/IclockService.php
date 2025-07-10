@@ -7,7 +7,6 @@ use App\Models\BranchDefaultWorkTime;
 use App\Models\BranchRoleDefaultWorkTime;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
-use App\Models\FingerLog;
 use App\Models\FpDevice;
 use App\Models\RoleDefaultWorkTime;
 use App\Models\User;
@@ -59,11 +58,6 @@ class IclockService
         try {
             $processedCount = 0;
             DB::transaction(function () use ($processedCount, $request) {
-                $content['url'] = json_encode($request->all());
-                $content['data'] = $request->getContent();
-                FingerLog::create($content);
-
-
                 $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
 
                 if ($request->input('table') == 'OPERLOG') {

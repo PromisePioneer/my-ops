@@ -295,10 +295,11 @@
                     }
                 },
                 async edit(id) {
-                    console.log(id)
                     const resp = await axios.get(`/master/accounting/accounts/edit/${id}`);
                     this.editVal = resp.data;
-                    await selectedValue('parent_id', `/select2/selected-account/${this.editVal.parent_id}`);
+                    if (this.editVal.parent_id) {
+                        await selectedValue('parent_id', `/select2/selected-account/${this.editVal.parent_id}`);
+                    }
                 },
                 async update(id) {
                     this.buttonLoading = true;

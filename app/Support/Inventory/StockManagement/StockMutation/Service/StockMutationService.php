@@ -12,7 +12,7 @@ use App\Models\Stock;
 use App\Models\StockMutation;
 use App\Models\StockMutationItem;
 use App\Models\Transaction;
-use App\Support\AccountTransactions\AccountTransactionService;
+use App\Support\AccountTransactions\Service\AccountTransactionService;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\ItemCatalogRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Inventory\StockManagement\StockMutation\Repository\StockMutationItemRepository;

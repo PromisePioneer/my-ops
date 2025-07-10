@@ -2,16 +2,24 @@
 
 namespace App\Support\Master\Operational\ItemCollections\Repositories;
 
+use AllowDynamicProperties;
 use App\Models\ItemCollection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 
-class ItemCollectionRepository
+#[AllowDynamicProperties] class ItemCollectionRepository
 {
+
+    public function __construct()
+    {
+        $this->itemCollection = new ItemCollection();
+    }
+
+
     public function getItemCollection(): Builder
     {
-        return ItemCollection::with('category', 'unitType', 'assetAccount')
+        return $this->itemCollection->with(['category', 'unitType', 'assetAccount'])
             ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'type', 'reorder_level', 'tangible_assets_type', 'building_type')
             ->orderBy('item_collection_name');
     }
@@ -29,12 +37,12 @@ class ItemCollectionRepository
 
     public function itemCollectionStock(): EloquentBuilder
     {
-        return ItemCollection::with('unitType', 'category')->whereNotNull('category_id');
+        return $this->itemCollection->with(['unitType', 'category'])->whereNotNull('category_id');
     }
 
     public function getArchivedData()
     {
-        return ItemCollection::onlyTrashed()->with('category', 'unitType', 'assetAccount')
+        return $this->itemCollection->onlyTrashed()->with(['category', 'unitType', 'assetAccount'])
             ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'type', 'reorder_level', 'tangible_assets_type', 'building_type')
             ->orderBy('name');
     }
@@ -42,13 +50,19 @@ class ItemCollectionRepository
 
     public function getAssetData()
     {
-        return ItemCollection::with('category', 'unitType', 'assetAccount')->where('type', 'ASET');
+        return $this->itemCollection->with(['category', 'unitType', 'assetAccount'])->where('type', 'ASET');
     }
 
 
     public function getMustReorderItem(): EloquentBuilder
     {
 
-        return ItemCollection::query();
+        return $this->itemCollection->query();
+    }
+
+
+    public function findById(int $id): array|ItemCollection
+    {
+        return $this->itemCollection->find($id);
     }
 }

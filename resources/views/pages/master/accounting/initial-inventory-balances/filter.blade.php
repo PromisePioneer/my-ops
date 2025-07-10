@@ -20,11 +20,38 @@
         <div class="card-body">
             <div class="row">
                 <div class="mb-4">
+                    <label for="date" class="form-label">Tanggal</label>
+                    <input type="text" name="date" id="date" x-model="date"
+                           class="form-control form-control-solid form-control-lg date-picker"
+                           placeholder="Tgl awal - akhir"/>
+                </div>
+                <div class="mb-4">
+                    <label for="branch_id" class="form-label">Cabang</label>
                     <x-select2.index
                         name="branch_id"
                         id="branch_id"
                         class="form-select form-select-solid"
                         elementSelector="branches-select2"
+                        data-dropdown-parent="#initial-inventory-balances-filter"
+                    />
+                </div>
+                <div class="mb-4">
+                    <label for="item_id" class="form-label">Barang</label>
+                    <x-select2.index
+                        name="item_id"
+                        id="item_id"
+                        class="form-select form-select-solid"
+                        elementSelector="items-select2"
+                        data-dropdown-parent="#initial-inventory-balances-filter"
+                    />
+                </div>
+                <div class="mb-4">
+                    <label for="supplier_id" class="form-label">Supplier</label>
+                    <x-select2.index
+                        name="supplier_id"
+                        id="supplier_id"
+                        class="form-select form-select-solid"
+                        elementSelector="suppliers-select2"
                         data-dropdown-parent="#initial-inventory-balances-filter"
                     />
                 </div>
