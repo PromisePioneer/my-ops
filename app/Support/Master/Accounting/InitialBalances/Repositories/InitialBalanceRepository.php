@@ -10,11 +10,9 @@ class InitialBalanceRepository implements InitialBalanceRepositoryInterface
 {
     public function handle(): Builder
     {
-        return Account::with('accountTransaction', 'children', 'parent')
+        return Account::with(['accountTransaction', 'children', 'parent'])
             ->whereNull('parent_id');
     }
-
-
 
 
 }

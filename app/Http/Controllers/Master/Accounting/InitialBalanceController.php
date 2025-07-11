@@ -136,7 +136,10 @@ use function App\Helper\currencyFormat;
      */
     public function store(InitialBalanceRequest $request): JsonResponse
     {
+
+
         $this->authorize('create', AccountTransaction::class);
+
         $rawAmount = $request->input('amount');
 
         $formattedValue = str_replace(',', '.', str_replace('.', '', $rawAmount));
@@ -148,7 +151,9 @@ use function App\Helper\currencyFormat;
             'account_id' => $request->account_id,
             'entries_type' => $request->entries_type,
         ], [
-            'date' => Carbon::now()->subYear()->endOfYear(),
+            'date' => $request->input('year') ? Carbon::parse(
+                $request->input('year') . '-' . Carbon::now()->month . '-' . Carbon::now()->day
+            )->endOfYear() : Carbon::now()->subYear()->endOfYear(),
             'transaction_type' => 'SA',
             'amount' => (float)$amount,
         ]);
@@ -164,7 +169,11 @@ use function App\Helper\currencyFormat;
     {
         $this->authorize('update', $account);
         $branchId = $request->branch_id ?? $request->user()->branch_id;
-        $data = AccountTransaction::where('account_id', $account->id)->where('branch_id', $branchId)->where('transaction_type', 'SA')->where('entries_type', $request->input('entries_type'))->whereYear('date', Carbon::now()->subYear())->first() ?? $account;
+        $data = AccountTransaction::where('account_id', $account->id)
+            ->where('branch_id', $branchId)
+            ->where('transaction_type', 'SA')
+            ->where('entries_type', $request->input('entries_type'))
+            ->whereYear('date', $request->input('year') ?? Carbon::now()->subYear())->first() ?? $account;
 
         if ($data) {
             $data->amount = (float)$data?->amount;

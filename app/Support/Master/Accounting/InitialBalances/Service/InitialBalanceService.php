@@ -124,13 +124,26 @@ use function App\Helper\currencyFormat;
     public function getFilteredTransactionSum($account, $type, ?Request $request, $entriesType = null): float
     {
         $transactions = $account->accountTransaction()
-            ->whereYear('date', Carbon::now()->subYear())
             ->where('transaction_type', $type)
             ->where('entries_type', $entriesType);
+
+
+        if (!empty($request?->input('year'))) {
+            $transactions->whereYear('date', (int)$request->input('year'));
+        } else {
+            $transactions->whereYear('date', Carbon::now()->subYear());
+        }
+//        dd(request()->except('_token'));
+
 
         if ($request?->branch_id || $request?->user()->branch_id) {
             $transactions->where('branch_id', $request->branch_id ?? $request->user()->branch_id);
         }
+
+
+//        dd($transactions->get());
+
+
         return $transactions->sum('amount');
     }
 
@@ -138,15 +151,10 @@ use function App\Helper\currencyFormat;
     public function filter(Request $request): array
     {
         $branch = $request->input('branch_id');
+        $year = $request->input('year');
+
 
         $query = $this->initialBalanceRepository->handle();
-
-        if ($branch) {
-            $query->orWhereHas('accountTransaction', function (Builder $query) use ($branch) {
-                $query->where('branch_id', $branch ?? null);
-            });
-        }
-
 
         return [
             'initial_balances' => $this->formattedData($query->paginate(self::$perPage), $request),

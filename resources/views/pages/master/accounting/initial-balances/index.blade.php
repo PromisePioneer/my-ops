@@ -27,10 +27,9 @@
                                 <h2 class="mb-0">Filter</h2>
                             </div>
                         </div>
-
-                        <form id="form-filter" @submit.prevent="filter()">
-                            <div class="card-body pt-0">
-                                <div class="d-flex flex-column text-gray-600">
+                        <div class="card-body pt-0">
+                            <div class="d-flex flex-column text-gray-600">
+                                <div class="mb-4">
                                     <x-select2.index
                                         name="branch_id"
                                         id="branch-id-filter"
@@ -38,13 +37,17 @@
                                         elementSelector="main-branches-select2"
                                     />
                                 </div>
+                                <div>
+                                    <input type="number" class="form-control form-control-solid" name="year"
+                                           id="year" x-model="year" placeholder="Tahun">
+                                </div>
                             </div>
-                            <div class="card-footer pt-4 text-end">
-                                <button type="submit" class="btn btn-light btn-active-primary btn-sm">
-                                    Filter
-                                </button>
-                            </div>
-                        </form>
+                        </div>
+                        <div class="card-footer pt-4 text-end">
+                            <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
+                                Filter
+                            </button>
+                        </div>
                     </div>
                 </div>
             @endif
@@ -281,6 +284,7 @@
                 selectAll: false,
                 singleChecked: false,
                 branchId: "{{ request()->user()->branch_id }}",
+                year: null,
                 search: "",
                 editVal: "",
                 accountVal: "",
@@ -315,6 +319,7 @@
                             params: {
                                 search: this.search,
                                 branch_id: this.branchId,
+                                year: this.year,
                             },
                         });
 
@@ -379,6 +384,7 @@
                         const resp = await axios.get('/master/accounting/initial-balances/filter', {
                             params: {
                                 branch_id: this.branchId,
+                                year: this.year,
                             }
                         });
                         this.initialBalances = resp.data;
@@ -409,6 +415,7 @@
                     const resp = await axios.get(`/master/accounting/initial-balances/${id}`, {
                         params: {
                             branch_id: branch_id,
+                            year: this.year,
                             entries_type: this.entriesType
                         }
                     });
@@ -433,7 +440,7 @@
                     });
                 },
                 disabledAccountButton(branchId, account) {
-                    if(account?.sub_accounts === []){
+                    if (account?.sub_accounts === []) {
                         return true;
                     }
 
@@ -443,15 +450,12 @@
                     }
 
 
-
-
                     if (this.branchId) {
                         return false;
                     }
                     if (!this.branchId) {
                         return true;
                     }
-
 
 
                     return null;
@@ -479,7 +483,8 @@
                     this.entriesType = null;
                     const resp = await axios.get(`${this.initialBalances.initial_balances.path}?page=${this.initialBalances.initial_balances.current_page}`, {
                         params: {
-                            branch_id: this.branchId
+                            branch_id: this.branchId,
+                            year: this.year,
                         }
                     });
                     this.initialBalances = resp.data
