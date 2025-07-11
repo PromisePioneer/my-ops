@@ -37,10 +37,6 @@
                                         elementSelector="main-branches-select2"
                                     />
                                 </div>
-                                <div>
-                                    <input type="number" class="form-control form-control-solid" name="year"
-                                           id="year" x-model="year" placeholder="Tahun">
-                                </div>
                             </div>
                         </div>
                         <div class="card-footer pt-4 text-end">
@@ -284,7 +280,6 @@
                 selectAll: false,
                 singleChecked: false,
                 branchId: "{{ request()->user()->branch_id }}",
-                year: null,
                 search: "",
                 editVal: "",
                 accountVal: "",
@@ -319,7 +314,6 @@
                             params: {
                                 search: this.search,
                                 branch_id: this.branchId,
-                                year: this.year,
                             },
                         });
 
@@ -384,7 +378,6 @@
                         const resp = await axios.get('/master/accounting/initial-balances/filter', {
                             params: {
                                 branch_id: this.branchId,
-                                year: this.year,
                             }
                         });
                         this.initialBalances = resp.data;
@@ -415,7 +408,6 @@
                     const resp = await axios.get(`/master/accounting/initial-balances/${id}`, {
                         params: {
                             branch_id: branch_id,
-                            year: this.year,
                             entries_type: this.entriesType
                         }
                     });
@@ -484,7 +476,6 @@
                     const resp = await axios.get(`${this.initialBalances.initial_balances.path}?page=${this.initialBalances.initial_balances.current_page}`, {
                         params: {
                             branch_id: this.branchId,
-                            year: this.year,
                         }
                     });
                     this.initialBalances = resp.data

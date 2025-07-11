@@ -4,6 +4,7 @@ namespace App\Support\Master\Accounting\InitialBalances\Service;
 
 use AllowDynamicProperties;
 use App\Models\Account;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use App\Support\AccountTransactions\Repository\AccountTransactionRepository;
 use App\Support\Master\Accounting\InitialBalances\Repositories\InitialBalanceRepository;
@@ -21,6 +22,7 @@ use function App\Helper\currencyFormat;
     {
         $this->initialBalanceRepository = new InitialBalanceRepository();
         $this->accountTransactionRepository = new AccountTransactionRepository();
+        $this->accountingPeriod = new AccountingPeriod();
     }
 
     public function data(Request $request)
@@ -125,15 +127,8 @@ use function App\Helper\currencyFormat;
     {
         $transactions = $account->accountTransaction()
             ->where('transaction_type', $type)
-            ->where('entries_type', $entriesType);
-
-
-        if (!empty($request?->input('year'))) {
-            $transactions->whereYear('date', (int)$request->input('year'));
-        } else {
-            $transactions->whereYear('date', Carbon::now()->subYear());
-        }
-//        dd(request()->except('_token'));
+            ->where('entries_type', $entriesType)
+            ->whereYear('date', $this->accountingPeriod->first()->year);
 
 
         if ($request?->branch_id || $request?->user()->branch_id) {
@@ -150,10 +145,6 @@ use function App\Helper\currencyFormat;
 
     public function filter(Request $request): array
     {
-        $branch = $request->input('branch_id');
-        $year = $request->input('year');
-
-
         $query = $this->initialBalanceRepository->handle();
 
         return [

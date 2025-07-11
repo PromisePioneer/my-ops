@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AccountingPeriod;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             LetterHeadSeeder::class,
             UnitTypesSeeder::class,
             WorkTimeSeeder::class,
+            AccountingPeriodSeeder::class,
             RoleHasDepartmentSeeder::class,
             PayrollScheduleSeeder::class,
             BPJSKetSeeder::class,

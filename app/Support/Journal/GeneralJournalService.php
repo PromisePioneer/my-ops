@@ -2,18 +2,28 @@
 
 namespace App\Support\Journal;
 
+use AllowDynamicProperties;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use function App\Helper\currencyFormat;
 
-class GeneralJournalService
+#[AllowDynamicProperties] class GeneralJournalService
 {
+    public function __construct()
+    {
+        $this->accountingPeriod = new AccountingPeriod();
+    }
+
+
     public function data()
     {
+
+
         $generalJournal = AccountTransaction::with('account')
             ->where('transaction_type', 'TR')
-            ->whereYear('date', Carbon::now())
+            ->whereYear('date', $this->accountingPeriod->query()->first()->year)
             ->orderBy('date')
             ->get();
 

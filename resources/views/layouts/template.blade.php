@@ -42,6 +42,7 @@
 <div class="d-flex flex-column flex-root">
 
     <div class="page d-flex flex-row flex-column-fluid">
+        @include('layouts.modal.accounting-period')
         @include('layouts.partials.aside')
         <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
             <div id="kt_header" style="" class="header align-items-stretch">
@@ -112,9 +113,14 @@
                             </ul>
                             <!--end::Breadcrumb-->
                         </div>
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#modal-accounting-period"
+                                    x-text="`Periode Pembukuan : ${accountingPeriod}`">
+                            </button>
+                        </div>
                         <div class="d-flex align-items-center pt-lg-0">
-                            <div class="d-flex align-items-center">
-                            </div>
+
                             <div class="d-flex align-items-center">
                                 <div class="d-flex">
                                     <div class="d-flex align-items-center">
@@ -218,7 +224,7 @@
         </div>
     </div>
 </div>
-
+@include('components.toast')
 <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.js')}}"></script>
 
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
@@ -228,10 +234,15 @@
 <script>
     function notifications() {
         return {
+            buttonLoading: false,
             notifications: [],
+            accountingPeriod: null,
+            formAccountingPeriod: document.getElementById('form-accounting-period'),
+            modalAccountingPeriod: new bootstrap.Modal(document.getElementById('modal-accounting-period')),
             async init() {
                 const notifications = await axios.get('/notifications');
                 this.notifications = notifications.data;
+                await this.getCurrentAccountingPeriod();
             },
             differenceBetweenDate(dueDate) {
                 let dateNow = "{{ Carbon::now()->format('Y-m-d') }}"
@@ -247,6 +258,14 @@
                 let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                 return `${diffDays} Hari`
             },
+            async getCurrentAccountingPeriod() {
+                try {
+                    const resp = await axios.get('/accounting-period-year');
+                    this.accountingPeriod = resp.data;
+                } catch (error) {
+                    console.log(error)
+                }
+            },
             formatDate(val) {
                 if (val) {
                     const date = new Date(val);
@@ -258,12 +277,27 @@
                     return formatter.format(date);
                 }
             },
+            async saveAccountingPeriod() {
+                this.buttonLoading = true;
+                try {
+                    await axios.post('/accounting-period-year/update', new FormData(this.formAccountingPeriod));
+                    await showAlert('success', 'Data berhasil disimpan')
+                    this.formAccountingPeriod.reset();
+                    this.modalAccountingPeriod.hide();
+                    await this.init();
+                } catch (error) {
+                    const respError = error.response.data.errors;
+                    Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                } finally {
+                    this.buttonLoading = false;
+                }
+            }
         }
     }
 </script>
 <script>
-    var defaultThemeMode = "light";
-    var themeMode;
+    const defaultThemeMode = "light";
+    let themeMode;
 
     if (document.documentElement) {
         if (document.documentElement.hasAttribute("data-bs-theme-mode")) {

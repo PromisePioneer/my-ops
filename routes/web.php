@@ -20,6 +20,7 @@ use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\PurchaseOrder
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\BranchDefaultWorkTimeController;
 use App\Http\Controllers\HRIS\Attendances\BranchRoleDefaultWorkTimeController;
@@ -109,19 +110,6 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 */
 
 
-Route::get('/phpinfo', function () {
-    phpinfo();
-});
-
-
-Route::get('/test', function () {
-    ini_set('max_execution_time', 300);
-    $zk = new ZKTeco('103.211.160.26');
-    $connected = $zk->connect();
-    $attendanceLog = $zk->getAttendance();
-
-});
-
 Route::get('/', function () {
     return redirect('home');
 });
@@ -132,14 +120,15 @@ Auth::routes();
 Route::prefix('/iclock')->group(function () {
     Route::post('/cdata', [IclockController::class, 'receiveRecords']);
     Route::get('/cdata', [IclockController::class, 'handshake']);
-    Route::get('test', [IclockController::class, 'test']);
     Route::get('/getrequest', [IclockController::class, 'getRequest']);
 });
 
 
 Route::group(['middleware' => ['auth']], static function () {
     //dashboard
-    Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('home', [HomeController::class, 'index'])->name('home');
+    Route::get('/accounting-period-year', [HomeController::class, 'accountingPeriodData']);
+    Route::post('/accounting-period-year/update/', [HomeController::class, 'accountingPeriodUpdate']);
 
     Route::prefix('/transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);

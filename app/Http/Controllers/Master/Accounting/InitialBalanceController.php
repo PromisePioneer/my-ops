@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InitialBalanceRequest;
 use App\Models\Account;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use App\Models\Master\Common\Branch;
 use App\Support\Master\Accounting\InitialBalances\Service\InitialBalanceService;
@@ -24,6 +25,7 @@ use function App\Helper\currencyFormat;
         $this->account = new Account();
         $this->initialBalanceService = new InitialBalanceService();
         $this->branch = new Branch();
+        $this->accountingPeriod = new AccountingPeriod();
     }
 
     /**
@@ -151,9 +153,9 @@ use function App\Helper\currencyFormat;
             'account_id' => $request->account_id,
             'entries_type' => $request->entries_type,
         ], [
-            'date' => $request->input('year') ? Carbon::parse(
-                $request->input('year') . '-' . Carbon::now()->month . '-' . Carbon::now()->day
-            )->endOfYear() : Carbon::now()->subYear()->endOfYear(),
+            'date' => Carbon::parse(
+                $this->accountingPeriod->first()->year . '-' . Carbon::now()->month . '-' . Carbon::now()->day
+            )->endOfYear()->subYear(),
             'transaction_type' => 'SA',
             'amount' => (float)$amount,
         ]);
