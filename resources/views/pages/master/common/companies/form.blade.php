@@ -27,6 +27,27 @@
                                placeholder="Nama Perusahaan" :value="editVal?.name"/>
                     </div>
 
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">No.Telp</label>
+                        <input type="number" id="phone" name="phone" class="form-control form-control-solid"
+                               placeholder="Telepon" :value="editVal?.phone"/>
+                    </div>
+
+
+                    <div class="mb-10">
+                        <label for="address" class="required form-label">Logo</label>
+                        <input type="file" class="form-control form-control-solid" name="image" id="image"
+                               accept=".jpg,.png,.jpeg">
+                    </div>
+
+                    <div class="mb-10">
+                        <label for="address" class="required form-label">Alamat</label>
+                        <textarea id="address" name="address" class="form-control form-control-solid"
+                                  data-kt-autosize="true" x-text="editVal?.address"
+                                  placeholder="Alamat lengkap"></textarea>
+                    </div>
+
+
                 </div>
 
                 <div class="modal-footer">

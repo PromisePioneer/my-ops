@@ -39,6 +39,7 @@ use Illuminate\View\View;
             'name' => $request->name,
             'code' => $request->code,
             'parent_id' => $account->id,
+            'category_id' => $request->category_id,
         ]);
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
@@ -46,10 +47,10 @@ use Illuminate\View\View;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', Account::class);
-        $accounts = $this->accountService->data();
+        $accounts = $this->accountService->data($request);
         return response()->json($accounts);
     }
 
@@ -69,7 +70,15 @@ use Illuminate\View\View;
     public function store(AccountRequest $request): JsonResponse
     {
         $this->authorize('create', Account::class);
-        Account::create($request->validated());
+
+        Account::create([
+            'company_id' => $request->company_id ?? $request->user()->company_id,
+            'name' => $request->name,
+            'code' => $request->code,
+            'parent_id' => $request->parent_id,
+            'category_id' => $request->category_id,
+            'trial_balance_type' => $request->trial_balance_type,
+        ]);
 
         return response()->json([
             'message' => 'Data berhasil disimpan',

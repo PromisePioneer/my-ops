@@ -2,8 +2,10 @@
 
 namespace App\Helper;
 
+use App\Models\Company;
 use App\Models\Menu;
 use App\Models\MenuSection;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -74,6 +76,13 @@ function randomDigits(): string
 function currencyFormat($currency): string
 {
     return 'Rp ' . number_format($currency, 2, ',', '.');
+}
+
+
+function companiesImg()
+{
+    $company = Company::where('id', Auth::user()->company_id)->first();
+    return \Storage::url($company->image);
 }
 
 

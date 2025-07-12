@@ -1,4 +1,4 @@
-﻿@php use Carbon\Carbon; @endphp
+﻿@php use Carbon\Carbon;use function App\Helper\companiesImg; @endphp
     <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,8 +48,8 @@
             <div id="kt_header" style="" class="header align-items-stretch">
                 <div class="header-brand">
                     <a href="{{ url()->current() }}">
-                        <img alt="Logo" src="{{ asset('assets/media/logos/mayatama-logo-full.png')}}"
-                             width="150px"/>
+                        <img alt="Logo" src="{{ companiesImg() }}"
+                             width="150px" />
                     </a>
                     <div id="kt_aside_toggle"
                          class="btn btn-icon w-auto px-0 btn-active-color-primary aside-minimize"

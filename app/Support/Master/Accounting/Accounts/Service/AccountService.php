@@ -20,9 +20,9 @@ use Illuminate\Http\Request;
         $this->accountRepository = new AccountRepository();
     }
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
-        $accounts = $this->accountRepository->dataQuery()->paginate(self::$perPage);
+        $accounts = $this->accountRepository->dataQuery($request)->paginate(self::$perPage);
         return self::formatAccounts($accounts);
     }
 

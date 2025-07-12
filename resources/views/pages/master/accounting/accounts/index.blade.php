@@ -23,12 +23,9 @@
                         @can('Tambah Data Akun')
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
+                                    data-bs-target="#modal-create" @click="add()">
+                                <x-icons.add-item/>
+                                Tambah
                             </button>
                         @endcan
                     </div>
@@ -63,9 +60,9 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-bordered">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input"
@@ -80,29 +77,13 @@
                             </tr>
                             </thead>
                             <template x-if="isLoading">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="9">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.loading colspan="4"/>
                             </template>
                             <template x-if="!isLoading && accounts.data?.length === 0">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="9">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.empty colspan="4"/>
                             </template>
                             <template x-for="(account, index) in accounts.data" :key="account.account_id">
-                                <tbody style="cursor:pointer" class="fw-bold">
+                                <tbody style="cursor:pointer" class="fw-bold text-center">
                                 <tr :id="account.account_id" @click="expand($event)">
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -191,6 +172,7 @@
                 deletePermission: "{{ request()->user()->can('Hapus Data Akun') }}",
                 accounts: [],
                 buttonLoading: false,
+                toggleAccountCategory: false,
                 isLoading: true,
                 startIndex: null,
                 search: '',
@@ -212,7 +194,13 @@
                 modalEditChildren: new bootstrap.Modal(document.getElementById('modal-edit-children')),
                 async init() {
                     await this.getAccountData();
-                    await select2('.parent-account-select2', 'Pilih Akun Induk', '/select2/parent-accounts-data')
+                    await select2('.companies-select2', 'Pilih Perusahaan', '/select2/companies-data');
+                    await select2('.parent-account-select2', 'Pilih Akun Induk', '/select2/parent-accounts-data');
+                    await select2('.account-categories-select2', 'Pilih Kategori Akun', '/select2/account-categories-data');
+                },
+                add() {
+                    this.editVal = '';
+                    this.toggleAccountCategory = false;
                 },
                 toggleAllCheckBox() {
                     this.selectAll = true;
@@ -297,6 +285,18 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/accounting/accounts/edit/${id}`);
                     this.editVal = resp.data;
+                    this.toggleAccountCategory = resp.data.category_id !== null;
+                    console.log(this.toggleAccountCategory);
+
+                    if (this.toggleAccountCategory) {
+                        await selectedValue('selected-account-category', `/select2/selected-account-category/${this.editVal.category_id}`);
+                    }
+
+
+                    if(this.editVal.company_id){
+                        await selectedValue('selected-company', `/select2/selected-company/${this.editVal.company_id}`);
+                    }
+
                     if (this.editVal.parent_id) {
                         await selectedValue('parent_id', `/select2/selected-account/${this.editVal.parent_id}`);
                     }

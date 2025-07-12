@@ -13,6 +13,11 @@ class CreateAccounts extends Migration
     {
         Schema::create('accounts', static function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')
+                ->nullable()
+                ->constrained('companies')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->string('code', 10);
             $table->string('name', 100);
             $table->foreignId('parent_id')->nullable()->constrained('accounts')->cascadeOnDelete();

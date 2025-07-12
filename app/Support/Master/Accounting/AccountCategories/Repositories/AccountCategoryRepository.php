@@ -31,4 +31,12 @@ use Illuminate\Database\Eloquent\Builder;
             })->orWhere('name', 'like', '%' . $search . '%');
         });
     }
+
+
+    public function getAllAccountCategories(): Builder
+    {
+        return $this->accountCategory->with(['children', 'parent'])
+            ->whereNull('parent_id')
+            ->orderBy('name');
+    }
 }

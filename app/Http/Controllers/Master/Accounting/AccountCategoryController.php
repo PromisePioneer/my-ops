@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Accounting\AccountCategory\AccountCategoryRequest;
 use App\Models\AccountCategory;
+use App\Support\Master\Accounting\AccountCategories\Repositories\AccountCategoryRepository;
 use App\Support\Master\Accounting\AccountCategories\Service\AccountCategoryService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -18,6 +19,7 @@ use Illuminate\View\View;
     {
         $this->accountCategoryService = new AccountCategoryService();
         $this->accountCategory = new AccountCategory();
+        $this->accountCategoryRepository = new AccountCategoryRepository();
     }
 
     /**
@@ -118,5 +120,17 @@ use Illuminate\View\View;
         return response()->json([
             'message' => 'data berhasil dihapus',
         ]);
+    }
+
+
+    public function getAccountCategories(Request $request): JsonResponse
+    {
+       return response()->json($this->accountCategoryService->getAllAccountCategories($request));
+    }
+
+
+    public function selectedAccountCategory(AccountCategory $accountCategory): JsonResponse
+    {
+      return response()->json($this->accountCategoryService->selectedAccountCategory($accountCategory));
     }
 }

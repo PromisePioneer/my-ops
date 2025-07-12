@@ -25,6 +25,9 @@ class CompanyRequest extends FormRequest
         return [
             'code' => ['required'],
             'name' => ['required'],
+            'phone' => ['required'],
+            'address' => ['required'],
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ];
     }
 
@@ -34,6 +37,12 @@ class CompanyRequest extends FormRequest
         return [
             'code.required' => 'Kode tidak boleh kosong.',
             'name.required' => 'Nama tidak boleh kosong.',
+            'phone.required' => 'No. Telepon tidak boleh kosong.',
+            'address.required' => 'Alamat tidak boleh kosong.',
+            'image.required' => 'Foto tidak boleh kosong.',
+            'image.image' => 'Foto harus berupa gambar.',
+            'image.mimes' => 'Foto harus berupa gambar.',
+            'image.max' => 'Ukuran gambar terlalu besar.',
         ];
     }
 }

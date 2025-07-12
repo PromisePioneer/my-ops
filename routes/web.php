@@ -1232,6 +1232,10 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/companies-data', [CompanyController::class, 'getCompanies']);
         Route::get('/selected-company/{company}', [CompanyController::class, 'selectedCompany']);
 
+
+        Route::get('/account-categories-data', [AccountCategoryController::class, 'getAccountCategories']);
+        Route::get('/selected-account-category/{accountCategory}', [AccountCategoryController::class, 'selectedAccountCategory']);
+
         Route::get('/roles-data', [RoleController::class, 'getRoles']);
         Route::get('/selected-role/{role}', [RoleController::class, 'selectedRole']);
 

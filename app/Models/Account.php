@@ -18,10 +18,12 @@ class Account extends Model
     protected $table = 'accounts';
 
     protected $fillable = [
+        'company_id',
         'name',
         'code',
         'parent_id',
         'trial_balance_type',
+        'category_id',
     ];
 
 
@@ -39,6 +41,11 @@ class Account extends Model
         ];
     }
 
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 
     public function parent(): BelongsTo
     {

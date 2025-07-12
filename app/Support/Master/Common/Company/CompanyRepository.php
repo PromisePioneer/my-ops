@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 
     public function getCompanies(): Builder|Company
     {
-        return $this->company->select('id', 'code', 'name');
+        return $this->company->query();
     }
 
     public function selectedCompany(int $companyId): Company

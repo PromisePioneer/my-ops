@@ -53,6 +53,8 @@
                                 </th>
                                 <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Telepon</th>
+                                <th class="min-w-125px">Alamat</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -73,7 +75,26 @@
                                         </div>
                                     </td>
                                     <td x-text="company.code"></td>
-                                    <td x-text="company.name"></td>
+                                    <td class="d-flex align-items-center">
+                                        <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                            <a href="#">
+                                                <div class="symbol-label">
+                                                    <a href="#" @click="openImage(company.image)">
+                                                        <img :src="getImageURL(company.image ?? null)"
+                                                             alt="Image" class="w-100">
+                                                    </a>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <p
+                                                class="text-gray-800 text-hover-primary mb-1"
+                                                x-text="`${company.name}`">
+                                            </p>
+                                        </div>
+                                    </td>
+                                    <td x-text="company.phone"></td>
+                                    <td x-text="company.address"></td>
                                     <td>
                                         <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"

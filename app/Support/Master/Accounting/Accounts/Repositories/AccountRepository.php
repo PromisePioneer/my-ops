@@ -4,23 +4,36 @@ namespace App\Support\Master\Accounting\Accounts\Repositories;
 
 use AllowDynamicProperties;
 use App\Models\Account;
+use App\Models\AccountCategory;
+use App\Models\Company;
 use App\Models\DraftStock;
 use App\Support\Master\Accounting\Accounts\Interface\AccountRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 #[AllowDynamicProperties] class AccountRepository
 {
     public function __construct()
     {
         $this->account = new Account();
+        $this->company = new Company();
     }
 
 
-    public function dataQuery()
+    public function dataQuery(Request $request)
     {
-        return Account::with('children')
+        return Account::with(['children', 'company'])
             ->where('parent_id', null)
-            ->orderBy('code');
+            ->whereHas('company', function (Builder $query) use ($request) {
+                $query->where(
+                    'id',
+                    $this->company
+                        ->where('id',
+                            $request->user()->company_id
+                        )->first()
+                        ->id
+                );
+            })->orderBy('code');
     }
 
 
@@ -76,5 +89,13 @@ use Illuminate\Database\Eloquent\Builder;
     public function getParentAccount($query)
     {
         return $query->where('parent_id', null)->orderBy('code');
+    }
+
+
+    public function getAccountCategories()
+    {
+        $data = AccountCategory::with('children')->get();
+
+
     }
 }
