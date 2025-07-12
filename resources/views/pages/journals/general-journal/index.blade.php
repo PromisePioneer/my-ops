@@ -20,10 +20,6 @@
                                     </select>
                                 </div>
                                 <div class="d-flex align-items-center py-2">
-                                    <input type="number" name="year" id="year" class="form-control form-control-solid"
-                                           placeholder="Filter Berdasarkan Tahun">
-                                </div>
-                                <div class="d-flex align-items-center py-2">
                                     <select class="form-select form-select-solid"
                                             name="month" id="month" data-control="select2"
                                             data-placeholder="Pilih Bulan">

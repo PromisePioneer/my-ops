@@ -3,6 +3,7 @@
 namespace App\Support\Journal;
 
 use App\Models\AccountCategory;
+use App\Models\AccountingPeriod;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use function App\Helper\currencyFormat;
@@ -121,18 +122,13 @@ class FinancialReportService
 
     public function getFilteredTransactionSum($account, $type, Request $request): float
     {
-        $transactions = $account->accountTransaction()->where('entries_type', $type);
+        $transactions = $account->accountTransaction()->where('entries_type', $type)
+            ->whereYear('date', AccountingPeriod::first()->year);
 
         if ($request->branch_id) {
             $transactions->where('branch_id', $request->branch_id);
         }
 
-        if ($request->year) {
-            $transactions->whereBetween('date', [
-                Carbon::parse($request->year)->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'),
-                $request->year
-            ]);
-        }
 
         if ($request->month) {
             $transactions->whereMonth('date', $request->month);

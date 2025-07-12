@@ -8,6 +8,7 @@ use App\Models\AccountTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use function App\Helper\currencyFormat;
+use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class GeneralJournalService
 {
@@ -37,7 +38,7 @@ use function App\Helper\currencyFormat;
             return [
                 'id' => $item->id,
                 'branch_name' => $item->branch->name,
-                'date' => $item->date,
+                'date' => formatDate($item->date),
                 'amount' => currencyFormat($item->amount),
                 'type' => $item->entries_type,
                 'account' => $item->account?->code . ' ' . $item->account?->name,

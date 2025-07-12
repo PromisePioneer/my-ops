@@ -3,6 +3,7 @@
 namespace App\Support\Journal;
 
 use App\Models\Account;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -64,19 +65,11 @@ class TrialBalanceService
 
     public function getFilteredTransactionSum($account, $type, ?Request $request): float
     {
-        $transactions = $account->accountTransaction()->where('entries_type', $type);
+        $transactions = $account->accountTransaction()->where('entries_type', $type)
+            ->whereYear('date', AccountingPeriod::first()->year);
 
-        if ($request?->year && $request?->month) {
-            $transactions->whereMonth('date', $request->month)
-                ->whereYear('date', $request->year);
-        } elseif ($request?->year) {
-            $start = Carbon::createFromDate($request->year - 1, 12, 1)->startOfDay();
-            $end = Carbon::createFromDate($request->year, 12, 31)->endOfDay();
-            $transactions->whereBetween('date', [$start, $end]);
-        } else {
-            $start = Carbon::now()->subYear()->startOfMonth()->setMonth(12); // 1 Dec tahun lalu
-            $end = Carbon::now()->endOfYear(); // 31 Dec tahun ini
-            $transactions->whereBetween('date', [$start, $end]);
+        if ($request?->month) {
+            $transactions->whereMonth('date', $request->month);
         }
 
         if ($request?->branch_id) {
@@ -106,14 +99,11 @@ class TrialBalanceService
         $query = AccountTransaction::with('account')
             ->whereHas('account', function ($query) use ($type) {
                 $query->where('trial_balance_type', $type);
-            })->where('entries_type', $type);
+            })->where('entries_type', $type)
+            ->where('date', AccountingPeriod::first()->year);
 
         if ($request->branch_id) {
             $query->where('branch_id', $request->branch_id);
-        }
-
-        if ($request->year) {
-            $query->whereYear('date', $request->year);
         }
 
         if ($request->month) {

@@ -3,6 +3,7 @@
 namespace App\Support\Journal;
 
 use App\Models\Account;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -14,7 +15,7 @@ class GeneralLedgerService
         return Account::all();
     }
 
-    public function getDetailGeneralLedger(Account $account): Builder
+    public function getDetailGeneralLedger(Account $account): Builder|AccountTransaction
     {
         $isAccountHasParent = Account::where('parent_id', $account->id)->exists();
 
@@ -24,7 +25,7 @@ class GeneralLedgerService
             'accounts.id',
             '=',
             'account_transactions.account_id'
-        );
+        )->whereYear('account_transactions.date', AccountingPeriod::first()->year);
 
         if ($isAccountHasParent) {
             $data->where('accounts.parent_id', $account->id);

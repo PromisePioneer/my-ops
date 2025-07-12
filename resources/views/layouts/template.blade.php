@@ -114,9 +114,17 @@
                             <!--end::Breadcrumb-->
                         </div>
                         <div class="d-flex align-items-center">
-                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" :disabled="isLoading"
                                     data-bs-target="#modal-accounting-period"
-                                    x-text="`Periode Pembukuan : ${accountingPeriod}`">
+                            >
+                                <template x-if="isLoading">
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </template>
+                                <template x-if="accountingPeriod !== null">
+                                    <span x-text="`Periode Pembukuan : ${accountingPeriod}`"></span>
+                                </template>
                             </button>
                         </div>
                         <div class="d-flex align-items-center pt-lg-0">
@@ -234,6 +242,7 @@
 <script>
     function notifications() {
         return {
+            isLoading: false,
             buttonLoading: false,
             notifications: [],
             accountingPeriod: null,
@@ -259,11 +268,14 @@
                 return `${diffDays} Hari`
             },
             async getCurrentAccountingPeriod() {
+                this.isLoading = true;
                 try {
                     const resp = await axios.get('/accounting-period-year');
                     this.accountingPeriod = resp.data;
                 } catch (error) {
                     console.log(error)
+                } finally {
+                    this.isLoading = false;
                 }
             },
             formatDate(val) {
@@ -284,7 +296,7 @@
                     await showAlert('success', 'Data berhasil disimpan')
                     this.formAccountingPeriod.reset();
                     this.modalAccountingPeriod.hide();
-                    await this.init();
+                    window.location.reload();
                 } catch (error) {
                     const respError = error.response.data.errors;
                     Object.keys(respError).map(err => toastr.error(respError[err][0]))
