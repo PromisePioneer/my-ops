@@ -253,7 +253,6 @@
             </div>
         </div>
     </div>
-    @include('components.toast')
     @include('components.input-mask')
     @include('components.select2.script')
 @endsection

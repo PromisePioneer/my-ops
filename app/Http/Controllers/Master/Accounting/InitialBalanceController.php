@@ -46,8 +46,8 @@ use function App\Helper\currencyFormat;
 
         $this->authorize('view', AccountTransaction::class);
         $query = Account::with(['children', 'accountTransaction'])
-            ->where('company_id', $request->session()->get('company_session'))
-            ->whereNull('parent_id');
+            ->whereNull('parent_id')
+            ->where('company_id', $request->session()->get('company_session'));
         $initialBalance = $this->initialBalanceService->formattedTotalInitialBalanceData($query, $request);
         $totalDebit = '0';
         $totalCredit = '0';
