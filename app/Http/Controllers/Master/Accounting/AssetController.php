@@ -130,7 +130,7 @@ use Throwable;
 
 
         $this->authorize('confirm', $asset);
-        $this->assetService->confirm( $asset, $asset->date);
+        $this->assetService->confirm2( $asset, $asset->date);
         return response()->json(['message' => 'Data berhasil dikonfirmasi.']);
     }
 

@@ -160,34 +160,75 @@ use function App\Helper\currencyFormat;
             $this->depreciation($asset, $date);
             $asset->status = 1;
             $asset->save();
+
+            if (empty($asset->stock_id)) {
+                AccountTransaction::create([
+                    'branch_id' => $asset->branch->parent_id,
+                    'date' => $asset->date,
+                    'account_id' => $asset->item->asset_account_id,
+                    'description' => sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $asset->item->name),
+                    'transaction_type' => 'SA',
+                    'entries_type' => 'Debit',
+                    'amount' => $asset->price,
+                ]);
+            } else {
+                $this->accountTransactionService->createDebitTransaction(
+                    $asset->branch->parent_id,
+                    sprintf(
+                        self::PURCHASE_ASSET_DESCRIPTION,
+                        $asset->item->name,
+                        $asset->branch->parent->name,
+                        $asset->branch->name
+                    ),
+                    $asset->item->asset_account_id,
+                    $asset->price,
+                );
+            }
         });
+    }
 
 
-        if (empty($asset->stock_id)) {
-            AccountTransaction::create([
-                'branch_id' => $asset->branch->parent_id,
-                'date' => $asset->date,
-                'account_id' => $asset->item->asset_account_id,
-                'description' => sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $asset->item->name),
-                'transaction_type' => 'SA',
-                'entries_type' => 'Debit',
-                'amount' => $asset->price,
-            ]);
-        } else {
+    public function confirm2(Asset $asset, string $date): void
+    {
+        $asset->load('item', 'branch.parent');
+        DB::transaction(function () use ($asset, $date) {
+            $this->depreciation($asset, $date);
+            $asset->status = 1;
+            $asset->save();
+
+            if (empty($asset->stock_id)) {
+                AccountTransaction::create([
+                    'branch_id' => $asset->branch->parent_id,
+                    'date' => $asset->date,
+                    'account_id' => $asset->item->asset_account_id,
+                    'description' => sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $asset->item->name),
+                    'transaction_type' => 'SA',
+                    'entries_type' => 'Debit',
+                    'amount' => $asset->price,
+                ]);
+            } else {
+                $this->accountTransactionService->createDebitTransaction(
+                    $asset->branch->parent_id,
+                    sprintf(
+                        self::PURCHASE_ASSET_DESCRIPTION,
+                        $asset->item->name,
+                        $asset->branch->parent->name,
+                        $asset->branch->name
+                    ),
+                    $asset->item->asset_account_id,
+                    $asset->price,
+                );
+            }
+
+
             $this->accountTransactionService->createDebitTransaction(
                 $asset->branch->parent_id,
-                sprintf(
-                    self::PURCHASE_ASSET_DESCRIPTION,
-                    $asset->item->name,
-                    $asset->branch->parent->name,
-                    $asset->branch->name
-                ),
+                'Persediaan Awal Aset',
                 $asset->item->asset_account_id,
                 $asset->price,
             );
-        }
+        });
     }
-
 
     /**
      * @throws Throwable
