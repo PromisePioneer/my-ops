@@ -19,6 +19,7 @@ class ItemCollection extends Model
         'name',
         'type',
         'code',
+        'company_id',
         'category_id',
         'unit_type_id',
         'tangible_assets_type',
@@ -38,6 +39,12 @@ class ItemCollection extends Model
         return [
             'name' => $this->name,
         ];
+    }
+
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     public function unitType(): BelongsTo

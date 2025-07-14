@@ -7,12 +7,13 @@ use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 class GeneralLedgerService
 {
-    public function getAccountData(): Collection
+    public function getAccountData(Request $request)
     {
-        return Account::all();
+        return Account::where('company_id', $request->session()->get('company_id'))->get();
     }
 
     public function getDetailGeneralLedger(Account $account): Builder|AccountTransaction

@@ -100,6 +100,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
     {
         $branches = $this->branchRepository->getAllBranch($request);
 
+
+
         return $branches->map(function ($branch) {
             return [
                 'id' => $branch?->id,

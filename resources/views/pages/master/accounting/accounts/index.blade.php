@@ -8,7 +8,6 @@
             @include('pages.master.accounting.accounts.modal.create-children')
             @include('pages.master.accounting.accounts.modal.edit-children')
             @include('pages.master.accounting.accounts.modal.edit')
-            @include('pages.master.accounting.accounts.filter')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -27,15 +26,6 @@
                                     data-bs-target="#modal-create" @click="add()">
                                 <x-icons.add-item/>
                                 Tambah
-                            </button>
-                        @endcan
-                        @can('Filter Data Akun Berdasarkan Perusahaan')
-                            <button id="kt_drawer_example_basic_button" class="btn btn-light-info btn-sm">
-                                <i class="ki-duotone ki-filter-square">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>
-                                Filter
                             </button>
                         @endcan
                     </div>
@@ -232,7 +222,6 @@
                         const response = await axios.get('/master/accounting/accounts/search', {
                             params: {
                                 search: this.search,
-                                company_id: document.getElementById('company-id-filter').value
                             },
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -249,7 +238,6 @@
                         const resp = await axios.get('/master/accounting/accounts/filter', {
                             params: {
                                 search: this.search,
-                                company_id: document.getElementById('company-id-filter').value
                             }
                         });
                         this.accounts = resp.data;
@@ -264,7 +252,6 @@
                         const resp = await axios.get(`${url}`, {
                             params: {
                                 search: this.search,
-                                company_id: document.getElementById('company-id-filter').value,
                             }
                         });
                         this.accounts = resp.data
@@ -398,7 +385,6 @@
                     const resp = await axios.get(`${this.accounts.path}?page=${this.accounts.current_page}`, {
                         params: {
                             search: this.search,
-                            company_id: document.getElementById('company-id-filter').value
                         }
                     });
                     this.accounts = resp.data

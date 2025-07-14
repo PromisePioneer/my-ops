@@ -274,13 +274,14 @@ class AccountSeeder extends Seeder
         ]);
     }
 
-    private function kendaraan($asetTetap): void
+    private function kendaraan($asetTetap, $companyId): void
     {
         Account::create([
             'code' => '123',
             'name' => 'Kendaraan',
             'trial_balance_type' => 'debit',
-            'category_id' => $asetTetap
+            'category_id' => $asetTetap,
+            'company_id' => $companyId,
         ]);
     }
 

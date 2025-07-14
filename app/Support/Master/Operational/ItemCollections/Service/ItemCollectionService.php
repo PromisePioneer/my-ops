@@ -28,9 +28,9 @@ use Throwable;
         $this->accountRepository = new AccountRepository();
     }
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
-        $data = $this->itemCollectionRepository->getItemCollection()->paginate(self::$perPage);
+        $data = $this->itemCollectionRepository->getItemCollection($request)->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -44,7 +44,7 @@ use Throwable;
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = $this->itemCollectionRepository->getItemCollection();
+        $query = $this->itemCollectionRepository->getItemCollection($request);
         $filter = ItemCollectionFilter::apply($query, $request)->paginate(self::$perPage);
         return self::formattedData($filter);
     }
@@ -125,6 +125,7 @@ use Throwable;
 
             ItemCollection::create([
                 'name' => $request->input('name'),
+                'company_id' => $request->session()->get('company_session'),
                 'is_vehicle' => $request->input('is_vehicle') === 'on',
                 'category_id' => $request->input('category_id'),
                 'unit_type_id' => $unitTypeId->id ?? $request->input('unit_type_id'),
@@ -178,6 +179,7 @@ use Throwable;
 
         return $itemCollection->update([
             'name' => $request->input('name'),
+            'company_id' => $request->session()->get('company_session'),
             'is_vehicle' => $request->input('is_vehicle') === 'on',
             'category_id' => $request->input('category_id'),
             'unit_type_id' => $unitTypeId->id ?? $request->input('unit_type_id'),

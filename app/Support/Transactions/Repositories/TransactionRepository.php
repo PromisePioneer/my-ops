@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
     }
 
 
-    public function getTransactions(): Builder
+    public function getTransactions(Request $request): Builder
     {
         return $this->transaction->with([
             'branch',
@@ -37,6 +37,15 @@ use Illuminate\Http\Request;
                 $branch = $this->branchRepository->findById($request->user()->branch_id)->children->pluck('id')->toArray();
                 $query->whereIn('branch_id', $branch);
             })->orderBy('created_at');
+    }
+
+    public function searchQuery($query)
+    {
+        return $query->leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
+            ->leftJoin('item_collections', 'transactions.item_id', '=', 'item_collections.id')
+            ->leftJoin('companies', 'transactions.company_id', '=', 'companies.id')
+            ->where('transactions.type', '!=', TransactionType::INITIAL_INVENTORY_BALANCE->value)
+            ->select('transactions.*', 'item_collections.name as collection_name', 'companies.name as company_name');
     }
 
 }

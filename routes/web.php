@@ -130,6 +130,11 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::get('/accounting-period-year', [HomeController::class, 'accountingPeriodData']);
     Route::post('/accounting-period-year/update/', [HomeController::class, 'accountingPeriodUpdate']);
 
+    Route::prefix('company-session')->group(function () {
+        Route::get('/data', [CompanyController::class, 'getCompanySessions']);
+    });
+
+
     Route::prefix('/transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
         Route::get('/create', [TransactionController::class, 'create']);
@@ -459,7 +464,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/create-child/{account}', [AccountController::class, 'createChildAccount']);
                 Route::get('/data', [AccountController::class, 'data']);
                 Route::get('/search', [AccountController::class, 'search']);
-                Route::get('/filter', [AccountController::class, 'filter']);
                 Route::post('/', [AccountController::class, 'store']);
                 Route::post('/destroy', [AccountController::class, 'destroy']);
                 Route::get('/edit/{account}', [AccountController::class, 'edit']);

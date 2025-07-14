@@ -28,7 +28,6 @@ class TransactionSeeder extends Seeder
         $qty1 = 300;
         $unitPrice1 = 300000;
         Transaction::create([
-            'company_id' => $mayatama,
             'transaction_number' => '12345435',
             'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
             'contact_id' => Contact::where('tax_type', 'PKP')->first()->id,
@@ -40,13 +39,13 @@ class TransactionSeeder extends Seeder
             'total_price' => $qty1 * $unitPrice1,
             'detail' => 'Pembelian Box ODC (PKP)',
             'debit_account_id' => Account::with('parent')
-                ->whereHas('parent', function ($query) use ($mayatama) {
-                    $query->where('company_id', $mayatama);
+                ->whereHas('parent', function ($query) use ($linkkita) {
+                    $query->where('company_id', $linkkita);
                 })->where('code', '112-01')
                 ->first()->id,
             'credit_account_id' => Account::with('parent')
-                ->whereHas('parent', function ($query) use ($mayatama) {
-                    $query->where('company_id', $mayatama);
+                ->whereHas('parent', function ($query) use ($linkkita) {
+                    $query->where('company_id', $linkkita);
                 })->where('code', '111-01')
                 ->first()->id,
             'created_by' => User::where('name', 'Super Admin')->first()->id,

@@ -24,7 +24,7 @@ use Carbon\Carbon;
     ): void
     {
         $this->accountTransaction->create([
-            'date' => date('y-m-d'),
+            'date' => date('Y-m-d'),
             'branch_id' => $branchId ?? null,
             'account_id' => $accountId,
             'description' => $description,

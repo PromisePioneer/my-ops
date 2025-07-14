@@ -145,4 +145,10 @@ use Illuminate\View\View;
             'name' => $company->name
         ];
     }
+
+    public function getCompanySessions(Request $request)
+    {
+        $company = $this->companyRepository->selectedCompany($request->session()->get('company_session'));
+        return $company->name;
+    }
 }

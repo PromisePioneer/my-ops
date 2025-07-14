@@ -73,7 +73,7 @@ use Illuminate\View\View;
         $this->authorize('create', Account::class);
 
         Account::create([
-            'company_id' => $request->company_id ?? $request->user()->company_id,
+            'company_id' => $request->session()->get('company_session'),
             'name' => $request->name,
             'code' => $request->code,
             'parent_id' => $request->parent_id,
@@ -102,7 +102,14 @@ use Illuminate\View\View;
     public function update(AccountRequest $request, Account $account): JsonResponse
     {
         $this->authorize('update', $account);
-        $account->update($request->validated());
+        $account->update([
+            'company_id' => $request->session()->get('company_session'),
+            'name' => $request->name,
+            'code' => $request->code,
+            'parent_id' => $request->parent_id,
+            'category_id' => $request->category_id,
+            'trial_balance_type' => $request->trial_balance_type,
+        ]);
 
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -168,12 +175,6 @@ use Illuminate\View\View;
     public function parentAccounts(Request $request)
     {
         return response()->json($this->accountService->parentAccount($request));
-    }
-
-    public function filter(Request $request)
-    {
-        $this->authorize('filterByCompany', Account::class);
-        return response()->json($this->accountService->filter($request));
     }
 
 }

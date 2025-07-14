@@ -124,7 +124,8 @@
                                         </div>
                                     </template>
                                     <template x-if="accountingPeriod !== null">
-                                        <span x-text="`Periode Pembukuan : ${accountingPeriod}`"></span>
+                                        <span
+                                            x-text="`Periode Pembukuan : ${accountingPeriod} (${companyName})`"></span>
                                     </template>
                                 </button>
                             @else
@@ -170,6 +171,7 @@
     </div>
 </div>
 @include('components.toast')
+@include('components.select2.script')
 <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.js')}}"></script>
 
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
@@ -182,13 +184,36 @@
             isLoading: false,
             buttonLoading: false,
             notifications: [],
+            companyName: null,
             accountingPeriod: null,
+            companyId: "{{ request()->session()->get('company_session') }}",
             formAccountingPeriod: document.getElementById('form-accounting-period'),
             modalAccountingPeriod: new bootstrap.Modal(document.getElementById('modal-accounting-period')),
             async init() {
                 const notifications = await axios.get('/notifications');
                 this.notifications = notifications.data;
+                await select2('.companies-select2', 'Pilih Perusahaan', '/select2/companies-data');
                 await this.getCurrentAccountingPeriod();
+                await this.getCurrentCompanySession();
+                await selectedValue('current_company_session', `/select2/selected-company/${this.companyId}`);
+            },
+            async getCurrentCompanySession() {
+                this.isLoading = true;
+                try {
+                    const resp = await axios.get('/company-session/data');
+                    this.companyName = resp.data;
+                } catch (error) {
+                    console.log(error);
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+            setCompanySession() {
+                try {
+
+                } catch (e) {
+                    console.error(e);
+                }
             },
             differenceBetweenDate(dueDate) {
                 let dateNow = "{{ Carbon::now()->format('Y-m-d') }}"

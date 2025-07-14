@@ -128,7 +128,6 @@
 
                                 <td class="text-center">
                                     <div class="d-flex flex-column">
-                                        <span class="text-info" x-text="`${transaction.company_name}`"></span>
                                         <span x-text="`[${transaction.branch_name}]`"></span>
                                         <span x-text="`Transaksi ${transaction.type}`"></span>
                                         <span x-text="`Tgl ${transaction.date}`"></span>
@@ -256,7 +255,6 @@
     </div>
     <div>
     </div>
-    @include('components.toast')
 @endsection
 @push('script')
     <script defer>

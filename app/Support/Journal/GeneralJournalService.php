@@ -18,11 +18,12 @@ use function App\Helper\formatDate;
     }
 
 
-    public function data()
+    public function data(Request $request)
     {
-
-
         $generalJournal = AccountTransaction::with('account')
+            ->whereHas('account.parent', function ($query) use ($request) {
+                $query->where('company_id', $request->session()->get('company_session'));
+            })
             ->where('transaction_type', 'TR')
             ->whereYear('date', $this->accountingPeriod->query()->first()->year)
             ->orderBy('date')

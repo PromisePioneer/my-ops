@@ -5,11 +5,8 @@ namespace App\Support\Master\Accounting\Accounts\Service;
 use AllowDynamicProperties;
 use App\Models\Account;
 use App\Models\Company;
-use App\Support\Master\Accounting\Accounts\Interface\AccountServiceInterface;
 use App\Support\Master\Accounting\Accounts\Repositories\AccountRepository;
-use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 #[AllowDynamicProperties] class AccountService
@@ -89,17 +86,15 @@ use Illuminate\Http\Request;
     }
 
 
-    public function getAssetAccounts(Request $request, ?Company $company): array
+    public function getAssetAccounts(Request $request): array
     {
         $search = $request->input('search');
-        $query = Account::search($search)
-            ->query(fn($query) => $this->accountRepository->getAssetAccounts($query, $request, $company))
-            ->get();
+        $query = $this->accountRepository->getAssetAccounts($request, $search)->get();
 
         return $query->map(function ($c) {
             return [
                 'id' => $c->id,
-                'text' => $c->code . ' ' . $c->name,
+                'text' => "$c->code $c->name",
             ];
         })->toArray();
     }
@@ -107,9 +102,7 @@ use Illuminate\Http\Request;
     public function kasAndLeverageAccounts(Request $request): array
     {
         $search = $request->input('search');
-        $query = Account::search($search)
-            ->query(fn($query) => $this->accountRepository->getKasAndLeverageAccounts($query))
-            ->get();
+        $query = $this->accountRepository->getKasAndLeverageAccounts($request, $search)->get();
 
 
         $results = [];
@@ -137,16 +130,27 @@ use Illuminate\Http\Request;
     public function getStockAccounts(Request $request): array
     {
         $search = $request->input('search');
-        $query = Account::search($search)
-            ->query(fn($query) => $this->accountRepository->getStockAccounts($query))
-            ->get();
+        $query = $this->accountRepository->getStockAccounts($request, $search)->get();
 
-        return $query->map(function ($c) {
-            return [
-                'id' => $c->id,
-                'text' => $c->code . ' ' . $c->name,
-            ];
-        })->toArray();
+        $results = [];
+
+        foreach ($query as $c) {
+            if (count($c->children) === 0) {
+                $results[] = [
+                    'id' => $c->id,
+                    'text' => $c->code . ' ' . $c->name,
+                ];
+            }
+
+            foreach ($c->children as $child) {
+                $results[] = [
+                    'id' => $child->id,
+                    'text' => $child->code . ' ' . $child->name,
+                ];
+            }
+        }
+
+        return $results;
     }
 
 
@@ -180,14 +184,6 @@ use Illuminate\Http\Request;
         })->toArray();
 
 
-    }
-
-    public function filter(Request $request): LengthAwarePaginator
-    {
-        $query = $this->accountRepository->dataQuery($request)->paginate(self::$perPage);
-
-
-        return self::formatAccounts($query);
     }
 
 

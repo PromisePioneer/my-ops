@@ -37,16 +37,6 @@
                     </div>
 
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Perusahaan</label>
-                        <select name="company_id" id="selected-company"
-                                class="form-select form-select-solid companies-select2"
-                                data-dropdown-parent="#modal-edit" >
-                            <option></option>
-                        </select>
-                    </div>
-
-
-                    <div class="mb-10">
                         <div class="form-check form-switch form-check-custom form-check-solid">
                             <input class="form-check-input" type="checkbox" x-model="toggleAccountCategory" value=""
                                    id="flexSwitchDefault"/>

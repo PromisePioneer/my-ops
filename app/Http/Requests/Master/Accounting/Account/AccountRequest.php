@@ -33,10 +33,6 @@ class AccountRequest extends FormRequest
             'parent_id' => [
                 'nullable',
             ],
-            'company_id' => [
-                Rule::requiredIf(empty($request->parent_id)),
-                'exists:companies,id',
-            ],
             'category_id' => [
                 'nullable',
                 Rule::exists('account_categories', 'id')

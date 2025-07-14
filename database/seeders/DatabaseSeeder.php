@@ -38,13 +38,13 @@ class DatabaseSeeder extends Seeder
             SalaryCalculationMethodSeeder::class,
             TaxSettingSeeder::class,
             ItemCategoriesSeeder::class,
-//            ItemCollectionSeeder::class,
+            ItemCollectionSeeder::class,
             AreaSeeder::class,
             WeekHolidaySeeder::class,
             ContactSeeder::class,
             RoleHierarchySeeder::class,
 //            InitialBalanceSeeder::class,
-//            TransactionSeeder::class,
+            TransactionSeeder::class,
         ]);
     }
 }

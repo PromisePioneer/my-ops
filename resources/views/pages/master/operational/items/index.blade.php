@@ -480,7 +480,6 @@
                     await showAlert('success', 'Data berhasil disimpan')
                     this.form.reset();
                     this.modal.hide();
-                    KTDrawer.getInstance(document.querySelector('#item-drawer-action')).hide();
                     const resp = await axios.get(`${this.items.path}?page=${this.items.current_page}`);
                     this.items = resp.data
                 },

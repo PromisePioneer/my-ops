@@ -691,7 +691,6 @@ class PermissionSeeder extends Seeder
             'Tambah Data Akun',
             'Edit Data Akun',
             'Hapus Data Akun',
-            'Filter Data Akun Berdasarkan Perusahaan'
         ];
 
 

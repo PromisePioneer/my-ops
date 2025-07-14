@@ -24,9 +24,9 @@ class GeneralLedgerController extends Controller
         return view('pages.journals.general-ledger.index');
     }
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        return response()->json($this->generalLedgerService->getAccountData());
+        return response()->json($this->generalLedgerService->getAccountData($request));
     }
 
     public function detail(Account $account): View

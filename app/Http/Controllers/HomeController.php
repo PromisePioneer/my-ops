@@ -20,7 +20,7 @@ class HomeController extends Controller
     }
 
 
-    public function index(): View
+    public function index(Request $request): View
     {
         return view('home');
     }
@@ -41,5 +41,11 @@ class HomeController extends Controller
         AccountingPeriod::first()->update([
             'year' => $request->input('year'),
         ]);
+
+
+        session()->forget('company_session');
+        session()->put('company_session', $request->input('current_company_session'));
     }
+
+
 }

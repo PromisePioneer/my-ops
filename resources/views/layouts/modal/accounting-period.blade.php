@@ -22,6 +22,14 @@
                                :value="accountingPeriod"/>
                     </div>
                 </div>
+                <div class="modal-body">
+                    <div class="mb-10">
+                        <label for="current_company_session" class="required form-label">Perusahaan</label>
+                        <select name="current_company_session" id="current_company_session"
+                                class="form-select form-select-solid companies-select2"
+                                data-dropdown-parent="#modal-accounting-period"></select>
+                    </div>
+                </div>
 
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">

@@ -29,16 +29,6 @@
 
 
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Perusahaan</label>
-                        <select name="company_id" id="company_id"
-                                class="form-select form-select-solid companies-select2"
-                                data-dropdown-parent="#modal-create">
-                            <option></option>
-                        </select>
-                    </div>
-
-
-                    <div class="mb-10">
                         <label for="name" class="required form-label">Tipe Saldo Awal / Neraca Saldo</label>
                         <select name="trial_balance_type" id="" class="form-select form-select-solid">
                             <option value="" selected>Pilih</option>

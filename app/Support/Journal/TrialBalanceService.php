@@ -13,15 +13,17 @@ use function App\Helper\currencyFormat;
 
 class TrialBalanceService
 {
-    public function data(): Collection
+    public function data(Request $request): Collection
     {
-        $accounts = $this->query();
+        $accounts = $this->query($request);
         return self::formattedData($accounts);
     }
 
-    public function query(): Builder
+    public function query(Request $request): Builder
     {
-        return Account::with('children')->whereNull('parent_id');
+        return Account::with('children')
+            ->where('company_id', $request->session()->get('company_session'))
+            ->whereNull('parent_id');
     }
 
     public function formattedData(Builder $accounts, ?Request $request = null): Collection
@@ -81,7 +83,7 @@ class TrialBalanceService
 
     public function filter(Request $request): array
     {
-        $query = $this->query();
+        $query = $this->query($request);
         return [
             'trial_balance' => $this->formattedData($query, $request),
             'total_debit' => currencyFormat($this->getTotalDebit($request)),
