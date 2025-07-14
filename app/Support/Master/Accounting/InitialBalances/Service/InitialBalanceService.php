@@ -144,6 +144,7 @@ use function App\Helper\currencyFormat;
     {
         $query = $this->initialBalanceRepository->handle($request);
 
+
         return [
             'initial_balances' => $this->formattedData($query->paginate(self::$perPage), $request),
             'total_debit' => currencyFormat($this->getTotalDebit($request)->sum('amount')),
