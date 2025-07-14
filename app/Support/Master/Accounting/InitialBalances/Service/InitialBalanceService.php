@@ -154,7 +154,7 @@ use function App\Helper\currencyFormat;
 
     private function getFilteredTotal(string $type, Request $request): Builder
     {
-        $query = $this->accountTransactionRepository->findByType($type);
+        $query = $this->accountTransactionRepository->findByType($type, $request);
 
         if ($request->filled('branch_id')) {
             $query->where('branch_id', $request->input('branch_id'));

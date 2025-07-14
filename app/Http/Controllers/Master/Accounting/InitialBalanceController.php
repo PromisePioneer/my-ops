@@ -46,7 +46,7 @@ use function App\Helper\currencyFormat;
 
         $this->authorize('view', AccountTransaction::class);
         $query = Account::with(['children', 'accountTransaction'])
-            ->where('company_id', $request->company_id ?? $request->user()->company_id)
+            ->where('company_id', $request->session()->get('company_session'))
             ->whereNull('parent_id');
         $initialBalance = $this->initialBalanceService->formattedTotalInitialBalanceData($query, $request);
         $totalDebit = '0';
@@ -155,9 +155,7 @@ use function App\Helper\currencyFormat;
             'account_id' => $request->account_id,
             'entries_type' => $request->entries_type,
         ], [
-            'date' => Carbon::parse(
-                $this->accountingPeriod->first()->year . '-' . Carbon::now()->month . '-' . Carbon::now()->day
-            )->endOfYear()->subYear(),
+            'date' => Carbon::parse($this->accountingPeriod->first()->year . '-' . Carbon::now()->month . '-' . Carbon::now()->day),
             'transaction_type' => 'SA',
             'amount' => (float)$amount,
         ]);
