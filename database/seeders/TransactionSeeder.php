@@ -20,9 +20,7 @@ class TransactionSeeder extends Seeder
     public function run(): void
     {
 
-
-        $mayatama = Company::where('code', '001')->first()->id;
-        $linkkita = Company::where('code', '002')->first()->id;
+        $linkkita = Company::where('code', '003')->first()->id;
 
         //transaksi aset PKP (ASET)
         $qty1 = 300;

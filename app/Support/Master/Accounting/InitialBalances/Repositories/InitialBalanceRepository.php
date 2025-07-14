@@ -12,7 +12,7 @@ class InitialBalanceRepository implements InitialBalanceRepositoryInterface
     public function handle(Request $request): Builder
     {
         return Account::with(['accountTransaction', 'children', 'parent'])
-            ->where('company_id', $request->company_id ?? $request->user()->company_id)
+            ->where('company_id', $request->session()->get('company_session'))
             ->whereNull('parent_id');
     }
 

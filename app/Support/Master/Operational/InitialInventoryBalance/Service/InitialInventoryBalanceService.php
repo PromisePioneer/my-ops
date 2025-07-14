@@ -169,7 +169,7 @@ use function App\Helper\formatDate;
     {
         DB::transaction(function () use ($request, $transaction) {
             $query = $transaction->whereIn('id', $request->get('id'));
-            $query->update(['status' => true]);
+            $query->update(['status' => 'Diterima']);
             $selectedInitialInventoryBalance = $query->with([
                 'branch',
                 'supplier',

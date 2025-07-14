@@ -134,7 +134,7 @@ class AccountSeeder extends Seeder
 
         Account::create([
             'name' => 'Persediaan Aset',
-            'code' => $parentAccount->code . '-' . '03',
+            'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
 

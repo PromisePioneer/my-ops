@@ -136,9 +136,6 @@ use function App\Helper\currencyFormat;
         }
 
 
-//        dd($transactions->get());
-
-
         return $transactions->sum('amount');
     }
 
