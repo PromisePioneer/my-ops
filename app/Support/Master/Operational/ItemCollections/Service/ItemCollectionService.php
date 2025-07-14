@@ -80,8 +80,8 @@ use Throwable;
     public function assetData(Request $request)
     {
         $search = $request->input('search');
-        $items = ItemCollection::search($search)->query(function ($query) {
-            $this->itemCollectionRepository->getAssetData();
+        $items = ItemCollection::search($search)->query(function ($query) use ($request) {
+            $this->itemCollectionRepository->getAssetData($query, $request);
         })->get();
         return $items->map(function ($item) {
             return [
