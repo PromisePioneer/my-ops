@@ -203,7 +203,7 @@ use function App\Helper\currencyFormat;
                     'account_id' => $asset->item->asset_account_id,
                     'description' => sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $asset->item->name),
                     'transaction_type' => 'SA',
-                    'entries_type' => 'Debit',
+                    'entries_type' => 'debit',
                     'amount' => $asset->price,
                 ]);
             } else {
@@ -219,14 +219,6 @@ use function App\Helper\currencyFormat;
                     $asset->price,
                 );
             }
-
-
-            $this->accountTransactionService->createDebitTransaction(
-                $asset->branch->parent_id,
-                'Persediaan Awal Aset',
-                $asset->item->asset_account_id,
-                $asset->price,
-            );
         });
     }
 

@@ -64,7 +64,7 @@ use function App\Helper\currencyFormat;
     }
 
 
-    public function sumAccountTransactions(Account $account, Request $request): array
+    public function sumAccountTransactions(Account $account, ?Request $request): array
     {
         if ($account->children->count() > 0) {
             $initialBalanceDebit = $account->children->sum(function ($transaction) use ($request) {
@@ -128,7 +128,7 @@ use function App\Helper\currencyFormat;
         $transactions = $account->accountTransaction()
             ->where('transaction_type', $type)
             ->where('entries_type', $entriesType)
-            ->whereYear('date', $this->accountingPeriod->first()->year);
+            ->whereYear('date', AccountingPeriod::first()->year);
 
 
         if ($request?->branch_id || $request?->user()->branch_id) {

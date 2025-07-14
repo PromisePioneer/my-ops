@@ -130,9 +130,9 @@
                                         </template>
                                         <template x-if="!asset.stock_id">
                                             <button
-                                                :class="`${asset.status  === 1  ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'}`"
-                                                @click="asset.status === 0 ? check(asset.id) : ''"
-                                                :disabled="asset.status === 1">
+                                                :class="`${asset.status  === true  ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'}`"
+                                                @click="asset.status === false ? check(asset.id) : ''"
+                                                :disabled="asset.status === true">
                                                 <i class="ki-duotone ki-check-square">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
@@ -159,6 +159,7 @@
         </div>
     </div>
     @include('components.select2.script')
+
 @endsection
 @push('script')
     <script defer>
