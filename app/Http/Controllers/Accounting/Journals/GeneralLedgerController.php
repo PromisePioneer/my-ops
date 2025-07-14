@@ -26,7 +26,9 @@ class GeneralLedgerController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        return response()->json($this->generalLedgerService->getAccountData($request));
+
+        $data = $this->generalLedgerService->getAccountData($request)->get();
+        return response()->json($data);
     }
 
     public function detail(Account $account): View
@@ -34,27 +36,18 @@ class GeneralLedgerController extends Controller
         return view('pages.journals.general-ledger.detail', compact('account'));
     }
 
-    public function detailAccountTransaction(Account $account): JsonResponse
+    public function detailAccountTransaction(Request $request, Account $account): JsonResponse
     {
         $accountTransaction = $this->generalLedgerService
-            ->getDetailGeneralLedger($account)
-            ->get()
-            ->map(function ($query) {
-                return [
-                    'id' => $query->id,
-                    'date' => Carbon::parse($query->date)->format('d/m/Y'),
-                    'description' => $query->description,
-                    'type' => $query->entries_type,
-                    'amount' => number_format($query->amount, 2),
-                ];
-            });
+            ->getDetailGeneralLedger($request, $account)
+            ->get();
 
-        $totalDebit = $this->generalLedgerService->getDetailGeneralLedger($account)
-            ->where('entries_type', 'debit')
+
+        $totalDebit = $this->generalLedgerService->getDetailGeneralLedger($request, $account, 'debit')
             ->sum('amount');
 
 
-        $totalCredit = $this->generalLedgerService->getDetailGeneralLedger($account)
+        $totalCredit = $this->generalLedgerService->getDetailGeneralLedger($request, $account, 'credit')
             ->where('entries_type', 'credit')
             ->sum('amount');
 

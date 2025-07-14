@@ -13,28 +13,20 @@ class GeneralLedgerService
 {
     public function getAccountData(Request $request)
     {
-        return Account::where('company_id', $request->session()->get('company_id'))->get();
+        return Account::with('children')
+            ->where('company_id', $request->session()->get('company_session'))
+            ->whereNull('parent_id');
     }
 
-    public function getDetailGeneralLedger(Account $account): Builder|AccountTransaction
+    public function getDetailGeneralLedger(Request $request, Account $account, $type = null): Builder|AccountTransaction
     {
-        $isAccountHasParent = Account::where('parent_id', $account->id)->exists();
+        return AccountTransaction::with('account.parent')->whereHas('account.parent', function ($query) {
+            $query->where('company_id', session()->get('company_session'));
+        })->whereHas('account', function ($query) use ($account) {
+            $query->where('parent_id', $account->id);
+        });
 
 
-        $data = Account::join(
-            'account_transactions',
-            'accounts.id',
-            '=',
-            'account_transactions.account_id'
-        )->whereYear('account_transactions.date', AccountingPeriod::first()->year);
-
-        if ($isAccountHasParent) {
-            $data->where('accounts.parent_id', $account->id);
-        } else {
-            $data->where('accounts.id', $account->id);
-        }
-
-        return $data;
     }
 
 
