@@ -13,7 +13,7 @@ class FinancialReportService
 
     public function data(Request $request)
     {
-        $data = AccountCategory::with('children', 'accounts', 'accounts.accountTransaction', 'accounts.children')
+        $data = AccountCategory::with(['children', 'accounts', 'accounts.accountTransaction', 'accounts.children'])
             ->whereNull('parent_id')
             ->get();
 
@@ -62,17 +62,19 @@ class FinancialReportService
                     foreach ($child->accounts as $account) {
                         $debit = 0;
                         $childDebit = 0;
+                        $credit = 0;
+                        $childCredit = 0;
                         if ($account->trial_balance_type === 'debit') {
                             $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
                             $childDebit = $account->children->sum(function ($child) use ($request, $account) {
                                 return $this->getFilteredTransactionSum($child, 'debit', $request);
                             });
+                        } else {
+                            $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
+                            $childCredit = $account->children->sum(function ($child) use ($request) {
+                                return $this->getFilteredTransactionSum($child, 'credit', $request);
+                            });
                         }
-
-                        $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
-                        $childCredit = $account->children->sum(function ($child) use ($request) {
-                            return $this->getFilteredTransactionSum($child, 'credit', $request);
-                        });
 
                         if ($account->trial_balance_type === 'debit') {
                             $balance = ($debit + $childDebit) - $childCredit;
