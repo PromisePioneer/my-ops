@@ -115,10 +115,10 @@
                         </div>
                         <div class="d-flex align-items-center">
                             @if(Auth::user()->can('Ubah Periode Pembukuan'))
-                                <button class="btn btn-info btn-sm" data-bs-toggle="modal" :disabled="isLoading"
+                                <button class="btn btn-info btn-sm" data-bs-toggle="modal" :disabled="accountingPeriodLoading"
                                         data-bs-target="#modal-accounting-period"
                                 >
-                                    <template x-if="isLoading">
+                                    <template x-if="accountingPeriodLoading">
                                         <div class="spinner-border" role="status">
                                             <span class="sr-only">Loading...</span>
                                         </div>
@@ -129,9 +129,9 @@
                                     </template>
                                 </button>
                             @else
-                                <button class="btn btn-info btn-sm" :disabled="isLoading"
+                                <button class="btn btn-info btn-sm" :disabled="accountingPeriodLoading"
                                 >
-                                    <template x-if="isLoading">
+                                    <template x-if="accountingPeriodLoading">
                                         <div class="spinner-border" role="status">
                                             <span class="sr-only">Loading...</span>
                                         </div>
@@ -181,7 +181,7 @@
 <script>
     function notifications() {
         return {
-            isLoading: false,
+            accountingPeriodLoading: false,
             buttonLoading: false,
             notifications: [],
             companyName: null,
@@ -198,14 +198,14 @@
                 await selectedValue('current_company_session', `/select2/selected-company/${this.companyId}`);
             },
             async getCurrentCompanySession() {
-                this.isLoading = true;
+                this.accountingPeriodLoading = true;
                 try {
                     const resp = await axios.get('/company-session/data');
                     this.companyName = resp.data;
                 } catch (error) {
                     console.log(error);
                 } finally {
-                    this.isLoading = false;
+                    this.accountingPeriodLoading = false;
                 }
             },
             setCompanySession() {
@@ -230,14 +230,14 @@
                 return `${diffDays} Hari`
             },
             async getCurrentAccountingPeriod() {
-                this.isLoading = true;
+                this.accountingPeriodLoading = true;
                 try {
                     const resp = await axios.get('/accounting-period-year');
                     this.accountingPeriod = resp.data;
                 } catch (error) {
                     console.log(error)
                 } finally {
-                    this.isLoading = false;
+                    this.accountingPeriodLoading = false;
                 }
             },
             formatDate(val) {

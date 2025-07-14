@@ -96,13 +96,13 @@ class TrialBalanceService
         return $this->getFilteredTotal('debit', $request);
     }
 
-    private function getFilteredTotal(string $type, Request $request): string
+    private function getFilteredTotal(string $type, Request $request)
     {
         $query = AccountTransaction::with('account')
-            ->whereHas('account', function ($query) use ($type) {
-                $query->where('trial_balance_type', $type);
+            ->whereHas('account', function ($query) use ($type, $request) {
+                $query->where('company_id', $request->session()->get('company_session'))->where('trial_balance_type', $type);
             })->where('entries_type', $type)
-            ->where('date', AccountingPeriod::first()->year);
+            ->whereYear('date', AccountingPeriod::first()->year);
 
         if ($request->branch_id) {
             $query->where('branch_id', $request->branch_id);
