@@ -145,34 +145,29 @@ use function App\Helper\currencyFormat;
         $query = $this->initialBalanceRepository->handle($request);
 
 
-
         return [
             'initial_balances' => $this->formattedData($query->paginate(self::$perPage), $request),
-            'total_debit' => currencyFormat($this->getTotalDebit($request)->sum('amount')),
-            'total_credit' => currencyFormat($this->getTotalCredit($request)->sum('amount')),
+            'total_debit' => currencyFormat($this->getTotalDebitConsistent($request)),
+            'total_credit' => currencyFormat($this->getTotalCreditConsistent($request)),
         ];
     }
 
 
-    private function getFilteredTotal(string $type, Request $request): Builder
+    private function getTotalDebitConsistent(Request $request): float
     {
-        $query = $this->accountTransactionRepository->findByType($type, $request);
-        if ($request->filled('branch_id')) {
-            $query->where('branch_id', $request->input('branch_id'));
-        }
+        $accounts = $this->initialBalanceRepository->handle($request)->get();
 
-
-        return $query;
+        return $accounts->sum(function ($account) use ($request) {
+            return $this->sumAccountTransactions($account, $request)['initial_balance_debit'];
+        });
     }
 
-
-    public function getTotalDebit(Request $request): Builder
+    private function getTotalCreditConsistent(Request $request): float
     {
-        return $this->getFilteredTotal('debit', $request);
-    }
+        $accounts = $this->initialBalanceRepository->handle($request)->get();
 
-    public function getTotalCredit(Request $request): Builder
-    {
-        return $this->getFilteredTotal('credit', $request);
+        return $accounts->sum(function ($account) use ($request) {
+            return $this->sumAccountTransactions($account, $request)['initial_balance_credit'];
+        });
     }
 }
