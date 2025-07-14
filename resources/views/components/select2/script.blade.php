@@ -23,7 +23,9 @@
                 url: url,
                 dataType: "json",
                 type: "GET",
-                data: params => ({search: params.term}),
+                data: params => ({
+                    search: params.term,
+                }),
                 processResults: (data) => ({results: data}),
                 cache: cache,
             }

@@ -67,13 +67,9 @@ class AccountRequest extends FormRequest
     public function isAccountExists(Request $request): Closure
     {
         return function ($attribute, $value, $fail) use ($request) {
-            $parentAccountId = Account::where('id', $request->parent_id)->first();
             $account = Account::where('code', $value)
                 ->where('company_id', $request->company_id)
                 ->first();
-
-
-//            dd($request->all());
 
             $company = Company::where('id', $request->company_id)->first()?->name;
 

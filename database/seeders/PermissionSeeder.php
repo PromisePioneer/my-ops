@@ -13,6 +13,10 @@ class PermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
+
+        //global config
+        $this->accountingPeriod();
+
         // general master data
         $this->branch();
         $this->contact();
@@ -687,6 +691,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data Akun',
             'Edit Data Akun',
             'Hapus Data Akun',
+            'Filter Data Akun Berdasarkan Perusahaan'
         ];
 
 
@@ -1096,6 +1101,18 @@ class PermissionSeeder extends Seeder
         $permissions = [
             'Lihat Menu Riwayat Aktifitas User',
         ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    private function accountingPeriod(): void
+    {
+        $permissions = [
+            'Ubah Periode Pembukuan',
+        ];
+
 
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);

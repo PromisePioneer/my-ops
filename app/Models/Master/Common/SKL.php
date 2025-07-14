@@ -22,18 +22,6 @@ class SKL extends Model
     ];
 
 
-    public function offeringLetterSKL(): HasMany
-    {
-        return $this->hasMany(OfferingLetterSKL::class, 'skl_id');
-    }
-
-
-    public function fabSKL(): HasMany
-    {
-        return $this->hasMany(FabHasSKL::class, 'skl_id');
-    }
-
-
     public function toSearchableArray(): array
     {
         return [

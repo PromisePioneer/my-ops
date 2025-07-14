@@ -252,7 +252,7 @@ class BranchSeeder extends Seeder
     {
         $mainBranch = Branch::create([
             'code' => '107',
-            'name' => 'Oku baturaja',
+            'name' => 'Oku Baturaja',
             'address' => 'Jalan Jendral Ahmad YanI Kelurahan Baturaja Lama Kecamatan Baturaja Timur.',
         ]);
 
@@ -396,7 +396,7 @@ class BranchSeeder extends Seeder
     {
         $mainBranch = Branch::create([
             'code' => '117',
-            'name' => 'Kuala tungkal',
+            'name' => 'Kuala Tungkal',
             'address' => 'Jl. Diponegoro RT 015 Kel. Tungkal Harapan, Kec. Tungkal Hilir',
         ]);
         Branch::create([

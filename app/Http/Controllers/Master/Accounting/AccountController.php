@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Accounting\Account\AccountRequest;
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\Master\Common\Branch;
 use App\Support\Master\Accounting\Accounts\Service\AccountService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -148,9 +149,9 @@ use Illuminate\View\View;
     }
 
 
-    public function assetAccounts(Request $request): JsonResponse
+    public function assetAccounts(Request $request, ?Company $company): JsonResponse
     {
-        return response()->json($this->accountService->getAssetAccounts($request));
+        return response()->json($this->accountService->getAssetAccounts($request, $company));
     }
 
 
@@ -158,7 +159,6 @@ use Illuminate\View\View;
     {
         return response()->json($this->accountService->kasAndLeverageAccounts($request));
     }
-
 
     public function kasAccounts(Request $request): JsonResponse
     {
@@ -168,6 +168,12 @@ use Illuminate\View\View;
     public function parentAccounts(Request $request)
     {
         return response()->json($this->accountService->parentAccount($request));
+    }
+
+    public function filter(Request $request)
+    {
+        $this->authorize('filterByCompany', Account::class);
+        return response()->json($this->accountService->filter($request));
     }
 
 }

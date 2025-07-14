@@ -1,9 +1,14 @@
 <div class="row mb-10">
-        <div class="col-md-6">
-            <label for="branch_id" class="required form-label">Cabang</label>
-            <x-select2.index name="branch_id" id="selected-branch" class="form-select form-select-solid"
-                             elementSelector="branches-select2"/>
-        </div>
+    <div class="col-md-6">
+        <label for="branch_id" class="required form-label">Cabang</label>
+        <x-select2.index name="branch_id" id="selected-branch" class="form-select form-select-solid"
+                         elementSelector="branches-select2"/>
+    </div>
+    <div class="col-md-6">
+        <label for="company_id" class="required form-label">Perusahaan</label>
+        <x-select2.index name="company_id" id="selected-company" class="form-select form-select-solid"
+                         elementSelector="companies-select2"/>
+    </div>
 </div>
 
 

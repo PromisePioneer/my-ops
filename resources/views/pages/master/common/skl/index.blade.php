@@ -52,7 +52,7 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
+                        <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5">
                             <thead>
                             <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
@@ -71,29 +71,30 @@
                             </template>
                             <template x-if="!isLoading && skl.data?.length === 0">
                                 <x-table.empty colspan="3"/>
-                                <template x-for="service in skl?.data" :key="service.id">
-                                    <tbody class="fw-bold text-center">
-                                    <tr>
+                            </template>
+                            <template x-for="(service) in skl?.data" :key="service.id">
+                                <tbody class="fw-bold text-center">
+                                <tr>
+                                    <td>
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                             @click="selectCheckBox($event)">
+                                            <input class="form-check-input" type="checkbox" :value="service.id"
+                                                   :id="'checkbox-' + service.id"
+                                                   :disabled="Number(deletePermission) !== 1"/>
+                                        </div>
+                                    </td>
+                                    <td x-text="service.name"></td>
+                                    <template x-if="Number(editPermission) === 1">
                                         <td>
-                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                                 @click="selectCheckBox($event)">
-                                                <input class="form-check-input" type="checkbox" :value="service.id"
-                                                       :id="'checkbox-' + service.id"
-                                                       :disabled="Number(deletePermission) !== 1"/>
-                                            </div>
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-skl" @click="edit(service.id)">
+                                                <x-icons.edit/>
+                                            </button>
                                         </td>
-                                        <td x-text="service.name"></td>
-                                        <template x-if="Number(editPermission) === 1">
-                                            <td>
-                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-skl" @click="edit(service.id)">
-                                                    <x-icons.edit/>
-                                                </button>
-                                            </td>
-                                        </template>
-                                    </tr>
-                                    </tbody>
-                                </template>
+                                    </template>
+                                </tr>
+                                </tbody>
+                            </template>
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
@@ -109,7 +110,6 @@
             </div>
         </div>
     </div>
-    @include('components.toast')
 @endsection
 @push('script')
     <script>

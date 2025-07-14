@@ -4,10 +4,12 @@ namespace App\Support\Master\Accounting\Accounts\Service;
 
 use AllowDynamicProperties;
 use App\Models\Account;
+use App\Models\Company;
 use App\Support\Master\Accounting\Accounts\Interface\AccountServiceInterface;
 use App\Support\Master\Accounting\Accounts\Repositories\AccountRepository;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 #[AllowDynamicProperties] class AccountService
@@ -52,15 +54,21 @@ use Illuminate\Http\Request;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = Account::with('children');
 
-        if (!empty($search)) {
-            $query->where(function ($query) use ($search) {
-                $query->where('code', 'like', '%' . $search . '%')
-                    ->orWhere('name', 'like', '%' . $search . '%');
-            });
-        }
+        $query = $this->accountRepository->dataQuery($request);
+
+        $query->where(function ($query) use ($request, $search) {
+            $query->whereHas('children', function ($q) use ($search, $request) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('code', 'like', '%' . $search . '%');
+            })
+                ->orWhere('name', 'like', '%' . $search . '%')
+                ->orWhere('code', 'like', '%' . $search . '%');
+        });
+
         $accounts = $query->paginate(self::$perPage);
+
+
         return self::formatAccounts($accounts);
     }
 
@@ -81,11 +89,11 @@ use Illuminate\Http\Request;
     }
 
 
-    public function getAssetAccounts(Request $request): array
+    public function getAssetAccounts(Request $request, ?Company $company): array
     {
         $search = $request->input('search');
         $query = Account::search($search)
-            ->query(fn($query) => $this->accountRepository->getAssetAccounts($query))
+            ->query(fn($query) => $this->accountRepository->getAssetAccounts($query, $request, $company))
             ->get();
 
         return $query->map(function ($c) {
@@ -172,6 +180,14 @@ use Illuminate\Http\Request;
         })->toArray();
 
 
+    }
+
+    public function filter(Request $request): LengthAwarePaginator
+    {
+        $query = $this->accountRepository->dataQuery($request)->paginate(self::$perPage);
+
+
+        return self::formatAccounts($query);
     }
 
 

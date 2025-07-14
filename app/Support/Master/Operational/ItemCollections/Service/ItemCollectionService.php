@@ -81,14 +81,8 @@ use Throwable;
     {
         $search = $request->input('search');
         $items = ItemCollection::search($search)->query(function ($query) {
-            $this->itemCollectionRepository->getAssetData($query);
+            $this->itemCollectionRepository->getAssetData();
         })->get();
-        return $items->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'text' => $item->name
-            ];
-        });
         return $items->map(function ($item) {
             return [
                 'id' => $item->id,
@@ -106,6 +100,7 @@ use Throwable;
                 'name' => $item->item_collection_name,
                 'unit_type_name' => $item->unitType?->name,
                 'category_name' => $item->category?->name,
+                'company_name' => $item->company?->name,
                 'category_id' => $item->category_id,
                 'asset_account_name' => "{$item->assetAccount?->code} {$item->assetAccount?->name}",
                 'tangible_asset' => $item->tangible_assets_type,

@@ -12,6 +12,10 @@ return new class extends Migration {
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')
+                ->constrained('companies')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->string('code');
             $table->foreignId('branch_id')
                 ->constrained('branches')

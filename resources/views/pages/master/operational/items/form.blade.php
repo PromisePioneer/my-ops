@@ -57,6 +57,13 @@
                             <input type="text" id="name" name="name" class="form-control form-control-solid"
                                    placeholder="Nama Barang" :value="editVal?.name"/>
                         </div>
+                        <div class="col-md-6 mb-7">
+                            <label for="name" class="required form-label">Perusahaan</label>
+                            <select name="company_id" id="selected-company"
+                                    class="form-select form-select-solid companies-select2">
+                                <option></option>
+                            </select>
+                        </div>
                         <div class="col-md-6"
                              x-show="itemMustHaveCode && !hasSNOnItem" x-transition x-cloak>
                             <label for="name" class="form-label">

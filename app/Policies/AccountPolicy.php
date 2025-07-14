@@ -28,4 +28,10 @@ class AccountPolicy
     {
         return $user->can('Hapus Data Akun');
     }
+
+
+    public function filterByCompany(User $user): bool
+    {
+        return $user->can('Filter Data Akun Berdasarkan Perusahaan');
+    }
 }

@@ -5,20 +5,17 @@ namespace Database\Seeders;
 use App\Models\Account;
 use App\Models\AccountCategory;
 use App\Models\Company;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class AccountSeeder extends Seeder
+class AccountPSGSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
-
-        $companyId = Company::where('code', '003')->first()->id;
-
+        $companyId = Company::where('code', '002')->first()->id;
 
         $asetLancar = AccountCategory::where('name', 'Aset Lancar')->first()->id;
         $asetTetap = AccountCategory::where('name', 'Aset Tetap')->first()->id;
@@ -26,8 +23,7 @@ class AccountSeeder extends Seeder
         $utangJangkaPanjang = AccountCategory::where('name', 'Utang Jangka Panjang')->first()->id;
         $modal = AccountCategory::where('name', 'Modal')->first()->id;
 
-
-        //linkkita
+        //mayatama
         $this->kasAccount($asetLancar, $companyId);
         $this->persediaan($asetLancar, $companyId);
         $this->piutangUsaha($asetLancar, $companyId);
@@ -71,6 +67,7 @@ class AccountSeeder extends Seeder
         $this->bebanBunga($companyId);
         $this->bebanPajakPenghasilan($companyId);
     }
+
 
     private function kasAccount($asetLancar, $companyId): void
     {
@@ -128,7 +125,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '01',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
         ]);
 
 
@@ -137,7 +133,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '03',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
         ]);
 
         Account::create([
@@ -145,7 +140,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '03',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
         ]);
     }
 
@@ -164,7 +158,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '01',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
         ]);
 
         Account::create([
@@ -172,7 +165,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
         ]);
 
         Account::create([
@@ -180,7 +172,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '03',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
         ]);
 
     }
@@ -201,7 +192,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '01',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
         ]);
 
         Account::create([
@@ -209,7 +199,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
         ]);
 
 
@@ -274,13 +263,14 @@ class AccountSeeder extends Seeder
         ]);
     }
 
-    private function kendaraan($asetTetap): void
+    private function kendaraan($asetTetap, $companyId): void
     {
         Account::create([
             'code' => '123',
             'name' => 'Kendaraan',
             'trial_balance_type' => 'debit',
-            'category_id' => $asetTetap
+            'category_id' => $asetTetap,
+            'company_id' => $companyId,
         ]);
     }
 
@@ -388,6 +378,7 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '01',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'credit',
+
 
         ]);
 
@@ -568,6 +559,7 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '01',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
+
         ]);
 
         Account::create([
@@ -575,6 +567,7 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
+
         ]);
 
         Account::create([
@@ -582,6 +575,7 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '03',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
+
         ]);
 
         Account::create([
@@ -589,6 +583,7 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '04',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
+
         ]);
 
 
@@ -615,9 +610,8 @@ class AccountSeeder extends Seeder
         Account::create([
             'name' => 'Beban Interkoneksi (Metro-Net)',
             'code' => $parentAccount->code . '-' . '02',
-            'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
+            'parent_id' => $parentAccount->id,
         ]);
 
         Account::create([
@@ -731,6 +725,7 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '01',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
+
         ]);
 
         Account::create([
@@ -738,6 +733,7 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
+
         ]);
 
         Account::create([
@@ -745,6 +741,7 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '03',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
+
         ]);
 
         Account::create([
@@ -752,6 +749,7 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '04',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
+
         ]);
 
     }
@@ -772,7 +770,6 @@ class AccountSeeder extends Seeder
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
 
-
         ]);
 
         Account::create([
@@ -780,7 +777,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
 
         ]);
 
@@ -802,7 +798,6 @@ class AccountSeeder extends Seeder
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
 
-
         ]);
 
         Account::create([
@@ -811,7 +806,6 @@ class AccountSeeder extends Seeder
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
 
-
         ]);
 
         Account::create([
@@ -819,7 +813,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '03',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
 
         ]);
 
@@ -840,8 +833,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '01',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
 
         Account::create([
@@ -849,8 +840,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
 
         Account::create([
@@ -858,8 +847,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '03',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
 
 
@@ -881,14 +868,12 @@ class AccountSeeder extends Seeder
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
 
-
         ]);
         Account::create([
             'name' => 'BBM Kendaraan R4 Kantor Operasional Lapangan',
             'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
 
         ]);
         Account::create([
@@ -897,7 +882,6 @@ class AccountSeeder extends Seeder
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
 
-
         ]);
         Account::create([
             'name' => 'BBM Kendaraan R2 Operasional',
@@ -905,14 +889,12 @@ class AccountSeeder extends Seeder
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
 
-
         ]);
         Account::create([
             'name' => 'Beban Mesin Genset',
             'code' => $parentAccount->code . '-' . '05',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
 
         ]);
 
@@ -933,8 +915,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '01',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
 
         Account::create([
@@ -942,8 +922,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
 
         Account::create([
@@ -951,8 +929,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '03',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
 
         Account::create([
@@ -960,8 +936,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '04',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
 
         Account::create([
@@ -969,8 +943,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '05',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
 
 
@@ -1008,7 +980,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '02',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
         ]);
 
         Account::create([
@@ -1016,8 +987,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '03',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
 
         Account::create([
@@ -1025,8 +994,6 @@ class AccountSeeder extends Seeder
             'code' => $parentAccount->code . '-' . '04',
             'parent_id' => $parentAccount->id,
             'trial_balance_type' => 'debit',
-
-
         ]);
     }
 

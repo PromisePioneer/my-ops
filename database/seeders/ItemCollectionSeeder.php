@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
@@ -15,6 +16,11 @@ class ItemCollectionSeeder extends Seeder
      */
     public function run(): void
     {
+        $mayatama = Company::where('code', "001")->first()->id;
+        $psg = Company::where('code', "001")->first()->id;
+        $linkkita = Company::where('code', "001")->first()->id;
+
+
         //kategori 1 aset
         ItemCollection::create([
             'code' => 'FO',
@@ -94,7 +100,6 @@ class ItemCollectionSeeder extends Seeder
             'asset_account_id' => Account::where('code', '121')->first()->id,
             'tangible_assets_type' => 'Tanah',
         ]);
-
 
 
         //kategori 3 aset

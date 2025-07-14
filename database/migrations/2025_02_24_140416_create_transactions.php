@@ -10,6 +10,7 @@ return new class extends Migration {
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('transaction_number')->nullable();
             $table->foreignId('branch_id')
                 ->constrained('branches')

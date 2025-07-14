@@ -21,7 +21,7 @@ class CreateAccounts extends Migration
             $table->string('code', 10);
             $table->string('name', 100);
             $table->foreignId('parent_id')->nullable()->constrained('accounts')->cascadeOnDelete();
-            $table->enum('trial_balance_type', ['debit', 'credit']);
+            $table->enum('trial_balance_type', ['debit', 'credit'])->nullable();
             $table->foreignId('category_id')
                 ->nullable()
                 ->constrained('account_categories')
@@ -36,6 +36,6 @@ class CreateAccounts extends Migration
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('sub_accounts');
+        Schema::dropIfExists('accounts');
     }
 }

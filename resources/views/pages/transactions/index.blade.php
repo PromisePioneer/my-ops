@@ -90,7 +90,7 @@
                             </template>
                         </thead>
                         <template x-if="isLoading">
-                        <tbody class="fw-bold">
+                            <tbody class="fw-bold">
                             <tr>
                                 <td colspan="7">
                                     <div style="text-align: center;">
@@ -100,7 +100,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        </tbody>
+                            </tbody>
                         </template>
                         <template x-if="!isLoading && transactions.data?.length === 0">
                             <tbody class="fw-bold">
@@ -128,6 +128,7 @@
 
                                 <td class="text-center">
                                     <div class="d-flex flex-column">
+                                        <span class="text-info" x-text="`${transaction.company_name}`"></span>
                                         <span x-text="`[${transaction.branch_name}]`"></span>
                                         <span x-text="`Transaksi ${transaction.type}`"></span>
                                         <span x-text="`Tgl ${transaction.date}`"></span>
@@ -137,9 +138,9 @@
                                             <template x-if="transaction.unit_type === 'Meter'">
                                                 <div>
                                                     <p class="text-decoration-underline m-0"
-                                                          x-text="`${transaction.qty} Haspel`"></p>
+                                                       x-text="`${transaction.qty} Haspel`"></p>
                                                     <p class="text-decoration-underline m-0"
-                                                          x-text="`${transaction.qty_in_meter} Meter per Haspel`"></p>
+                                                       x-text="`${transaction.qty_in_meter} Meter per Haspel`"></p>
                                                 </div>
                                             </template>
                                         </div>
@@ -174,14 +175,14 @@
                                 <td class="text-center">
                                     <div class="d-flex flex-column align-items-center justify-content-center">
                                         <p class="fs-7">Status Transaksi : <span
-                                                :class="transaction.locked_status === 1 ? 'text-info' : 'text-danger'"
-                                                x-text="transaction.locked_status === 1 ? `Terkunci (${transaction.created_by})` : 'Belum Dikunci'"></span>
+                                                :class="transaction.locked_status === true ? 'text-info' : 'text-danger'"
+                                                x-text="transaction.locked_status === true ? `Terkunci (${transaction.created_by})` : 'Belum Dikunci'"></span>
                                         </p>
                                         <p class="fs-7">Dibuat Oleh : <span
                                                 x-text="`${transaction.created_by}`"></span>
                                         </p>
                                         <div>
-                                            <template x-if="transaction.locked_status === 1">
+                                            <template x-if="transaction.locked_status === true">
                                                 <p class="fs-7">Status Konfirmasi : <span
                                                         :class="transaction.status === 'Diproses'
                                                         ? 'text-warning'
@@ -210,16 +211,17 @@
                                     </div>
                                 </td>
                                 <td>
-                                <template x-if="Number(editPermission) === 1 && transaction.locked_status === 0">
+                                    <template
+                                        x-if="Number(editPermission) === 1 && transaction.locked_status === false">
                                         <div
                                             class="d-flex flex-column align-items-center justify-content-center">
-                                            <template x-if="transaction.locked_status === 0">
+                                            <template x-if="transaction.locked_status === false">
                                                 <a :href="`/transactions/edit/${transaction.id}`"
                                                    class="btn btn-light-primary btn-sm mb-4">
                                                     <i class="bi bi-pencil"></i> Ubah Data
                                                 </a>
                                             </template>
-                                            <template x-if="transaction.locked_status === 0">
+                                            <template x-if="transaction.locked_status === false">
                                                 <button class="btn btn-light-info btn-sm mb-4"
                                                         data-bs-toggle="tooltip"
                                                         data-bs-placement="top"
@@ -230,8 +232,8 @@
                                                 </button>
                                             </template>
                                         </div>
-                                </template>
-                                    </td>
+                                    </template>
+                                </td>
                             </tr>
                             </tbody>
                         </template>
@@ -281,7 +283,7 @@
                 formConfirm: document.getElementById('form-confirm'),
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
                 async init() {
-                        await this.getTransactions();
+                    await this.getTransactions();
                 },
                 async paginationEndPoint(url) {
                     if (url) {
@@ -437,14 +439,14 @@
                     if (this.selectedCheckBox.length === 0) return false;
                     const selectedIds = this.selectedCheckBox;
                     return this.transactions.data.some(transaction =>
-                        selectedIds.includes(transaction.id.toString()) && transaction.locked_status === 0
+                        selectedIds.includes(transaction.id.toString()) && transaction.locked_status === false
                     );
                 },
                 hasUnlockedTransactions() {
                     if (this.selectedCheckBox.length === 0) return false;
                     const selectedIds = this.selectedCheckBox;
                     return this.transactions.data.some(transaction =>
-                        selectedIds.includes(transaction.id.toString()) && transaction.locked_status === 1
+                        selectedIds.includes(transaction.id.toString()) && transaction.locked_status === true
                     );
                 },
                 uncheckAfterSuccessfulEvent() {

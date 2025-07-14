@@ -38,6 +38,7 @@ class Account extends Model
             'code' => $this->code,
             'id' => $this->id,
             'name' => $this->name,
+            'parent.name' => ''
         ];
     }
 

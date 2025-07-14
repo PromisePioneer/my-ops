@@ -459,6 +459,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/create-child/{account}', [AccountController::class, 'createChildAccount']);
                 Route::get('/data', [AccountController::class, 'data']);
                 Route::get('/search', [AccountController::class, 'search']);
+                Route::get('/filter', [AccountController::class, 'filter']);
                 Route::post('/', [AccountController::class, 'store']);
                 Route::post('/destroy', [AccountController::class, 'destroy']);
                 Route::get('/edit/{account}', [AccountController::class, 'edit']);
@@ -1285,7 +1286,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/permissions-data', [PermissionController::class, 'getPermissions']);
 
         Route::get('/parent-accounts-data', [AccountController::class, 'parentAccounts']);
-        Route::get('/asset-accounts-data', [AccountController::class, 'assetAccounts']);
+        Route::get('/asset-accounts-data/{company?}', [AccountController::class, 'assetAccounts']);
         Route::get('/kas-and-leverages-accounts-data', [AccountController::class, 'kasAndLeverageAccounts']);
         Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);

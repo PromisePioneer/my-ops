@@ -15,6 +15,7 @@ class Transaction extends Model
 
     protected $table = 'transactions';
     protected $fillable = [
+        'company_id',
         'transaction_number',
         'branch_id',
         'contact_id',
@@ -55,7 +56,6 @@ class Transaction extends Model
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
-
 
 
     public function debitAccount(): BelongsTo
@@ -100,5 +100,11 @@ class Transaction extends Model
     public function stockAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'stock_account_id');
+    }
+
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

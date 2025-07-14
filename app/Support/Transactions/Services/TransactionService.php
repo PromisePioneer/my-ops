@@ -103,6 +103,7 @@ use function App\Helper\formatDate;
                 'branch_id' => $item->branch_id,
                 'branch_name' => "{$item->branch->parent->name} - {$item?->branch?->name}",
                 'date' => formatDate($item->date),
+                'company_name' => $item->company->name,
                 'transaction_number' => $item->transaction_number,
                 'item_name' => $item->item?->name,
                 'qty' => $item->qty,
@@ -135,6 +136,7 @@ use function App\Helper\formatDate;
         $unitPrice = (float)$formattedValue;
 
         Transaction::create([
+            'company_id' => $request->input('company_id'),
             'type' => $request->input('type'),
             'transaction_number' => $this->generateTransactionNumber($request),
             'branch_id' => $request->input('branch_id'),
@@ -171,6 +173,7 @@ use function App\Helper\formatDate;
         $unitPrice = (float)$formattedValue;
 
         $transaction->update([
+            'company_id' => $request->input('company_id'),
             'transaction_number' => $this->generateTransactionNumber($request),
             'branch_id' => $request->input('branch_id'),
             'date' => $request->input('date'),

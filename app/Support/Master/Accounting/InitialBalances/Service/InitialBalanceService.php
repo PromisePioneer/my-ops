@@ -27,7 +27,7 @@ use function App\Helper\currencyFormat;
 
     public function data(Request $request)
     {
-        $data = $this->initialBalanceRepository->handle()->paginate(self::$perPage);
+        $data = $this->initialBalanceRepository->handle($request)->paginate(self::$perPage);
         return $this->formattedData($data, $request);
     }
 
@@ -35,7 +35,7 @@ use function App\Helper\currencyFormat;
     public function search(Request $request)
     {
         $search = $request->input('search');
-        $query = $this->initialBalanceRepository->handle();
+        $query = $this->initialBalanceRepository->handle($request);
         if (!empty($search)) {
             $query->where('name', 'like', '%' . $search . '%')
                 ->orWhere('code', 'like', '%' . $search . '%');
@@ -145,7 +145,7 @@ use function App\Helper\currencyFormat;
 
     public function filter(Request $request): array
     {
-        $query = $this->initialBalanceRepository->handle();
+        $query = $this->initialBalanceRepository->handle($request);
 
         return [
             'initial_balances' => $this->formattedData($query->paginate(self::$perPage), $request),
