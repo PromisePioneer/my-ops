@@ -17,13 +17,10 @@ use Illuminate\Http\Request;
 
     public function findByType(string $type, Request $request)
     {
-        return AccountTransaction::with('account')
-            ->where('entries_type', $type)
-            ->where('transaction_type', 'SA')
-            ->where('transaction_type', 'SA')
-            ->where('entries_type', $type)
-            ->whereHas('account', function ($query) use ($request) {
-                $query->where('company_id', $request->session()->get('company_session'));
-            });
+        return AccountTransaction::with(['account.parent', function ($query) use ($type, $request) {
+            $query->where('company_id', $request->session()->get('company_session'))
+                ->where('trial_balance_type', $type);
+        }])->where('transaction_type', 'SA')
+            ->where('entries_type', $type);
     }
 }
