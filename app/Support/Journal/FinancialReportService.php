@@ -20,107 +20,89 @@ class FinancialReportService
         return self::formattedData($data, $request);
     }
 
-
     public function formattedData($data, $request)
     {
         return $data->map(function ($item) use ($request) {
-            $total = 0;
             $totalEachCategories = 0;
-            foreach ($item->children as $children) {
-                foreach ($children->accounts as $account) {
-                    $debit = 0;
-                    $childDebit = 0;
-                    if ($account->trial_balance_type === 'debit') {
-                        $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
-                        $childDebit = $account->children->sum(function ($child) use ($request, $account) {
-                            return $this->getFilteredTransactionSum($child, 'debit', $request);
-                        });
-                    }
 
-                    $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
-                    $childCredit = $account->children->sum(function ($child) use ($request) {
-                        return $this->getFilteredTransactionSum($child, 'credit', $request);
-                    });
+            $subCategories = $item->children->map(function ($child) use ($request) {
+                $subCategoryTotal = 0;
 
-                    if ($account->trial_balance_type === 'debit') {
-                        $balance = ($debit + $childDebit) - $childCredit;
-                    } else {
-                        $balance = $credit + $childCredit;
-                    }
+                $accounts = $child->accounts->map(function ($account) use ($request) {
+                    $balance = $this->calculateAccountBalance($account, $request);
+                    return [
+                        'id' => $account->id,
+                        'name' => $account->name,
+                        'trial_balance_type' => $account->trial_balance_type,
+                        'balance' => currencyFormat($balance),
+                        'raw_balance' => $balance, // Keep raw for calculation
+                    ];
+                });
 
-                    $total += $balance;
-                }
-                $totalEachCategories += $total;
-            }
+                // Sum all account balances for this sub-category
+                $subCategoryTotal = $accounts->sum('raw_balance');
+
+                return [
+                    'id' => $child->id,
+                    'name' => $child->name,
+                    'total' => currencyFormat($subCategoryTotal),
+                    'raw_total' => $subCategoryTotal, // Keep raw for parent calculation
+                    'accounts' => $accounts->map(function ($account) {
+                        // Remove raw_balance from final output
+                        unset($account['raw_balance']);
+                        return $account;
+                    })
+                ];
+            });
+
+            // Sum all sub-category totals
+            $totalEachCategories = $subCategories->sum('raw_total');
 
             return [
                 'id' => $item->id,
                 'name' => $item->name,
                 'total_each_categories' => currencyFormat($totalEachCategories),
-                'sub_categories' => $item->children->map(function ($child) use ($request) {
-                    $total = 0;
-                    foreach ($child->accounts as $account) {
-                        $debit = 0;
-                        $childDebit = 0;
-                        $credit = 0;
-                        $childCredit = 0;
-                        if ($account->trial_balance_type === 'debit') {
-                            $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
-                            $childDebit = $account->children->sum(function ($child) use ($request, $account) {
-                                return $this->getFilteredTransactionSum($child, 'debit', $request);
-                            });
-                        } else {
-                            $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
-                            $childCredit = $account->children->sum(function ($child) use ($request) {
-                                return $this->getFilteredTransactionSum($child, 'credit', $request);
-                            });
-                        }
-
-                        if ($account->trial_balance_type === 'debit') {
-                            $balance = ($debit + $childDebit) - $childCredit;
-                        } else {
-                            $balance = $credit + $childCredit;
-                        }
-
-                        $total += $balance;
-                    }
-                    return [
-                        'id' => $child->id,
-                        'name' => $child->name,
-                        'total' => currencyFormat($total),
-                        'accounts' => $child->accounts->map(function ($account) use ($request, $total) {
-                            $debit = 0;
-                            $childDebit = 0;
-                            if ($account->trial_balance_type === 'debit') {
-                                $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
-                                $childDebit = $account->children->sum(function ($child) use ($request, $account) {
-                                    return $this->getFilteredTransactionSum($child, 'debit', $request);
-                                });
-                            }
-
-                            $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
-                            $childCredit = $account->children->sum(function ($child) use ($request) {
-                                return $this->getFilteredTransactionSum($child, 'credit', $request);
-                            });
-
-                            if ($account->trial_balance_type === 'debit') {
-                                $balance = ($debit + $childDebit) - $childCredit;
-                            } else {
-                                $balance = $credit + $childCredit;
-                            }
-                            return [
-                                'id' => $account->id,
-                                'name' => $account->name,
-                                'trial_balance_type' => $account->trial_balance_type,
-                                'balance' => currencyFormat($balance),
-                            ];
-                        })
-                    ];
+                'sub_categories' => $subCategories->map(function ($subCategory) {
+                    // Remove raw_total from final output
+                    unset($subCategory['raw_total']);
+                    return $subCategory;
                 })
             ];
         });
     }
 
+    /**
+     * Calculate balance for an account including its children
+     */
+    private function calculateAccountBalance($account, Request $request): float
+    {
+        // Get parent account transactions
+        $parentDebit = 0;
+        $parentCredit = 0;
+
+        if ($account->trial_balance_type === 'debit') {
+            $parentDebit = $this->getFilteredTransactionSum($account, 'debit', $request);
+        }
+        $parentCredit = $this->getFilteredTransactionSum($account, 'credit', $request);
+
+        // Get children transactions
+        $childDebit = $account->children->sum(function ($child) use ($request) {
+            return $this->getFilteredTransactionSum($child, 'debit', $request);
+        });
+
+        $childCredit = $account->children->sum(function ($child) use ($request) {
+            return $this->getFilteredTransactionSum($child, 'credit', $request);
+        });
+
+        // Calculate balance based on trial balance type
+        if ($account->trial_balance_type === 'debit') {
+            // For debit accounts: (Parent Debit + Child Debit) - (Parent Credit + Child Credit)
+            return ($parentDebit + $childDebit) - ($parentCredit + $childCredit);
+        } else {
+            // For credit accounts: (Parent Credit + Child Credit) - (Parent Debit + Child Debit)
+            return ($parentCredit + $childCredit) - ($parentDebit + $childDebit);
+        }
+    }
 
     public function getFilteredTransactionSum($account, $type, Request $request): float
     {
@@ -131,7 +113,6 @@ class FinancialReportService
             $transactions->where('branch_id', $request->branch_id);
         }
 
-
         if ($request->month) {
             $transactions->whereMonth('date', $request->month);
         }
@@ -139,9 +120,8 @@ class FinancialReportService
         return $transactions->sum('amount');
     }
 
-
     public function filter()
     {
-
+        // Implementation needed
     }
 }
