@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Account;
 use App\Models\AccountCategory;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use App\Models\Activity;
 use App\Models\Area;
@@ -37,6 +38,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Policies\AccountCategoryPolicy;
+use App\Policies\AccountingPeriodPolicy;
 use App\Policies\AccountPolicy;
 use App\Policies\ActivityLogPolicy;
 use App\Policies\AreaPolicy;
@@ -120,6 +122,7 @@ class AuthServiceProvider extends ServiceProvider
         ItemCategory::class => ItemCategoryPolicy::class,
         Activity::class => ActivityLogPolicy::class,
         StockMutation::class => StockMutationPolicy::class,
+        AccountingPeriod::class => AccountingPeriodPolicy::class,
     ];
 
     /**

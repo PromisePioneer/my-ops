@@ -38,6 +38,8 @@ class HomeController extends Controller
 
     public function accountingPeriodUpdate(AccountingPeriodRequest $request)
     {
+
+        $this->authorize('update', AccountingPeriod::class);
         AccountingPeriod::first()->update([
             'year' => $request->input('year'),
         ]);
