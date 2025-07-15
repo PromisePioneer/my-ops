@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Accounting\Journals;
 
 use App\Http\Controllers\Controller;
 use App\Models\Master\Common\Branch;
-use App\Support\Journal\GeneralJournalService;
+use App\Support\Journal\GeneralJournal\Service\GeneralJournalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

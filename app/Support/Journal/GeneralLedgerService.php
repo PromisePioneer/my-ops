@@ -20,24 +20,15 @@ class GeneralLedgerService
 
     public function getDetailGeneralLedger(Request $request, Account $account, $type = null): Builder|AccountTransaction
     {
-        return AccountTransaction::with('account.parent')->whereHas('account.parent', function ($query) {
+        $query = AccountTransaction::with('account.parent')->whereHas('account.parent', function ($query) {
             $query->where('company_id', session()->get('company_session'));
         })->whereHas('account', function ($query) use ($account) {
-            $query->where('parent_id', $account->id);
+            $query->where('parent_id', $account->id)->orWhere('parent_id', null);
         });
 
 
-    }
+        return $query;
 
-
-    public function filterByPeriod(Account $account, $month, $year)
-    {
-        $generalLedger = $this->getDetailGeneralLedger($account)
-            ->whereMonth('date', $month)
-            ->whereYear('date', $year)
-            ->get();
-
-        return self::formattedData($generalLedger);
     }
 
     public function formattedData($generalLedgerCollection)

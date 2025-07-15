@@ -1,34 +1,30 @@
 <?php
 
-namespace App\Support\Journal;
+namespace App\Support\Journal\GeneralJournal\Service;
 
 use AllowDynamicProperties;
 use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
-use Carbon\Carbon;
+use App\Support\Journal\GeneralJournal\Repository\GeneralJournalRepository;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use function App\Helper\currencyFormat;
 use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class GeneralJournalService
 {
+    private static int $perPage = 10;
+
     public function __construct()
     {
         $this->accountingPeriod = new AccountingPeriod();
+        $this->generalJournalRepository = new GeneralJournalRepository();
     }
 
 
     public function data(Request $request)
     {
-        $generalJournal = AccountTransaction::with('account')
-            ->whereHas('account.parent', function ($query) use ($request) {
-                $query->where('company_id', $request->session()->get('company_session'));
-            })
-            ->where('transaction_type', 'TR')
-            ->whereYear('date', $this->accountingPeriod->query()->first()->year)
-            ->orderBy('date')
-            ->get();
-
+        $generalJournal = $this->generalJournalRepository->data($request)->cursor();
         return self::formattedData($generalJournal);
     }
 
@@ -56,7 +52,13 @@ use function App\Helper\formatDate;
         $year = $request->input('year');
         $month = $request->input('month');
 
-        $query = AccountTransaction::with('account')->orderBy('date');
+        $query = AccountTransaction::with('account.parent')
+            ->whereHas('account', function ($query) use ($request) {
+                $query->where('company_id', $request->session()->get('company_session'));
+            })
+            ->where('transaction_type', 'TR')
+            ->whereYear('date', $this->accountingPeriod->query()->first()->year)
+            ->orderBy('date');
 
         if ($branch) {
             $query->where('branch_id', $branch);
@@ -70,12 +72,8 @@ use function App\Helper\formatDate;
             $query->whereMonth('date', $month);
         }
 
-        if ($year && $month) {
-            $query->orWhereYear('date', $year)
-                ->whereMonth('date', $month);
-        }
 
-        $data = $query->get();
+        $data = $query->cursor();
         return self::formattedData($data);
     }
 
