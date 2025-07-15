@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
     public function data(Request $request)
     {
         return $this->accountTransaction->with('account.parent')
-            ->whereHas('account', function ($query) use ($request) {
+            ->whereHas('account.parent', function ($query) use ($request) {
                 $query->where('company_id', $request->session()->get('company_session'));
             })
             ->where('transaction_type', 'TR')

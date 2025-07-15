@@ -53,7 +53,6 @@ use function App\Helper\formatDate;
     {
 
         $branch = $request->input('branch_id');
-        $year = $request->input('year');
         $month = $request->input('month');
 
         $query = AccountTransaction::with('account.parent')

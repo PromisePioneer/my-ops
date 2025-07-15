@@ -105,12 +105,14 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="d-grid gap-2 mt-4">
-                                <button @click="seeMore(generalJournal.path)"
-                                        class="btn btn-sm btn-light-info fs-4 fw-bolder text-uppercase">
-                                    Lihat Lebih Banyak
-                                </button>
-                            </div>
+                            <template x-if="generalJournal.per_page > 100 && generalJournal.to === page">
+                                <div class="d-grid gap-2 mt-4">
+                                    <button @click="seeMore(generalJournal.path)"
+                                            class="btn btn-sm btn-light-info fs-4 fw-bolder text-uppercase">
+                                        Lihat Lebih Banyak
+                                    </button>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </div>
