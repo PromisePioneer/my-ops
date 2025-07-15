@@ -105,7 +105,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <template x-if="generalJournal.per_page > 100 && generalJournal.to === page">
+                            <template x-if="generalJournal.last_page >= page">
                                 <div class="d-grid gap-2 mt-4">
                                     <button @click="seeMore(generalJournal.path)"
                                             class="btn btn-sm btn-light-info fs-4 fw-bolder text-uppercase">
