@@ -83,14 +83,14 @@
                                             </td>
                                         </tr>
                                     </template>
-                                    <template x-if="!isLoading && generalJournal?.length === 0">
+                                    <template x-if="!isLoading && generalJournal.data?.length === 0">
                                         <tr>
                                             <td colspan="9">
                                                 <center>Data Tidak Ditemukan</center>
                                             </td>
                                         </tr>
                                     </template>
-                                    <template x-for="(journal, index) in generalJournal" :key="index">
+                                    <template x-for="(journal, index) in generalJournal.data" :key="index">
                                         <tr>
                                             <td class="text-center" x-text="journal.branch_name"></td>
                                             <td class="text-center" x-text="journal.date"></td>
@@ -104,6 +104,12 @@
                                     </template>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="d-grid gap-2 mt-4">
+                                <button @click="seeMore(generalJournal.path)"
+                                        class="btn btn-sm btn-light-info fs-4 fw-bolder text-uppercase">
+                                    Lihat Lebih Banyak
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -122,6 +128,7 @@
                 search: '',
                 startIndex: null,
                 filterButton: false,
+                page: 1,
                 months: [],
                 async init() {
                     await this.getGeneralJournalData();
@@ -140,16 +147,27 @@
                         this.isLoading = false;
                     }
                 },
+                async seeMore(url) {
+                    this.page++;
+                    try {
+                        const resp = await axios.get(`${url}?=page${this.page}`, {
+                            params: {
+                                month: document.getElementById('month').value,
+                                branch_id: $(".main-branches-select2")?.val(),
+                            }
+                        });
+                        this.generalJournal.data.push(...resp.data.data);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                },
                 async filter() {
-                    const year = document.getElementById('year')?.value ?? '';
-                    const month = document.getElementById('month')?.value ?? '';
                     try {
                         this.generalJournal = []
                         this.isLoading = true;
                         const resp = await axios.get('/journals/general-journal/filter', {
                             params: {
-                                month: month,
-                                year: year,
+                                month: document.getElementById('month').value,
                                 branch_id: $(".main-branches-select2")?.val(),
                             }
                         });

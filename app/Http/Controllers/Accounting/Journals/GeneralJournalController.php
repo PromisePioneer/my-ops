@@ -32,10 +32,6 @@ class GeneralJournalController extends Controller
         return response()->json($this->generalJournalService->data($request));
     }
 
-    public function getBranchData(Request $request): JsonResponse
-    {
-        return response()->json($this->branch->getData($request));
-    }
 
     public function filter(Request $request): JsonResponse
     {

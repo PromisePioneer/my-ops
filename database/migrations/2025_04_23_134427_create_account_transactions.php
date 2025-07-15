@@ -19,9 +19,14 @@ class CreateAccountTransactions extends Migration
                 ->nullable()
                 ->constrained('transactions')
                 ->cascadeOnDelete();
-            $table->foreignId('branch_id')->nullable()->constrained('branches');
-            $table->date('date');
-            $table->foreignId('account_id')->nullable()->constrained('accounts');
+            $table->foreignId('branch_id')
+                ->index()
+                ->nullable()
+                ->constrained('branches');
+            $table->date('date')->index();
+            $table->foreignId('account_id')
+                ->index()
+                ->nullable()->constrained('accounts');
             $table->enum('transaction_type', ['TR', 'SA'])->default('TR');
             $table->string('description')->nullable();
             $table->enum('entries_type', ['debit', 'credit'])->nullable();

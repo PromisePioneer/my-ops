@@ -13,7 +13,7 @@ use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class GeneralJournalService
 {
-    private static int $perPage = 10;
+    private static int $perPage = 100;
 
     public function __construct()
     {
@@ -24,14 +24,14 @@ use function App\Helper\formatDate;
 
     public function data(Request $request)
     {
-        $generalJournal = $this->generalJournalRepository->data($request)->cursor();
+        $generalJournal = $this->generalJournalRepository->data($request)->paginate(self::$perPage);
         return self::formattedData($generalJournal);
     }
 
 
     private static function formattedData($generalJournal)
     {
-        return $generalJournal->map(function ($item) {
+        $data = $generalJournal->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
                 'branch_name' => $item->branch->name,
@@ -42,6 +42,10 @@ use function App\Helper\formatDate;
                 'description' => $item->description,
             ];
         });
+
+
+        $generalJournal->setCollection($data);
+        return $generalJournal;
     }
 
 
@@ -63,17 +67,12 @@ use function App\Helper\formatDate;
         if ($branch) {
             $query->where('branch_id', $branch);
         }
-
-        if ($year) {
-            $query->whereYear('date', $year);
-        }
-
         if ($month) {
             $query->whereMonth('date', $month);
         }
 
 
-        $data = $query->cursor();
+        $data = $query->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
