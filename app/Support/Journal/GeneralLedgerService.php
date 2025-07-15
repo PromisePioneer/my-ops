@@ -18,20 +18,30 @@ class GeneralLedgerService
             ->whereNull('parent_id');
     }
 
-    public function getDetailGeneralLedger(Request $request, Account $account, $type = null): Builder|AccountTransaction
+    public function getDetailGeneralLedger(Account $account): Builder|AccountTransaction
     {
-        $query = AccountTransaction::with('account.parent')->whereHas('account.parent', function ($query) {
+        return AccountTransaction::with('account.parent')->whereHas('account.parent', function ($query) {
             $query->where('company_id', session()->get('company_session'));
         })->whereHas('account', function ($query) use ($account) {
             $query->where('parent_id', $account->id)->orWhere('parent_id', null);
-        });
-
-
-        return $query;
-
+        })->whereYear('date', AccountingPeriod::first()->year);
     }
 
-    public function formattedData($generalLedgerCollection)
+
+    public function filter(Account $account, Request $request)
+    {
+        $query = $this->getDetailGeneralLedger($account);
+
+
+        if ($request->filled('month')) {
+            $query->whereMonth('date', $request->month);
+        }
+        $query->get();
+
+        return self::formattedData($query);
+    }
+
+    private static function formattedData($generalLedgerCollection)
     {
         return $generalLedgerCollection->map(function ($item) {
             return [
@@ -50,5 +60,4 @@ class GeneralLedgerService
             ];
         })->values();
     }
-
 }

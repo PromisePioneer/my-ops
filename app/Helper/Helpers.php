@@ -83,7 +83,7 @@ function currencyFormat($currency): string
 function companiesImg(): string
 {
     $company = Company::where('id', request()->session()->get('company_session'))->first();
-    return \Storage::url($company->image);
+    return \Storage::url($company?->image);
 }
 
 
