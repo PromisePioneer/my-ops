@@ -63,6 +63,7 @@
                                        id="kt_roles_view_table">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-50px text-center">No</th>
                                         <th class="min-w-125px text-center">Cabang</th>
                                         <th class="min-w-125px text-center">Tanggal</th>
                                         <th class="min-w-125px text-center">Akun</th>
@@ -92,6 +93,7 @@
                                     </template>
                                     <template x-for="(journal, index) in generalJournal.data" :key="index">
                                         <tr>
+                                            <td class="text-center" x-text="startIndex + index++"></td>
                                             <td class="text-center" x-text="journal.branch_name"></td>
                                             <td class="text-center" x-text="journal.date"></td>
                                             <td x-text="journal.account"></td>
@@ -132,6 +134,7 @@
                 filterButton: false,
                 page: 1,
                 months: [],
+                startIndex: null,
                 async init() {
                     await this.getGeneralJournalData();
                     await this.getMainBranches();
