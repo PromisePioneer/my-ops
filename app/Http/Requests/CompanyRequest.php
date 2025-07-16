@@ -29,7 +29,7 @@ class CompanyRequest extends FormRequest
             'name' => ['required'],
             'phone' => ['required'],
             'address' => ['required'],
-            'image' => [Rule::requiredIf($request->route('company')),
+            'image' => [Rule::requiredIf($request->route('company') === null),
                 'image',
                 'mimes:jpeg,png,jpg,gif,svg',
                 'max:2048'
