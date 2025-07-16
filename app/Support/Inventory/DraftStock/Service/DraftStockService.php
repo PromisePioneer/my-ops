@@ -68,7 +68,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         })->filter(function ($item) use ($request) {
             $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($request, $item['id']);
             return $totalDraftStockQty > 0;
-        });
+        })->values();
 
         $itemData->setCollection($data);
         return $itemData;

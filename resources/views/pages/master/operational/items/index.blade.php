@@ -172,7 +172,6 @@
         </div>
     </div>
     @include('components.select2.script')
-    @include('components.toast')
 @endsection
 @push('script')
     <script type="text/javascript">
@@ -192,11 +191,13 @@
                 isLoading: false,
                 buttonLoading: false,
                 selectedCheckBox: [],
+                userCompanyId: "{{ auth()->user()->company_id }}",
                 selectAll: false,
                 singleChecked: false,
                 search: '',
                 editVal: '',
                 itemCategoryDescription: '',
+                companyId: null,
                 modal: new bootstrap.Modal(document.getElementById('modal-item')),
                 form: document.getElementById('form-item'),
                 formDelete: document.getElementById('form-delete'),
@@ -206,7 +207,15 @@
                     await select2('.unit-types-select2', 'Pilih Satuan', '/select2/unit-types-data', true, true);
                     await select2('#item-category-id-filter', 'Pilih Kategori', '/select2/item-categories-data', true, false);
                     await select2('.item-category-select2', 'Pilih Kategori', '/select2/item-categories-data', true, false);
-                    await select2('.asset-accounts-select2', 'Pilih Akun Aset', '/select2/asset-accounts-data', true, false);
+                    await select2('.asset-accounts-select2', 'Pilih Akun Aset', `/select2/asset-accounts-data/${this.userCompanyId}`, true, false);
+                    await select2('.companies-select2', 'Pilih Perusahaan', '/select2/companies-data/');
+                    await this.onSelect();
+                },
+                async onSelect() {
+                    $('#selected-company').on('select2:select', async (e) => {
+                        this.companyId = e.params.data.id;
+                        await select2('.asset-accounts-select2', 'Pilih Akun Aset', `/select2/asset-accounts-data/${this.companyId}`, true, false);
+                    });
                 },
                 add() {
                     this.editVal = '';
@@ -261,7 +270,8 @@
                         const resp = await axios.get(`${url}`);
                         this.items = resp.data
                     }
-                },
+                }
+                ,
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
                     this.singleChecked = false;
@@ -308,7 +318,8 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                },
+                }
+                ,
                 async getItemCategories() {
                     $(".item-category-select2").select2({
                         allowClear: true,
@@ -449,7 +460,8 @@
                     await this.selectedUnitType();
                     await this.selectedAssetAccount();
 
-                },
+                }
+                ,
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
@@ -468,7 +480,6 @@
                     await showAlert('success', 'Data berhasil disimpan')
                     this.form.reset();
                     this.modal.hide();
-                    KTDrawer.getInstance(document.querySelector('#item-drawer-action')).hide();
                     const resp = await axios.get(`${this.items.path}?page=${this.items.current_page}`);
                     this.items = resp.data
                 },

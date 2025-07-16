@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Account;
 use App\Models\AccountCategory;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use App\Models\Activity;
 use App\Models\Area;
@@ -30,12 +31,14 @@ use App\Models\OfferingLetter;
 use App\Models\PurchaseOrder;
 use App\Models\RoleDefaultWorkTime;
 use App\Models\SP;
+use App\Models\StockMutation;
 use App\Models\StockWithdrawal;
 use App\Models\TaxSetting;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Policies\AccountCategoryPolicy;
+use App\Policies\AccountingPeriodPolicy;
 use App\Policies\AccountPolicy;
 use App\Policies\ActivityLogPolicy;
 use App\Policies\AreaPolicy;
@@ -63,6 +66,7 @@ use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
 use App\Policies\SKLPolicy;
 use App\Policies\SpPolicy;
+use App\Policies\StockMutationPolicy;
 use App\Policies\StockWithdrawalPolicy;
 use App\Policies\TaxSettingPolicy;
 use App\Policies\TransactionPolicy;
@@ -117,6 +121,8 @@ class AuthServiceProvider extends ServiceProvider
         StockWithdrawal::class => StockWithdrawalPolicy::class,
         ItemCategory::class => ItemCategoryPolicy::class,
         Activity::class => ActivityLogPolicy::class,
+        StockMutation::class => StockMutationPolicy::class,
+        AccountingPeriod::class => AccountingPeriodPolicy::class,
     ];
 
     /**

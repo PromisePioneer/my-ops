@@ -6,10 +6,12 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
+use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Master\Common\Company\CompanyRepository;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 #[AllowDynamicProperties] class CompanyController extends Controller
@@ -20,8 +22,11 @@ use Illuminate\View\View;
     public function __construct()
     {
         $this->companyRepository = new CompanyRepository();
+        $this->company = new Company();
+        $this->handleFileUploadService = new HandleFileUploadService();
 
     }
+
     /**
      * @throws AuthorizationException
      */
@@ -38,7 +43,7 @@ use Illuminate\View\View;
     public function data(): JsonResponse
     {
         $this->authorize('view', Company::class);
-        $company = Company::paginate(self::$perPage);
+        $company = $this->companyRepository->getCompanies()->paginate(self::$perPage);
         return response()->json($company);
     }
 
@@ -50,7 +55,7 @@ use Illuminate\View\View;
     {
         $this->authorize('view', Company::class);
         $search = $request->input('search');
-        $companies = Company::search($search)->paginate(self::$perPage);
+        $companies = $this->company->search($search)->paginate(self::$perPage);
         return response()->json($companies);
     }
 
@@ -61,7 +66,17 @@ use Illuminate\View\View;
     public function store(CompanyRequest $request): JsonResponse
     {
         $this->authorize('create', Company::class);
-        return response()->json(Company::create($request->validated()));
+        $this->company->create([
+            'name' => $request->input('name'),
+            'address' => $request->input('address'),
+            'phone' => $request->input('phone'),
+            'image' => $this->handleFileUploadService->upload(
+                $request,
+                'documents/companies',
+                'image'
+            ),
+        ]);
+        return response()->json(['message' => 'data berhasil disimpan.']);
     }
 
 
@@ -81,7 +96,18 @@ use Illuminate\View\View;
     public function update(CompanyRequest $request, Company $company): JsonResponse
     {
         $this->authorize('update', $company);
-        return response()->json($company->update($request->validated()));
+        $company->update([
+            'name' => $request->input('name'),
+            'address' => $request->input('address'),
+            'phone' => $request->input('phone'),
+            'image' => $this->handleFileUploadService->upload(
+                $request,
+                'documents/companies',
+                'image',
+                $company->image
+            ),
+        ]);
+        return response()->json(['message' => 'data berhasil disimpan.']);
     }
 
 
@@ -91,9 +117,7 @@ use Illuminate\View\View;
     public function destroy(Request $request, Company $company): JsonResponse
     {
         $this->authorize('delete', $company);
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $company->whereIn('id', $explodeID)->delete();
+        $company->whereIn('id', $request->get('id'))->delete();
 
         return response()->json([
             'message' => 'data berhasil dihapus',
@@ -101,9 +125,10 @@ use Illuminate\View\View;
     }
 
 
-    public function getCompanies()
+    public function getCompanies(Request $request): Collection
     {
-        $companies = $this->companyRepository->getCompanies()->get();
+        $search = $request->input('search');
+        $companies = $this->company->search($search)->get();
         return $companies->map(function ($company) {
             return [
                 'id' => $company->id,
@@ -119,5 +144,11 @@ use Illuminate\View\View;
             'id' => $company->id,
             'name' => $company->name
         ];
+    }
+
+    public function getCompanySessions(Request $request)
+    {
+        $company = $this->companyRepository->selectedCompany($request->session()->get('company_session'));
+        return $company->name;
     }
 }

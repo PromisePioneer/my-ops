@@ -20,9 +20,20 @@
         <div class="card-body">
             <div class="row">
                 <div class="mb-4">
+                    <label for="" class="form-label">Cabang</label>
                     <select class="form-select form-select-solid form-select-sm branches-select2"
                             name="branch_id"
                             id="branch_id"
+                            data-dropdown-parent="#assets-filter"
+                    >
+                        <option></option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="" class="form-label">Barang</label>
+                    <select class="form-select form-select-solid form-select-sm items-select2"
+                            name="item_id"
+                            id="item_id"
                             data-dropdown-parent="#assets-filter"
                     >
                         <option></option>

@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
     }
     public function data(): Builder
     {
-        return Asset::with('branch', 'branch.parent', 'item');
+        return Asset::with(['branch', 'branch.parent', 'item'])->orderBy('date', 'ASC');
     }
 
     public function findById(int $assetId): Asset

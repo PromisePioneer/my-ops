@@ -15,6 +15,10 @@ class AssetQueryFilterService
             $query->where('branch_id', $request->get('branch_id'));
         }
 
+        if ($request->filled('item_id')) {
+            $query->where('item_id', $request->get('item_id'));
+        }
+
 
         return $query;
     }

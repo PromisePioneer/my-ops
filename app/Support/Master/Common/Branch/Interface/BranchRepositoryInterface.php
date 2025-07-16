@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 interface BranchRepositoryInterface
 {
-    public function handle(): Builder;
+    public function handle(Request $request): Builder;
 
     public function getAllBranches(string $search): Collection;
 

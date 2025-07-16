@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Support\Master\Common\Area;
+namespace App\Support\Master\Common\Area\Service;
 
 use AllowDynamicProperties;
 use App\Http\Requests\Master\Common\Area\AreaRequest;
 use App\Models\Area;
+use App\Support\Master\Common\Area\Respository\AreaRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -14,13 +15,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function __construct()
     {
+        $this->areaRepository = new AreaRepository();
         $this->area = new Area();
     }
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $query = Area::with('branch', 'department')->withCount('areaHasUser');
-        $aclFilter = AreaACLQuery::apply($query, $request)->paginate(self::$perPage);
+        $query = $this->areaRepository->getData();
+        $aclFilter = AreaACLQueryService::apply($query, $request)->paginate(self::$perPage);
         return self::formattedData($aclFilter);
     }
 
@@ -28,27 +30,22 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $area = Area::with('branch')->when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%')
-                ->orWhereHas('branch', function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                })->orWhereHas('department', function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                })->orWhere('name', 'like', '%' . $search . '%');
-        });
 
 
-        $areaFilter = AreaACLQuery::apply($area, $request)->paginate(self::$perPage);
+        $area = $this->area->search($search)->query(function ($query) use ($request) {
+            return AreaACLQueryService::apply($this->areaRepository->searchAreaQuery($query), $request);
+        })->paginate(self::$perPage);
 
-        return self::formattedData($areaFilter);
+        return self::formattedData($area);
     }
 
 
     public function filter(Request $request): LengthAwarePaginator
     {
         $query = Area::with('branch');
-        $areaFilterQuery = AreaFilterQuery::apply($query, $request);
-        $aclFilterQuery = AreaACLQuery::apply($areaFilterQuery, $request)->paginate(self::$perPage);
+        $areaFilterQuery = AreaFilterQueryService::apply($query, $request);
+        $aclFilterQuery = AreaACLQueryService::apply($areaFilterQuery, $request)
+            ->paginate(self::$perPage);
 
         return self::formattedData($aclFilterQuery);
     }
@@ -76,7 +73,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $data['branch_id'] = $request->user()->branch_id
             ? $request->user()->branch_id
             : $request->branch_id;
-        return Area::create($data);
+        return $this->area->create($data);
     }
 
 

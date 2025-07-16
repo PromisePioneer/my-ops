@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
@@ -15,8 +16,14 @@ class ItemCollectionSeeder extends Seeder
      */
     public function run(): void
     {
+        $mayatama = Company::where('code', "001")->first()->id;
+        $psg = Company::where('code', "001")->first()->id;
+        $linkkita = Company::where('code', "001")->first()->id;
+
+
         //kategori 1 aset
         ItemCollection::create([
+            'company_id' => $mayatama,
             'code' => 'FO',
             'name' => 'Kabel FO Aerial',
             'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
@@ -32,6 +39,7 @@ class ItemCollectionSeeder extends Seeder
 
         ItemCollection::create([
             'name' => 'KU 96 Core',
+            'company_id' => $mayatama,
             'code' => 'KU96',
             'category_id' => ItemCategory::where('name', 'Kategori 1')->first()->id,
             'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
@@ -46,6 +54,7 @@ class ItemCollectionSeeder extends Seeder
 
         //kategori 1 jual
         ItemCollection::create([
+            'company_id' => $mayatama,
             'name' => 'DW',
             'code' => 'DW',
             'category_id' => ItemCategory::where('name', 'Kategori 1')->first()->id,
@@ -58,6 +67,7 @@ class ItemCollectionSeeder extends Seeder
 
         //kategori 2 aset
         ItemCollection::create([
+            'company_id' => $mayatama,
             'name' => 'Box ODC',
             'code' => 'ODC',
             'category_id' => ItemCategory::where('name', 'Kategori 2')->first()->id,
@@ -72,6 +82,7 @@ class ItemCollectionSeeder extends Seeder
 
         //kategori 2 ASET
         ItemCollection::create([
+            'company_id' => $mayatama,
             'name' => 'GPON',
             'code' => 'GPON',
             'category_id' => ItemCategory::where('name', 'Kategori 2')->first()->id,
@@ -87,6 +98,7 @@ class ItemCollectionSeeder extends Seeder
 
 
         ItemCollection::create([
+            'company_id' => $mayatama,
             'name' => 'TANAH',
             'code' => 'TNH',
             'type' => 'ASET',
@@ -96,9 +108,9 @@ class ItemCollectionSeeder extends Seeder
         ]);
 
 
-
         //kategori 3 aset
         ItemCollection::create([
+            'company_id' => $mayatama,
             'name' => 'Splicer',
             'code' => 'SPLICER',
             'category_id' => ItemCategory::where('name', 'Kategori 3')->first()->id,
@@ -115,6 +127,7 @@ class ItemCollectionSeeder extends Seeder
 
         //kategori 4 aset
         ItemCollection::create([
+            'company_id' => $mayatama,
             'name' => 'Pathcord',
             'code' => 'PATHCORD',
             'category_id' => ItemCategory::where('name', 'Kategori 4')->first()->id,
@@ -126,6 +139,7 @@ class ItemCollectionSeeder extends Seeder
 
         //kategori 4 jual
         ItemCollection::create([
+            'company_id' => $mayatama,
             'name' => 'Pigtail',
             'category_id' => ItemCategory::where('name', 'Kategori 4')->first()->id,
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,

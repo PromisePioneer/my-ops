@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Support\Master\Common\Area;
+namespace App\Support\Master\Common\Area\Service;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 
 
-class AreaACLQuery
+class AreaACLQueryService
 {
     public static function apply(EloquentBuilder|Builder $query, Request $request): EloquentBuilder|Builder
     {

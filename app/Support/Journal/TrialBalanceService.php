@@ -3,6 +3,7 @@
 namespace App\Support\Journal;
 
 use App\Models\Account;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,15 +13,17 @@ use function App\Helper\currencyFormat;
 
 class TrialBalanceService
 {
-    public function data(): Collection
+    public function data(Request $request): Collection
     {
-        $accounts = $this->query();
+        $accounts = $this->query($request);
         return self::formattedData($accounts);
     }
 
-    public function query(): Builder
+    public function query(Request $request): Builder
     {
-        return Account::with('children')->whereNull('parent_id');
+        return Account::with('children')
+            ->where('company_id', $request->session()->get('company_session'))
+            ->whereNull('parent_id');
     }
 
     public function formattedData(Builder $accounts, ?Request $request = null): Collection
@@ -64,19 +67,11 @@ class TrialBalanceService
 
     public function getFilteredTransactionSum($account, $type, ?Request $request): float
     {
-        $transactions = $account->accountTransaction()->where('entries_type', $type);
+        $transactions = $account->accountTransaction()->where('entries_type', $type)
+            ->whereYear('date', AccountingPeriod::first()->year);
 
-        if ($request?->year && $request?->month) {
-            $transactions->whereMonth('date', $request->month)
-                ->whereYear('date', $request->year);
-        } elseif ($request?->year) {
-            $start = Carbon::createFromDate($request->year - 1, 12, 1)->startOfDay();
-            $end = Carbon::createFromDate($request->year, 12, 31)->endOfDay();
-            $transactions->whereBetween('date', [$start, $end]);
-        } else {
-            $start = Carbon::now()->subYear()->startOfMonth()->setMonth(12); // 1 Dec tahun lalu
-            $end = Carbon::now()->endOfYear(); // 31 Dec tahun ini
-            $transactions->whereBetween('date', [$start, $end]);
+        if ($request?->month) {
+            $transactions->whereMonth('date', $request->month);
         }
 
         if ($request?->branch_id) {
@@ -88,7 +83,7 @@ class TrialBalanceService
 
     public function filter(Request $request): array
     {
-        $query = $this->query();
+        $query = $this->query($request);
         return [
             'trial_balance' => $this->formattedData($query, $request),
             'total_debit' => currencyFormat($this->getTotalDebit($request)),
@@ -101,19 +96,16 @@ class TrialBalanceService
         return $this->getFilteredTotal('debit', $request);
     }
 
-    private function getFilteredTotal(string $type, Request $request): string
+    private function getFilteredTotal(string $type, Request $request)
     {
         $query = AccountTransaction::with('account')
-            ->whereHas('account', function ($query) use ($type) {
-                $query->where('trial_balance_type', $type);
-            })->where('entries_type', $type);
+            ->whereHas('account', function ($query) use ($type, $request) {
+                $query->where('company_id', $request->session()->get('company_session'))->where('trial_balance_type', $type);
+            })->where('entries_type', $type)
+            ->whereYear('date', AccountingPeriod::first()->year);
 
         if ($request->branch_id) {
             $query->where('branch_id', $request->branch_id);
-        }
-
-        if ($request->year) {
-            $query->whereYear('date', $request->year);
         }
 
         if ($request->month) {

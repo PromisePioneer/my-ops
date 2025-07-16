@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Accounting\AccountCategory\AccountCategoryRequest;
 use App\Models\AccountCategory;
+use App\Support\Master\Accounting\AccountCategories\Repositories\AccountCategoryRepository;
 use App\Support\Master\Accounting\AccountCategories\Service\AccountCategoryService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +18,8 @@ use Illuminate\View\View;
     public function __construct()
     {
         $this->accountCategoryService = new AccountCategoryService();
+        $this->accountCategory = new AccountCategory();
+        $this->accountCategoryRepository = new AccountCategoryRepository();
     }
 
     /**
@@ -51,7 +54,7 @@ use Illuminate\View\View;
     public function store(AccountCategoryRequest $request): JsonResponse
     {
         $this->authorize('create', AccountCategory::class);
-        AccountCategory::updateOrCreate([
+        $this->accountCategory->updateOrCreate([
             'name' => $request->name,
         ]);
 
@@ -64,7 +67,7 @@ use Illuminate\View\View;
     public function storeChild(AccountCategoryRequest $request, AccountCategory $accountCategory): JsonResponse
     {
         $this->authorize('create', AccountCategory::class);
-        AccountCategory::create([
+        $this->accountCategory->updateOrCreate([
             'name' => $request->name,
             'parent_id' => $accountCategory->id
         ]);
@@ -78,8 +81,8 @@ use Illuminate\View\View;
     public function edit(AccountCategory $accountCategory): JsonResponse
     {
         $this->authorize('update', $accountCategory);
-        $data = AccountCategory::where('id', $accountCategory->id)->with('parent')->first();
-        return response()->json($data);
+        $accountCategory->load('parent');
+        return response()->json($accountCategory);
     }
 
 
@@ -117,5 +120,17 @@ use Illuminate\View\View;
         return response()->json([
             'message' => 'data berhasil dihapus',
         ]);
+    }
+
+
+    public function getAccountCategories(Request $request): JsonResponse
+    {
+       return response()->json($this->accountCategoryService->getAllAccountCategories($request));
+    }
+
+
+    public function selectedAccountCategory(AccountCategory $accountCategory): JsonResponse
+    {
+      return response()->json($this->accountCategoryService->selectedAccountCategory($accountCategory));
     }
 }

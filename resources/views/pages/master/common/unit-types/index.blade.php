@@ -49,7 +49,7 @@
                     <div class="table-responsive">
                         <table class="table align-middle table-bordered fs-6 gy-5">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox"
@@ -57,31 +57,21 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Nama Satuan</th>
+                                <th class="min-w-125px">Barang</th>
                                 <template x-if="Number(editPermission) === 1">
                                     <th class="min-w-125px">Actions</th>
                                 </template>
                             </tr>
                             </thead>
-                            <tbody class="fw-bold">
+
                             <template x-if="isLoading">
-                                <tr>
-                                    <td colspan="9">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <x-table.empty colspan="4"/>
                             </template>
                             <template x-if="!isLoading && unitTypes.data?.length === 0">
-                                <tr>
-                                    <td colspan="9">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
+                                <x-table.empty colspan="4"/>
                             </template>
                             <template x-for="(unitType, index) in unitTypes?.data" :key="unitType.id">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -91,9 +81,16 @@
                                                    :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
-                                    <td x-text="unitType.name"></td>
+                                    <td class="text-center" x-text="unitType.name"></td>
+                                    <td>
+                                        <ul>
+                                            <template x-for="(item, index) in unitType.item_collections" :key="index">
+                                                <li x-text="item.name"></li>
+                                            </template>
+                                        </ul>
+                                    </td>
                                     <template x-if="Number(editPermission) === 1">
-                                        <td>
+                                        <td class="text-center">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-unit-type" @click="edit(unitType.id)">
                                                 <x-icons.edit/>
@@ -101,8 +98,8 @@
                                         </td>
                                     </template>
                                 </tr>
+                                </tbody>
                             </template>
-                            </tbody>
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">

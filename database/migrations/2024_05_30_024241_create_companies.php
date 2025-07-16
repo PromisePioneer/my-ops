@@ -10,10 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('fp_templates', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
             $table->string('name');
-            $table->text('template');
+            $table->text('address')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +26,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('fp_templates');
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('companies');
     }
 };

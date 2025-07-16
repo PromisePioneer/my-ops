@@ -19,7 +19,6 @@ class FpDevice extends Model
 
     protected $fillable = [
         'branch_id',
-        'name',
         'ip_address',
         'serial_number',
         'online',

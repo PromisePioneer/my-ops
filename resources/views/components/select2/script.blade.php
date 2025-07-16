@@ -2,8 +2,9 @@
 
 
 <script>
-    async function select2(element, placeholder, url, cache = true, tags = false, modalId = null) {
+    async function select2(element, placeholder, url, cache = true, tags = false, modalId = null, multiple = false) {
         return $(`${element}`).select2({
+            multiple: multiple,
             allowClear: true,
             placeholder: placeholder,
             escapeMarkup: markup => (markup),
@@ -22,7 +23,9 @@
                 url: url,
                 dataType: "json",
                 type: "GET",
-                data: params => ({search: params.term}),
+                data: params => ({
+                    search: params.term,
+                }),
                 processResults: (data) => ({results: data}),
                 cache: cache,
             }

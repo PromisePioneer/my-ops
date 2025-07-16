@@ -28,28 +28,33 @@ use function App\Helper\formatDate;
 
     public function index(): View
     {
+        $this->authorize('view', StockMutation::class);
         return view('pages.inventory.stock-mutations.index');
     }
 
     public function data(): JsonResponse
     {
+        $this->authorize('view', StockMutation::class);
         return response()->json($this->stockMutationService->data());
     }
 
 
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('view', StockMutation::class);
         return response()->json($this->stockMutationService->search($request));
     }
 
 
     public function filter(Request $request): JsonResponse
     {
+        $this->authorize('view', StockMutation::class);
         return response()->json($this->stockMutationService->filter($request));
     }
 
     public function create(?ItemCollection $itemCollection): View
     {
+        $this->authorize('create', StockMutation::class);
         return view('pages.inventory.stock-mutations.form', compact('itemCollection'));
     }
 
@@ -59,6 +64,7 @@ use function App\Helper\formatDate;
      */
     public function store(StockMutationRequest $request): JsonResponse
     {
+        $this->authorize('create', StockMutation::class);
         $this->stockMutationService->store($request);
         return response()->json(['message' => 'stock  berhasil di mutasi']);
     }
@@ -66,10 +72,10 @@ use function App\Helper\formatDate;
 
     public function show(StockMutation $stockMutation): JsonResponse
     {
+        $this->authorize('viewDetail', StockMutation::class);
         $stockMutation->load(
             'stockMutationItems',
             'stockMutationItems.stock.transaction.item',
-            'stockMutationItems.stock.initialInventoryBalance.item',
             'sender',
             'receiver'
         );
@@ -80,6 +86,7 @@ use function App\Helper\formatDate;
 
     public function receive(StockMutation $stockMutation): JsonResponse
     {
+        $this->authorize('receive', StockMutation::class);
         $this->stockMutationService->receive($stockMutation);
         return response()->json(['message' => 'stock  berhasil di terima']);
     }
@@ -87,6 +94,7 @@ use function App\Helper\formatDate;
 
     public function destroy(Request $request, StockMutation $stockMutation): JsonResponse
     {
+        $this->authorize('delete', StockMutation::class);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $stockMutation->whereIn('id', $explodeID)->delete();
@@ -96,6 +104,7 @@ use function App\Helper\formatDate;
 
     public function getSessions(): JsonResponse
     {
+        $this->authorize('create', StockMutation::class);
         $stock = session()->get('stock_mutation_items') ?? [];
         return response()->json($stock);
     }
@@ -103,6 +112,7 @@ use function App\Helper\formatDate;
 
     public function sessionStore(Request $request): void
     {
+        $this->authorize('create', StockMutation::class);
         $stockMutationItem = [
             'code' => $request->get('code'),
             'qty' => $request->get('qty'),
@@ -116,12 +126,14 @@ use function App\Helper\formatDate;
 
     public function flushSessions(): void
     {
+        $this->authorize('create', StockMutation::class);
         session()->forget('stock_mutation_items');
     }
 
 
     public function deleteSessions(Request $request): void
     {
+        $this->authorize('create', StockMutation::class);
         Session::forget("stock_mutation_items.$request->index");
     }
 
@@ -131,6 +143,7 @@ use function App\Helper\formatDate;
      */
     public function cancelItemDelivery(StockMutation $stockMutation): void
     {
+        $this->authorize('cancelDelivery', StockMutation::class);
         DB::transaction(function () use ($stockMutation) {
             $items = $stockMutation->load('stockMutationItems')->stockMutationItems;
             foreach ($items as $item) {
