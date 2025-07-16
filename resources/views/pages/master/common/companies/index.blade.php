@@ -58,10 +58,10 @@
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
-                                <x-table.loading colspan="4"/>
+                                <x-table.loading colspan="5"/>
                             </template>
                             <template x-if="!isLoading && companies.data?.length === 0">
-                                <x-table.empty colspan="4"/>
+                                <x-table.empty colspan="5"/>
                             </template>
                             <template x-for="company in companies?.data" :key="company.id">
                                 <tbody class="fw-bold text-center">

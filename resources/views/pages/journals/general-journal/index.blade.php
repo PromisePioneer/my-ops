@@ -72,26 +72,14 @@
                                         <th class="min-w-125px text-center">Kredit</th>
                                     </tr>
                                     </thead>
-                                    <tbody class="fw-bold">
                                     <template x-if="isLoading">
-                                        <tr>
-                                            <td colspan="5">
-                                                <div style="text-align: center;">
-                                                    <div class="spinner-border" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <x-table.loading colspan="7"/>
                                     </template>
                                     <template x-if="!isLoading && generalJournal.data?.length === 0">
-                                        <tr>
-                                            <td colspan="9">
-                                                <center>Data Tidak Ditemukan</center>
-                                            </td>
-                                        </tr>
+                                        <x-table.loading colspan="7"/>
                                     </template>
                                     <template x-for="(journal, index) in generalJournal.data" :key="index">
+                                        <tbody class="fw-bold">
                                         <tr>
                                             <td class="text-center" x-text="startIndex + index++"></td>
                                             <td class="text-center" x-text="journal.branch_name"></td>
@@ -103,8 +91,8 @@
                                             <td class="text-center"
                                                 x-text="journal.type === 'credit' ? journal.amount : '-'"></td>
                                         </tr>
+                                        </tbody>
                                     </template>
-                                    </tbody>
                                 </table>
                             </div>
                             <template x-if="!isLoading && generalJournal.next_page_url !== null">

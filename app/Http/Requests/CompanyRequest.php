@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CompanyRequest extends FormRequest
 {
@@ -20,14 +22,18 @@ class CompanyRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
             'code' => ['required'],
             'name' => ['required'],
             'phone' => ['required'],
             'address' => ['required'],
-            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            'image' => [Rule::requiredIf($request->route('company')),
+                'image',
+                'mimes:jpeg,png,jpg,gif,svg',
+                'max:2048'
+            ],
         ];
     }
 
