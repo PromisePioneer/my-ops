@@ -107,7 +107,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <template x-if="generalJournal.next_page_url !== null">
+                            <template x-if="!isLoading && generalJournal.next_page_url !== null">
                                 <div class="d-grid gap-2 mt-4">
                                     <button @click="seeMore(generalJournal.next_page_url)"
                                             class="btn btn-sm btn-light-info fs-4 fw-bolder text-uppercase">
