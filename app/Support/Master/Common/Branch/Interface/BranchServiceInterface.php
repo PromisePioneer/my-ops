@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 interface BranchServiceInterface
 {
-    public function data();
+    public function data(Request $request);
 
     public function search(Request $request);
 

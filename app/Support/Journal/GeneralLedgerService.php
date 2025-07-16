@@ -18,13 +18,23 @@ class GeneralLedgerService
             ->whereNull('parent_id');
     }
 
-    public function getDetailGeneralLedger(Account $account): Builder|AccountTransaction
+    public function getDetailGeneralLedger(Account $account)
     {
-        return AccountTransaction::with('account.parent')->whereHas('account.parent', function ($query) {
-            $query->where('company_id', session()->get('company_session'));
-        })->whereHas('account', function ($query) use ($account) {
-            $query->where('parent_id', $account->id)->orWhere('parent_id', null);
-        })->whereYear('date', AccountingPeriod::first()->year);
+
+        if (!empty($account->parent_id)) {
+            return AccountTransaction::with('account.parent')->whereHas('account.parent', function ($query) {
+                $query->where('company_id', session()->get('company_session'));
+            })->whereHas('account', function ($query) use ($account) {
+                $query->where('parent_id', $account->id);
+            })->whereYear('date', AccountingPeriod::first()->year);
+        }
+
+
+        return AccountTransaction::with('account')
+            ->whereHas('account', function ($query) {
+                $query->where('company_id', session()->get('company_session'));
+            })->where('account_id', $account->id)
+            ->whereYear('date', AccountingPeriod::first()->year);
     }
 
 

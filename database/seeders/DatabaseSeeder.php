@@ -14,10 +14,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             DepartmentSeeder::class,
+            CompanySeeder::class,
             BranchSeeder::class,
             FpDeviceSeeder::class,
             AccountCategorySeeder::class,
-            CompanySeeder::class,
             AccountSeeder::class,
 //            AccountMayatamaSeeder::class,
 //            AccountPSGSeeder::class,

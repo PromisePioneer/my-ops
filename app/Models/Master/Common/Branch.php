@@ -24,6 +24,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
     protected $table = 'branches';
 
     protected $fillable = [
+        'company_id',
         'name',
         'code',
         'address',
@@ -44,6 +45,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
             'name' => $this->name,
             'code' => $this->code,
         ];
+    }
+
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
 
