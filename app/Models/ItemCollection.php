@@ -19,7 +19,6 @@ class ItemCollection extends Model
         'name',
         'type',
         'code',
-        'company_id',
         'category_id',
         'unit_type_id',
         'tangible_assets_type',
@@ -40,13 +39,6 @@ class ItemCollection extends Model
             'name' => $this->name,
         ];
     }
-
-
-    public function company(): BelongsTo
-    {
-        return $this->belongsTo(Company::class, 'company_id');
-    }
-
     public function unitType(): BelongsTo
     {
         return $this->belongsTo(UnitType::class, 'unit_type_id');
@@ -68,4 +60,9 @@ class ItemCollection extends Model
         return $this->hasMany(Transaction::class, 'item_id');
     }
 
+
+    public function initialInventoryBalance(): HasMany
+    {
+        return $this->hasMany(InitialInventoryBalance::class, 'item_id');
+    }
 }

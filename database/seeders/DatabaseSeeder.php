@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\AccountingPeriod;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,22 +13,20 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             DepartmentSeeder::class,
-            CompanySeeder::class,
             BranchSeeder::class,
-            FpDeviceSeeder::class,
             AccountCategorySeeder::class,
             AccountSeeder::class,
-//            AccountMayatamaSeeder::class,
-//            AccountPSGSeeder::class,
+            CompanySeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
             PermissionSeeder::class,
             ServicesCategoriesSeeder::class,
+            OfferingLetterSeeder::class,
             CompanyProfileSeeder::class,
             LetterHeadSeeder::class,
             UnitTypesSeeder::class,
             WorkTimeSeeder::class,
-            AccountingPeriodSeeder::class,
+            FpDeviceSeeder::class,
             RoleHasDepartmentSeeder::class,
             PayrollScheduleSeeder::class,
             BPJSKetSeeder::class,
@@ -43,9 +40,8 @@ class DatabaseSeeder extends Seeder
             WeekHolidaySeeder::class,
             ContactSeeder::class,
             RoleHierarchySeeder::class,
-//            InitialBalanceSeeder::class,
+            InitialBalanceSeeder::class,
             TransactionSeeder::class,
-            AccountTransactionSeeder::class,
         ]);
     }
 }

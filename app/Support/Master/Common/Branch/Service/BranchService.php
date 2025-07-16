@@ -19,9 +19,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $this->branch = new Branch();
     }
 
-    public function data(Request $request): LengthAwarePaginator
+    public function data(): LengthAwarePaginator
     {
-        $branch = $this->branchRepository->handle($request)->paginate(self::$perPage);
+        $branch = $this->branchRepository->handle()->paginate(self::$perPage);
         return self::formattedData($branch);
     }
 
@@ -29,8 +29,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $branch = $this->branch->search($search)->query(function ($query) use ($request) {
-            $query->where('company_id', $request->session()->get('company_session'));
+        $branch = $this->branch->search($search)->query(function () {
+            $this->branchRepository->handle();
         })->paginate(self::$perPage);
         return self::formattedData($branch);
     }
@@ -99,7 +99,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function getAllBranch(Request $request)
     {
         $branches = $this->branchRepository->getAllBranch($request);
-
 
         return $branches->map(function ($branch) {
             return [

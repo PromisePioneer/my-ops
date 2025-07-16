@@ -12,14 +12,10 @@ return new class extends Migration {
     {
         Schema::create('item_collections', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')
-                ->constrained('companies')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->string('name');
             $table->enum('type', ['ASET', 'JUAL']);
             $table->string('code')->nullable();
-            $table->enum('tangible_assets_type', ['Tanah', 'Bangunan', 'Bukan Bangunan'])->nullable();
+            $table->enum('tangible_assets_type', ['Tanah','Bangunan', 'Bukan Bangunan'])->nullable();
             $table->boolean('is_vehicle')->default(false);
             $table->enum('non_building_group',
                 ['Kelompok I', 'Kelompok II', 'Kelompok III', 'Kelompok IV'])

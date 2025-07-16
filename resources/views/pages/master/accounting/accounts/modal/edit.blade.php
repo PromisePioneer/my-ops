@@ -35,26 +35,6 @@
                             <option value="credit" :selected="editVal.trial_balance_type ==='credit'">Kredit</option>
                         </select>
                     </div>
-
-                    <div class="mb-10">
-                        <div class="form-check form-switch form-check-custom form-check-solid">
-                            <input class="form-check-input" type="checkbox" x-model="toggleAccountCategory" value=""
-                                   id="flexSwitchDefault"/>
-                            <label class="form-check-label" for="flexSwitchDefault">
-                                Kategori Akun (Akan Masuk di laporan keuangan) ?
-                            </label>
-                        </div>
-                    </div>
-
-
-                    <div class="mb-10" x-show="toggleAccountCategory" x-transition x-cloak>
-                        <label for="" class="form-label required">Kategori Akun</label>
-                        <select :name="`${toggleAccountCategory ? 'category_id' : '' }`" id="selected-account-category"
-                                class="form-select form-select-solid account-categories-select2"
-                                data-dropdown-parent="#modal-edit">
-                            <option value=""></option>
-                        </select>
-                    </div>
                 </div>
 
                 <div class="modal-footer">

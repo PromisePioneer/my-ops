@@ -21,8 +21,11 @@
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-company">
-                                <x-icons.add-item/>
-                                Tambah
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
                             </button>
                         @endcan
                     </div>
@@ -35,7 +38,12 @@
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
-                            <x-icons.trash/>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
                             Hapus
                         </button>
                     </form>
@@ -53,15 +61,29 @@
                                 </th>
                                 <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Telepon</th>
-                                <th class="min-w-125px">Alamat</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
-                                <x-table.loading colspan="5"/>
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="9">
+                                        <div style="text-align: center;">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
                             </template>
                             <template x-if="!isLoading && companies.data?.length === 0">
-                                <x-table.empty colspan="5"/>
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="9">
+                                        <center>Data Tidak Ditemukan</center>
+                                    </td>
+                                </tr>
+                                </tbody>
                             </template>
                             <template x-for="company in companies?.data" :key="company.id">
                                 <tbody class="fw-bold text-center">
@@ -75,31 +97,15 @@
                                         </div>
                                     </td>
                                     <td x-text="company.code"></td>
-                                    <td class="d-flex align-items-center">
-                                        <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                            <a href="#">
-                                                <div class="symbol-label">
-                                                    <a href="#" @click="openImage(company.image)">
-                                                        <img :src="getImageURL(company.image ?? null)"
-                                                             alt="Image" class="w-100">
-                                                    </a>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <p
-                                                class="text-gray-800 text-hover-primary mb-1"
-                                                x-text="`${company.name}`">
-                                            </p>
-                                        </div>
-                                    </td>
-                                    <td x-text="company.phone"></td>
-                                    <td x-text="company.address"></td>
+                                    <td x-text="company.name"></td>
                                     <td>
                                         <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-company" @click="edit(company.id)">
-                                                <x-icons.edit/>
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
                                             </button>
                                         </template>
                                     </td>

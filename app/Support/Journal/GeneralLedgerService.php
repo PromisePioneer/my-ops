@@ -3,55 +3,50 @@
 namespace App\Support\Journal;
 
 use App\Models\Account;
-use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 
 class GeneralLedgerService
 {
-    public function getAccountData(Request $request)
+    public function getAccountData(): Collection
     {
-        return Account::with('children')
-            ->where('company_id', $request->session()->get('company_session'))
-            ->whereNull('parent_id');
+        return Account::all();
     }
 
-    public function getDetailGeneralLedger(Account $account)
+    public function getDetailGeneralLedger(Account $account): Builder
     {
+        $isAccountHasParent = Account::where('parent_id', $account->id)->exists();
 
-        if (!empty($account->parent_id)) {
-            return AccountTransaction::with('account.parent')->whereHas('account.parent', function ($query) {
-                $query->where('company_id', session()->get('company_session'));
-            })->whereHas('account', function ($query) use ($account) {
-                $query->where('parent_id', $account->id);
-            })->whereYear('date', AccountingPeriod::first()->year);
+
+        $data = Account::join(
+            'account_transactions',
+            'accounts.id',
+            '=',
+            'account_transactions.account_id'
+        );
+
+        if ($isAccountHasParent) {
+            $data->where('accounts.parent_id', $account->id);
+        } else {
+            $data->where('accounts.id', $account->id);
         }
 
-
-        return AccountTransaction::with('account')
-            ->whereHas('account', function ($query) {
-                $query->where('company_id', session()->get('company_session'));
-            })->where('account_id', $account->id)
-            ->whereYear('date', AccountingPeriod::first()->year);
+        return $data;
     }
 
 
-    public function filter(Account $account, Request $request)
+    public function filterByPeriod(Account $account, $month, $year)
     {
-        $query = $this->getDetailGeneralLedger($account);
+        $generalLedger = $this->getDetailGeneralLedger($account)
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->get();
 
-
-        if ($request->filled('month')) {
-            $query->whereMonth('date', $request->month);
-        }
-        $query->get();
-
-        return self::formattedData($query);
+        return self::formattedData($generalLedger);
     }
 
-    private static function formattedData($generalLedgerCollection)
+    public function formattedData($generalLedgerCollection)
     {
         return $generalLedgerCollection->map(function ($item) {
             return [
@@ -70,4 +65,5 @@ class GeneralLedgerService
             ];
         })->values();
     }
+
 }

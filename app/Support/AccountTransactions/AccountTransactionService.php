@@ -1,20 +1,12 @@
 <?php
 
-namespace App\Support\AccountTransactions\Service;
+namespace App\Support\AccountTransactions;
 
-use AllowDynamicProperties;
 use App\Models\AccountTransaction;
 use Carbon\Carbon;
 
-#[AllowDynamicProperties] class AccountTransactionService
+class AccountTransactionService
 {
-
-    public function __construct()
-    {
-        $this->accountTransaction = new AccountTransaction();
-    }
-
-
     public function createDebitTransaction(
         ?int      $branchId,
         string    $description,
@@ -23,8 +15,8 @@ use Carbon\Carbon;
                   $transactionId = null
     ): void
     {
-        $this->accountTransaction->create([
-            'date' => date('Y-m-d'),
+        AccountTransaction::create([
+            'date' => date('y-m-d'),
             'branch_id' => $branchId ?? null,
             'account_id' => $accountId,
             'description' => $description,
@@ -44,7 +36,7 @@ use Carbon\Carbon;
                   $date = null
     ): void
     {
-        $this->accountTransaction->create([
+        AccountTransaction::create([
             'branch_id' => $branchId,
             'date' => Carbon::parse($date ?? date('Y-m-d'))->format('Y-m-d'),
             'account_id' => $accountId,

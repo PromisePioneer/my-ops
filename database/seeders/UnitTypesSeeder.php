@@ -48,5 +48,8 @@ class UnitTypesSeeder extends Seeder
             'name' => 'Unit',
         ]);
 
+        DB::table('unit_types')->insert([
+            'name' => 'ROLL',
+        ]);
     }
 }

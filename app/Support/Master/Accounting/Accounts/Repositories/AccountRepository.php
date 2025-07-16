@@ -4,96 +4,40 @@ namespace App\Support\Master\Accounting\Accounts\Repositories;
 
 use AllowDynamicProperties;
 use App\Models\Account;
-use App\Models\Company;
 use App\Models\DraftStock;
+use App\Support\Master\Accounting\Accounts\Interface\AccountRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 
-#[AllowDynamicProperties] class AccountRepository
+#[AllowDynamicProperties] class AccountRepository implements AccountRepositoryInterface
 {
     public function __construct()
     {
         $this->account = new Account();
-        $this->company = new Company();
     }
 
 
-    public function dataQuery(Request $request)
+    public function getAssetAccounts(Builder $query): Builder
     {
-        return Account::with(['children' => function ($q) {
-            $q->orderBy('code');
-        }, 'company'])
-            ->where('parent_id', null)
-            ->whereHas('company', function (Builder $query) use ($request) {
-                $query->where(
-                    'id',
-                    $this->company
-                        ->where('id',
-                            $request->session()->get('company_session')
-                        )->first()
-                        ->id
-                );
-            })->orderBy('code');
-    }
-
-
-    public function getAssetAccounts(Request $request, ?string $search): Builder
-    {
-        $accounts = $this->account->with('children')->whereIn('code', ['125', '126'])
-            ->where('company_id', $request->session()->get('company_session'))
+        return $query->whereIn('code', ['121', '122', '123', '125', '126'])
             ->orderby('code')
             ->select('id', 'name', 'code');
-
-        if (!empty($search)) {
-            $accounts->where(function ($query) use ($search) {
-                $query->whereHas('children', function ($query) use ($search) {
-                    $query->where('code', 'like', '%' . $search . '%')
-                        ->orWhere('name', 'like', '%' . $search . '%');
-                });
-            });
-        }
-
-        return $accounts;
     }
 
-    public function getKasAndLeverageAccounts(Request $request, ?string $search)
+    public function getKasAndLeverageAccounts(Builder $query): Builder
     {
-        $accounts = $this->account->with('children')
-            ->where('company_id', $request->session()->get('company_session'))
-            ->whereIn('code', ['111', '211', '221', '222', '223'])
-            ->orderBy('code')
+        return $query->with('children')->with('children')
+            ->whereIn('code', ['111', '211', '221', '222', '223'])->orderBy('code')
             ->select('id', 'name', 'code');
-
-
-        if (!empty($search)) {
-            $accounts->whereHas('children', function ($query) use ($search) {
-                $query->where('code', 'like', '%' . $search . '%')
-                    ->orWhere('name', 'like', '%' . $search . '%');
-            });
-        }
-
-        return $accounts;
     }
 
 
-    public function getStockAccounts(Request $request, ?string $search): Builder
+    public function getStockAccounts(Builder $query): Builder
     {
-        $accounts = $this->account->with('children')
-            ->where('company_id', $request->session()->get('company_session'))
-            ->where('code', '112')
-            ->orderBy('code')
+        return $query->with('children')
+            ->whereHas('parent', function (Builder $query) {
+                $query->where('code', '112');
+            })->orderBy('code')
             ->select('id', 'name', 'code');
-
-
-        if (!empty($search)) {
-            $accounts->whereHas('children', function ($query) use ($search) {
-                $query->where('code', 'like', '%' . $search . '%')
-                    ->orWhere('name', 'like', '%' . $search . '%');
-            });
-        }
-
-
-        return $accounts;
     }
 
 
@@ -119,10 +63,5 @@ use Illuminate\Http\Request;
     public function findById(int $id)
     {
         return $this->account->query()->find($id);
-    }
-
-    public function getParentAccount($query)
-    {
-        return $query->where('parent_id', null)->orderBy('code');
     }
 }

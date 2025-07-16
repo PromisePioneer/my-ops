@@ -51,9 +51,10 @@ class FpDeviceService
         $fpDevice = $data->getCollection()->map(function ($query) {
             return [
                 'id' => $query->id,
+                'name' => $query->name,
                 'serial_number' => $query->serial_number,
                 'ip_address' => $query->ip_address,
-                'branch_name' => "{$query->branch->parent?->name} - {$query->branch?->name}",
+                'branch_name' => $query->branch?->name,
                 'online' => $query->online ? 'Online' : 'Offline',
                 'last_download_date' => $query->attendanceJobProgress?->created_at ? Carbon::parse($query->attendanceJobProgress->created_at) : null,
                 'last_download_status' => $query->attendanceJobProgress?->status ?? null,

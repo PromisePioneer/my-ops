@@ -19,7 +19,7 @@ class UnitType extends Model
     ];
 
 
-    public function itemCollections(): HasMany
+    public function itemCollection(): HasMany
     {
         return $this->hasMany(ItemCollection::class);
     }

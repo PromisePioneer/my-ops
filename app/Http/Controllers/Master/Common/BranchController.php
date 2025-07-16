@@ -36,10 +36,10 @@ use Illuminate\View\View;
     /**
      * @throws AuthorizationException
      */
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
         $this->authorize('view', Branch::class);
-        return response()->json($this->branchService->data($request));
+        return response()->json($this->branchService->data());
     }
 
     /**
@@ -59,12 +59,7 @@ use Illuminate\View\View;
     {
         $this->authorize('create', Branch::class);
         DB::transaction(function () use ($request) {
-            $this->branch->query()->create([
-                'company_id' => $request->session()->get('company_session'),
-                'name' => $request->name,
-                'code' => $request->code,
-                'address' => $request->address,
-            ]);
+            $this->branch->query()->create($request->validated());
             activity()->event('created')->withProperties([
                 'attributes' => [
                     'Nama' => $request->input('name'),

@@ -2,28 +2,18 @@
 
 namespace App\Support\Master\Accounting\AccountCategories\Service;
 
-use AllowDynamicProperties;
-use App\Models\Account;
 use App\Models\AccountCategory;
-use App\Support\Master\Accounting\AccountCategories\Repositories\AccountCategoryRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-#[AllowDynamicProperties] class AccountCategoryService
+class AccountCategoryService
 {
 
     private static int $perPage = 10;
 
-
-    public function __construct()
-    {
-        $this->accountCategoryRepository = new AccountCategoryRepository();
-        $this->accountCategory = new AccountCategory();
-    }
-
     public function data(): LengthAwarePaginator
     {
-        $data = $this->accountCategoryRepository->dataQuery()->paginate(self::$perPage);
+        $data = AccountCategory::with('children')->whereNull('parent_id')->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -50,49 +40,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = $this->accountCategoryRepository->dataQuery();
-
-
-        if (!empty($search)) {
-            $this->accountCategoryRepository->searchQuery($search, $query);
-        }
-
-        $data = $query->paginate(self::$perPage);
-
+        $data = AccountCategory::with('children')->when(!empty($search), function ($query) use ($search) {
+            $query->orWhereHas('children', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })->orWhere('name', 'like', '%' . $search . '%');
+        })->paginate(self::$perPage);
         return self::formattedData($data);
-    }
-
-    public function getAllAccountCategories(Request $request)
-    {
-        $search = $request->input('search');
-        $categories = $this->accountCategoryRepository->getAllAccountCategories();
-
-
-        if (!empty($search)) {
-            $categories = $this->accountCategoryRepository->searchQuery($search, $categories);
-        }
-
-        return $categories->get()->map(function ($category) {
-            return [
-                'id' => $category?->id,
-                'text' => $category?->name,
-                'children' => $category->children->map(function ($child) {
-                    return [
-                        'id' => $child?->id,
-                        'parent_id' => $child?->parent_id,
-                        'text' => $child?->name,
-                    ];
-                })
-            ];
-        });
-    }
-
-
-    public function selectedAccountCategory(AccountCategory $accountCategory): array
-    {
-        return [
-            'id' => $accountCategory?->id,
-            'name' => $accountCategory?->name,
-        ];
     }
 }

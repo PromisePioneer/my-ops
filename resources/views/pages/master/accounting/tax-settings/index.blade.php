@@ -22,8 +22,11 @@
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#tax-modal">
-                                <x-icons.add-item/>
-                                Tambah
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
                             </button>
                         @endcan
                     </div>
@@ -36,7 +39,12 @@
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
-                            <x-icons.trash/>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
                             Hapus
                         </button>
                     </form>
@@ -97,7 +105,10 @@
                                         <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#tax-modal" @click="edit(tax.id)">
-                                                <x-icons.edit/>
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
                                             </button>
                                         </template>
                                     </td>
@@ -109,10 +120,8 @@
                     <ul class="pagination float-end mb-4 mt-4">
                         <template x-for="pagination in taxSettings.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link"
-                                        @click="paginationEndPoint(pagination.url)"
-                                        x-html="pagination.label"
-                                >
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
                                 </button>
                             </li>
                         </template>

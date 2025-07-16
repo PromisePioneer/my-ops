@@ -42,12 +42,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $data = $unitTypes->getCollection()->map(function ($unitType) {
             return [
                 'id' => $unitType->id,
-                'item_collections' => $unitType->itemCollections->map(function ($itemCollection) {
-                    return [
-                        'id' => $itemCollection->id,
-                        'name' => $itemCollection->name,
-                    ];
-                }),
                 'name' => $unitType->name,
             ];
         });

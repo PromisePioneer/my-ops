@@ -29,9 +29,7 @@ class TrialBalanceController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        $query = Account::with(['children', 'accountTransaction'])
-            ->where('company_id', $request->session()->get('company_session'))
-            ->whereNull('parent_id');
+        $query = Account::with('children', 'accountTransaction')->whereNull('parent_id');
         $trialBalance = $this->trialBalanceService->formattedData($query, $request);
         $totalDebit = '0';
         $totalCredit = '0';
@@ -42,7 +40,7 @@ class TrialBalanceController extends Controller
         }
 
         return response()->json([
-            'trial_balances' => $this->trialBalanceService->data($request),
+            'trial_balances' => $this->trialBalanceService->data(),
             'total_debit' => 'Rp.' . number_format(bcsub($totalDebit, '0', 2), 2, '.', '.'),
             'total_credit' => 'Rp.' . number_format(bcsub($totalCredit, '0', 2), 2, '.', '.'),
         ]);

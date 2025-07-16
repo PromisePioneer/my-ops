@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BroadbandPacketRequest;
 use App\Models\BroadbandPacket;
 use App\Models\Master\Common\Branch;
-use App\Support\Master\Common\BroadbandPacket\BroadbandPacketService;
+use App\Support\Master\Common\BroadbandPacketService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,12 +34,11 @@ use Illuminate\View\View;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', BroadbandPacket::class);
-        return response()->json($this->broadbandPacketService->data());
+        return response()->json($this->broadbandPacketService->data($request));
     }
-
     /**
      * @throws AuthorizationException
      */
@@ -49,6 +48,17 @@ use Illuminate\View\View;
         return response()->json($this->broadbandPacketService->search($request));
     }
 
+
+    public function filter(Request $request): JsonResponse
+    {
+        return response()->json($this->broadbandPacketService->filter($request));
+    }
+
+
+    public function branchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
+    }
 
     /**
      * @throws AuthorizationException

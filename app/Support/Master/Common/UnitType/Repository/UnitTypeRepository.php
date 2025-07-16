@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 
     public function data(): Builder
     {
-        return $this->unitType->query()->with('itemCollections')->orderBy('name');
+        return $this->unitType->query()->orderBy('name');
     }
 
     public function findById(int|string|null $id): ?UnitType

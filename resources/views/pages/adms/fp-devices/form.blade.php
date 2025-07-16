@@ -14,13 +14,18 @@
                     <div class="mb-10">
                         <label for="branch_id" class="required form-label">Cabang</label>
                         <select name="branch_id" id="selected-branch"
-                                class="form-select form-select-solid branches-select2"
+                                class="form-select form-select-solid main-branches-select2"
                                 data-dropdown-parent="#modal-fp-device">
                             <option value="0">Pilih</option>
                         </select>
                     </div>
                     <div class="mb-10">
-                        <label for="serial_number" class="required form-label">IP Address</label>
+                        <label for="name" class="required form-label">Nama</label>
+                        <input type="text" id="name" name="name" class="form-control form-control-solid"
+                               placeholder="Nama Kantor/Pop" :value="editVal?.name"/>
+                    </div>
+                    <div class="mb-10">
+                            <label for="serial_number" class="required form-label">IP Address</label>
                         <input type="text" id="ip_address" name="ip_address"
                                class="form-control form-control-solid"
                                placeholder="IP Address" :value="editVal?.ip_address"/>

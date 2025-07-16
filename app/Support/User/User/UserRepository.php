@@ -3,7 +3,6 @@
 namespace App\Support\User\User;
 
 use AllowDynamicProperties;
-use App\Models\Area;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -43,15 +42,6 @@ use Illuminate\Http\Request;
             $query->where('branch_id', $request->user()->branch_id)
                 ->where('id', '!=', $request->user()->id);
         });
-    }
-
-
-    public function getUserHasArea(Area $area): Builder|User
-    {
-        return $this->user->with(['roles', 'jobInformation', 'userHasArea', 'weekHoliday'])
-            ->whereHas('userHasArea', function ($query) use ($area) {
-                $query->where('area_id', $area->id);
-            });
     }
 
 }

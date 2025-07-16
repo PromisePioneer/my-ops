@@ -13,6 +13,8 @@ use Illuminate\View\View;
 
 #[AllowDynamicProperties] class ItemCategoryController extends Controller
 {
+
+
     public function __construct()
     {
         $this->itemCategoryService = new ItemCategoryService();

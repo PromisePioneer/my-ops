@@ -12,7 +12,7 @@ use App\Models\Master\Common\Branch;
 use App\Models\Stock;
 use App\Models\TaxSetting;
 use App\Models\Transaction;
-use App\Support\AccountTransactions\Service\AccountTransactionService;
+use App\Support\AccountTransactions\AccountTransactionService;
 use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Transactions\Repositories\TransactionRepository;
 use Carbon\Carbon;
@@ -58,7 +58,7 @@ use function App\Helper\formatDate;
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $data = $this->transactionRepository->getTransactions($request);
+        $data = $this->transactionRepository->getTransactions();
         $filter = TransactionACLFilter::apply($data, $request)->paginate(self::$perPage);
         return self::formattedData($filter);
     }
@@ -68,7 +68,7 @@ use function App\Helper\formatDate;
     {
         $search = $request->input('search');
         $data = Transaction::search($search)->query(function ($query) use ($search) {
-            $this->transactionRepository->searchQuery($query);
+            $query->where('type', '!=', TransactionType::INITIAL_INVENTORY_BALANCE->value);
         });
         $filter = TransactionACLFilter::apply($data, $request)->paginate(self::$perPage);
         return self::formattedData($filter);
@@ -229,9 +229,7 @@ use function App\Helper\formatDate;
 
             if ($request->input('status') === 'Diterima') {
                 foreach ($explodeID as $transactionId) {
-                    $transaction = Transaction::with(['item.category', 'supplier'])
-                        ->where('id', $transactionId)
-                        ->first();
+                    $transaction = Transaction::with('item.category', 'supplier')->where('id', $transactionId)->first();
                     $branch = Branch::with('parent')->where('id', $transaction->branch_id)->first();
                     $this->saveToStock($transaction);
                     $this->accountTransactionStore($taxSetting, $transaction, $branch, $ppnAccount);

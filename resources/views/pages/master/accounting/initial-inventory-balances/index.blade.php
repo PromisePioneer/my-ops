@@ -1,4 +1,3 @@
-@php use function App\Helper\getDefaultEndDate;use function App\Helper\getDefaultStartDate; @endphp
 @extends('layouts.template')
 @section('page-title', 'Saldo Awal Persediaan')
 @section('breadcrumbs', 'Master Keuangan - Saldo Awal Persediaan')
@@ -60,7 +59,12 @@
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
-                            <x-icons.trash/>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
                             Hapus
                         </button>
                     </form>
@@ -79,14 +83,26 @@
                                 <th class="min-w-125px text-center">Dokumentasi</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
-                                <x-table.loading colspan="6"/>
+                                <tr>
+                                    <td colspan="9">
+                                        <div style="text-align: center;">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                             </template>
                             <template x-if="!isLoading && initialInventoryBalances.data?.length === 0">
-                                <x-table.empty colspan="6"/>
+                                <tr>
+                                    <td colspan="9">
+                                        <center>Data Tidak Ditemukan</center>
+                                    </td>
+                                </tr>
                             </template>
                             <template x-for="(inventory, index) in initialInventoryBalances?.data" :key="index">
-                                <tbody class="fw-bold">
                                 <tr class="text-center">
                                     <td>
                                         <template x-if="inventory.status === 'Diproses'">
@@ -138,20 +154,26 @@
                                         <template x-if="inventory.status === 'Diproses'">
                                             <a :href="`/master/accounting/initial-inventory-balances/edit/${inventory.id}`"
                                                class="btn btn-light-primary btn-sm">
-                                                <x-icons.edit/>
+                                                <i class="ki-duotone ki-pencil">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
                                             </a>
                                         </template>
 
 
                                         <template x-if="inventory.status === 'Diterima'">
                                               <span class="badge badge-light-success">
-                                           <x-icons.confirm/>
+                                            <i class="ki-duotone ki-check-square fs-2x text-success">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
                                         </span>
                                         </template>
                                     </td>
                                 </tr>
-                                </tbody>
                             </template>
+                            </tbody>
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
@@ -169,7 +191,6 @@
         @include('components.toast')
         @include('components.select2.script')
     </div>
-
 @endsection
 @push('script')
     <script>
@@ -179,26 +200,14 @@
                 isLoading: false,
                 toggleAllCheckBox: false,
                 selectedCheckBox: [],
-                startDate: "{{ $startDate }}",
-                endDate: "{{ $endDate }}",
                 initialInventoryBalances: [],
-                date: document.getElementById('date')?.value,
                 editVal: '',
                 search: '',
                 deleteForm: document.getElementById('form-delete'),
                 confirmForm: document.getElementById('form-confirm'),
                 async init() {
                     await this.getInitialInventoryBalances();
-                    flatpickr(".date-picker", {
-                        mode: "range",
-                        dateFormat: "d/m/Y",
-                        defaultDate: [this.startDate, this.endDate],
-                    });
-
-
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
-                    await select2('.items-select2', 'Pilih Barang', '/select2/goods-data');
-                    await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data');
                 },
                 async filter() {
                     this.buttonLoading = true;
@@ -207,12 +216,7 @@
                     try {
                         const resp = await axios.get('/master/accounting/initial-inventory-balances/filter', {
                             params: {
-                                search: this.search,
-                                branch_id: $('#branch_id').val(),
-                                item_id: $('#item_id').val(),
-                                supplier_id: $('#supplier_id').val(),
-                                start_date: this.formatDate(this.date.split('to').map(part => part.trim())[0]),
-                                end_date: this.formatDate(this.date.split('to').map(part => part.trim())[1]),
+                                branch_id: $('#branch_id').val()
                             }
                         })
                         this.initialInventoryBalances = resp.data;
@@ -230,16 +234,12 @@
                         const resp = await axios.get('/master/accounting/initial-inventory-balances/search', {
                             params: {
                                 search: this.search,
-                                branch_id: $('#branch_id').val(),
-                                item_id: $('#item_id').val(),
-                                supplier_id: $('#supplier_id').val(),
-                                start_date: this.formatDate(this.date.split('to').map(part => part.trim())[0]),
-                                end_date: this.formatDate(this.date.split('to').map(part => part.trim())[1]),
+                                branch_id: $('#branch_id').val()
                             }
                         })
                         this.initialInventoryBalances = resp.data;
-                    } catch (error) {
-                        console.log(error)
+                    } catch (e) {
+
                     } finally {
                         this.isLoading = false;
                     }
@@ -336,13 +336,6 @@
                         return "{{ asset('')  }}" + placeholders;
                     }
                     return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
-                },
-                formatDate(dateStr) {
-                    if (!dateStr) {
-                        return '';
-                    }
-                    const [day, month, year] = dateStr.split('/');
-                    return `${year}-${month}-${day}`;
                 },
             }
         }

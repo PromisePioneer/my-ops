@@ -1,11 +1,10 @@
 import './bootstrap.js'
 import Alpine from 'alpinejs'
 import Swal from 'sweetalert2'
-import sort from '@alpinejs/sort'
+import tokml from "tokml";
 
 
 window.Alpine = Alpine;
 window.Swal = Swal;
-
-Alpine.plugin(sort)
+window.tokml = tokml;
 Alpine.start()
