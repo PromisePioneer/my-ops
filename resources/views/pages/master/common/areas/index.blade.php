@@ -85,7 +85,7 @@
                                     <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
                                             <div
-                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                                 <input class="form-check-input" type="checkbox"
                                                        @click="toggleAllCheckBox()"
                                                        :disabled="Number(deletePermission) !== 1">
@@ -165,7 +165,6 @@
             </div>
         </div>
     </div>
-    @include('components.toast')
 @endsection
 @push('script')
     @include('pages.master.common.areas.script')
