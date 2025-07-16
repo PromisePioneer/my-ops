@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Laravel\Scout\Searchable;
 
-class BroadbandPacket extends Model
+class InternetPackage extends Model
 {
     use Searchable;
 
-    protected $table = 'broadband_packets';
+    protected $table = 'internet_packages';
     protected $fillable = [
+        'company_id',
         'name',
         'capacity',
         'price',
@@ -28,5 +29,11 @@ class BroadbandPacket extends Model
             'capacity' => $this->capacity,
             'price' => $this->price,
         ];
+    }
+
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

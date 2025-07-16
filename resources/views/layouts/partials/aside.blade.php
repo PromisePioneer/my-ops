@@ -165,11 +165,11 @@
                                     Jabatan
                                 </x-dropdown-menu-item>
                             @endcan
-                            @can('Lihat Menu Paket Broadband')
+                            @can('Lihat Menu Paket Internet')
                                 <x-dropdown-menu-item
-                                    :active="request()->segment(3) === 'broadband-packets'"
-                                    href="{{ url('master/common/broadband-packets') }}">
-                                    Paket Broadband
+                                    :active="request()->segment(3) === 'internet-packages'"
+                                    href="{{ url('master/common/internet-packages') }}">
+                                    Paket Internet
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Data Perusahaan')

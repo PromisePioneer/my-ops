@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Benefit\SalesBonusRequest;
 use App\Http\Requests\SalesBonusImportRequest;
 use App\Imports\SalesBonusImport;
-use App\Models\BroadbandPacket;
+use App\Models\InternetPackage;
 use App\Models\SaleBonus;
 use App\Models\User;
 use App\Support\SalesBonus\SalesBonusService;
@@ -21,7 +21,7 @@ class SalesBonusController extends Controller
     private static int $bonusPercentage = 20;
     private User $user;
     private SaleBonus $saleBonus;
-    private BroadbandPacket $broadbandPacket;
+    private InternetPackage $broadbandPacket;
     private SalesBonusService $salesBonusService;
 
 
@@ -29,7 +29,7 @@ class SalesBonusController extends Controller
     {
         $this->user = new User();
         $this->saleBonus = new SaleBonus();
-        $this->broadbandPacket = new BroadbandPacket();
+        $this->broadbandPacket = new InternetPackage();
         $this->salesBonusService = new SalesBonusService();
     }
 

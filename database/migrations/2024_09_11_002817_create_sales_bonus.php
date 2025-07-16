@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->date('date_active');
             $table->string('customer_name');
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('packet_id')->constrained('broadband_packets');
+            $table->foreignId('packet_id')->constrained('internet_packages');
             $table->double('amount');
             $table->timestamps();
         });

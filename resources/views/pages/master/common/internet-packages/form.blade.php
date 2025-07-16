@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-broadband-packet">
+<div class="modal fade" tabindex="-1" id="modal-internet-package">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="form-broadband-packet" @submit.prevent="save(editVal?.id)">
+            <form id="form-internet-package" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama Paket</label>

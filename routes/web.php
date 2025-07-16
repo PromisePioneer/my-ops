@@ -75,7 +75,7 @@ use App\Http\Controllers\Master\Accounting\AssetController;
 use App\Http\Controllers\Master\Accounting\InitialBalanceController;
 use App\Http\Controllers\Master\Accounting\TaxSettingController;
 use App\Http\Controllers\Master\Common\BranchController;
-use App\Http\Controllers\Master\Common\BroadbandPacketController;
+use App\Http\Controllers\Master\Common\InternetPackageController;
 use App\Http\Controllers\Master\Common\CompanyController;
 use App\Http\Controllers\Master\Common\ContactController;
 use App\Http\Controllers\Master\Common\DepartmentController;
@@ -425,14 +425,14 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::delete('/{role}', [RoleController::class, 'destroy']);
             });
 
-            Route::prefix('broadband-packets')->group(function () {
-                Route::get('/', [BroadbandPacketController::class, 'index']);
-                Route::get('/data', [BroadbandPacketController::class, 'data']);
-                Route::get('/search', [BroadbandPacketController::class, 'search']);
-                Route::post('/', [BroadbandPacketController::class, 'store']);
-                Route::get('/{broadbandPacket}', [BroadbandPacketController::class, 'edit']);
-                Route::post('/destroy', [BroadbandPacketController::class, 'destroy']);
-                Route::post('/{broadbandPacket}', [BroadbandPacketController::class, 'update']);
+            Route::prefix('internet-packages')->group(function () {
+                Route::get('/', [InternetPackageController::class, 'index']);
+                Route::get('/data', [InternetPackageController::class, 'data']);
+                Route::get('/search', [InternetPackageController::class, 'search']);
+                Route::post('/', [InternetPackageController::class, 'store']);
+                Route::get('/{internetPackage}', [InternetPackageController::class, 'edit']);
+                Route::post('/destroy', [InternetPackageController::class, 'destroy']);
+                Route::post('/{internetPackage}', [InternetPackageController::class, 'update']);
             });
 
             Route::prefix('companies')->group(function () {

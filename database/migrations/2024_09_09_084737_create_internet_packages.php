@@ -10,8 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('broadband_packets', function (Blueprint $table) {
+        Schema::create('internet_packages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')
+                ->index()
+                ->constrained('companies')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->string('name');
             $table->integer('capacity');
             $table->double('price');
@@ -25,6 +30,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('broadband_packets');
+        Schema::dropIfExists('internet_packages');
     }
 };

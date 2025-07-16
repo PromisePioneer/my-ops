@@ -13,7 +13,7 @@ use App\Models\Asset;
 use App\Models\AttendanceSummary;
 use App\Models\BranchDefaultWorkTime;
 use App\Models\BranchRoleDefaultWorkTime;
-use App\Models\BroadbandPacket;
+use App\Models\InternetPackage;
 use App\Models\Company;
 use App\Models\Department;
 use App\Models\EmployeeSchedule;
@@ -108,7 +108,7 @@ class AuthServiceProvider extends ServiceProvider
         PurchaseOrder::class => PurchaseOrderPolicy::class,
         SKL::class => SKLPolicy::class,
         UnitType::class => UnitTypePolicy::class,
-        BroadbandPacket::class => BroadbandPacketPolicy::class,
+        InternetPackage::class => BroadbandPacketPolicy::class,
         Area::class => AreaPolicy::class,
         TaxSetting::class => TaxSettingPolicy::class,
         Asset::class => AssetPolicy::class,

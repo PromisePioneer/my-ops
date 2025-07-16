@@ -28,6 +28,6 @@ class SaleBonus extends Model
 
     public function packet(): BelongsTo
     {
-        return $this->belongsTo(BroadbandPacket::class, 'packet_id');
+        return $this->belongsTo(InternetPackage::class, 'packet_id');
     }
 }

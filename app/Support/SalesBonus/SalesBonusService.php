@@ -3,7 +3,7 @@
 namespace App\Support\SalesBonus;
 
 use App\Http\Requests\Benefit\SalesBonusRequest;
-use App\Models\BroadbandPacket;
+use App\Models\InternetPackage;
 use App\Models\SaleBonus;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -64,7 +64,7 @@ class SalesBonusService
 
     public function store(SalesBonusRequest $request)
     {
-        $packet = BroadbandPacket::where('id', $request->packet_id)->first();
+        $packet = InternetPackage::where('id', $request->packet_id)->first();
         $data = $request->validated();
         $data['amount'] = $packet->price / 100 * self::$bonusPercentage;
         return SaleBonus::create($data);
@@ -72,7 +72,7 @@ class SalesBonusService
 
     public function update(SalesBonusRequest $request, SaleBonus $saleBonus): bool
     {
-        $packet = BroadbandPacket::where('id', $request->packet_id)->first();
+        $packet = InternetPackage::where('id', $request->packet_id)->first();
         $data = $request->validated();
         $data['amount'] = $packet->price / 100 * self::$bonusPercentage;
         $saleBonus->update($data);

@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             PayrollScheduleSeeder::class,
             BPJSKetSeeder::class,
             CutOffPayrollSettingSeeder::class,
-            BroadbandPacketSeeder::class,
+            InternetPackageSeeder::class,
             SalaryCalculationMethodSeeder::class,
             TaxSettingSeeder::class,
             ItemCategoriesSeeder::class,
