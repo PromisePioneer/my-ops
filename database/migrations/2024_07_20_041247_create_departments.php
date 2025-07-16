@@ -15,6 +15,10 @@ class CreateDepartments extends Migration
             $table->id();
             $table->string('code')->unique();
             $table->string('name')->unique();
+//            $table->foreignId('role_id')->nullable() // for head department
+//            ->constrained('roles')
+//                ->cascadeOnDelete()
+//                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }

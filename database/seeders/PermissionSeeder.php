@@ -13,10 +13,6 @@ class PermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-
-        //global config
-        $this->accountingPeriod();
-
         // general master data
         $this->branch();
         $this->contact();
@@ -47,7 +43,6 @@ class PermissionSeeder extends Seeder
         $this->stock();
         $this->stockWithdrawal();
         $this->mustReorderItem();
-        $this->stockMutation();
 
         // journal
         $this->generalJournal();
@@ -964,24 +959,6 @@ class PermissionSeeder extends Seeder
     }
 
 
-    public function stockMutation(): void
-    {
-        $permissions = [
-            'Lihat Menu Mutasi Barang',
-            'Tambah Data Mutasi Barang',
-            'Batalkan Pengiriman Barang',
-            'Lihat Detail Mutasi Barang',
-            'Terima Mutasi Barang',
-            'Hapus Data Mutasi Barang',
-        ];
-
-
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
-    }
-
-
     public function stock(): void
     {
         $permissions = [
@@ -1100,18 +1077,6 @@ class PermissionSeeder extends Seeder
         $permissions = [
             'Lihat Menu Riwayat Aktifitas User',
         ];
-
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
-    }
-
-    private function accountingPeriod(): void
-    {
-        $permissions = [
-            'Ubah Periode Pembukuan',
-        ];
-
 
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);

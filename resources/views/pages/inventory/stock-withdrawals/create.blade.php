@@ -232,6 +232,7 @@
             </div>
         </div>
     </div>
+    @include('components.toast')
     @include('components.select2.script')
 @endsection
 @push('script')

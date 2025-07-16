@@ -28,9 +28,8 @@
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Parent Account</label>
-                        <select name="parent_id" id="parent_id"
-                                class="form-select form-select-solid parent-account-select2">
-                            <option :value="editVal.parent?.id" x-text="editVal?.parent?.name"></option>
+                        <select name="parent_id" class="form-select form-select-solid">
+                            <option :value="editVal?.parent.id" x-text="editVal?.parent?.name"></option>
                         </select>
                     </div>
 
@@ -40,27 +39,6 @@
                             <option value="" selected>Pilih</option>
                             <option value="debit" :selected="editVal.trial_balance_type ==='debit'">Debit</option>
                             <option value="credit" :selected="editVal.trial_balance_type ==='credit'">Kredit</option>
-                        </select>
-                    </div>
-
-
-                    <div class="mb-10">
-                        <div class="form-check form-switch form-check-custom form-check-solid">
-                            <input class="form-check-input" type="checkbox" x-model="toggleAccountCategory" value=""
-                                   id="flexSwitchDefault"/>
-                            <label class="form-check-label" for="flexSwitchDefault">
-                                Kategori Akun (Akan Masuk di laporan keuangan) ?
-                            </label>
-                        </div>
-                    </div>
-
-
-                    <div class="mb-10" x-show="toggleAccountCategory" x-transition x-cloak>
-                        <label for="" class="form-label required">Kategori Akun</label>
-                        <select :name="`${toggleAccountCategory ? 'category_id' : '' }`" id="selected-account-categorys"
-                                class="form-select form-select-solid account-categories-select2"
-                                data-dropdown-parent="#modal-edit-children">
-                            <option value=""></option>
                         </select>
                     </div>
                 </div>

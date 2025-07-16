@@ -67,6 +67,7 @@
             </form>
         </div>
     </div>
+    @include('components.toast')
     @include('components.select2.script')
     @include('components.input-mask')
     @include('components.image.handle-image')
@@ -99,7 +100,6 @@
                 itemId: "{{ $transaction->item_id ?? '' }}",
                 debitAccountId: "{{ $transaction->debit_account_id ?? '' }}",
                 creditAccountId: "{{ $transaction->credit_account_id ?? '' }}",
-                companyId: "{{ $transaction->company_id ?? '' }}",
                 form: document.getElementById('form'),
                 goodsForm: document.getElementById('form-item'),
                 itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
@@ -112,7 +112,6 @@
                 async init() {
                     inputMask('unit_price', 'decimal');
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
-                    await select2('.companies-select2', 'Pilih Perusahaan', '/select2/companies-data');
                     await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data', true, false, 'contact-modal');
                     await select2('.items-select2', 'Pilih Barang', '/select2/goods-data', true, false, 'modal-item');
                     await select2('.stock-accounts-select2', 'Pilih Akun Persediaan', '/select2/stock-accounts-data');
@@ -141,7 +140,6 @@
                     await selectedValue('selected-debit-account', `/select2/selected-account/${this.debitAccountId}`);
                     await selectedValue('selected-credit-account', `/select2/selected-account/${this.creditAccountId}`);
                     await selectedValue('selected-supplier', `/select2/selected-contact/${this.supplierId}`);
-                    await selectedValue('selected-company', `/select2/selected-company/${this.companyId}`);
                     const getSuppliers = await axios.get(`/select2/selected-supplier/${this.supplierId}`);
                     this.PKP = getSuppliers.data.tax_type === 'PKP';
 

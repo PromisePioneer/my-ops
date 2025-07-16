@@ -28,9 +28,9 @@ use Throwable;
         $this->accountRepository = new AccountRepository();
     }
 
-    public function data(Request $request): LengthAwarePaginator
+    public function data(): LengthAwarePaginator
     {
-        $data = $this->itemCollectionRepository->getItemCollection($request)->paginate(self::$perPage);
+        $data = $this->itemCollectionRepository->getItemCollection()->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -44,7 +44,7 @@ use Throwable;
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = $this->itemCollectionRepository->getItemCollection($request);
+        $query = $this->itemCollectionRepository->getItemCollection();
         $filter = ItemCollectionFilter::apply($query, $request)->paginate(self::$perPage);
         return self::formattedData($filter);
     }
@@ -77,12 +77,9 @@ use Throwable;
     }
 
 
-    public function assetData(Request $request)
+    public function assetData()
     {
-        $search = $request->input('search');
-        $items = ItemCollection::search($search)->query(function ($query) use ($request) {
-            $this->itemCollectionRepository->getAssetData($query, $request);
-        })->get();
+        $items = $this->itemCollectionRepository->getAssetData()->get();
         return $items->map(function ($item) {
             return [
                 'id' => $item->id,
@@ -100,7 +97,6 @@ use Throwable;
                 'name' => $item->item_collection_name,
                 'unit_type_name' => $item->unitType?->name,
                 'category_name' => $item->category?->name,
-                'company_name' => $item->company?->name,
                 'category_id' => $item->category_id,
                 'asset_account_name' => "{$item->assetAccount?->code} {$item->assetAccount?->name}",
                 'tangible_asset' => $item->tangible_assets_type,
@@ -125,7 +121,6 @@ use Throwable;
 
             ItemCollection::create([
                 'name' => $request->input('name'),
-                'company_id' => $request->session()->get('company_session'),
                 'is_vehicle' => $request->input('is_vehicle') === 'on',
                 'category_id' => $request->input('category_id'),
                 'unit_type_id' => $unitTypeId->id ?? $request->input('unit_type_id'),
@@ -179,7 +174,6 @@ use Throwable;
 
         return $itemCollection->update([
             'name' => $request->input('name'),
-            'company_id' => $request->session()->get('company_session'),
             'is_vehicle' => $request->input('is_vehicle') === 'on',
             'category_id' => $request->input('category_id'),
             'unit_type_id' => $unitTypeId->id ?? $request->input('unit_type_id'),

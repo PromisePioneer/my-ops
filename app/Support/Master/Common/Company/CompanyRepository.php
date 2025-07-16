@@ -2,25 +2,17 @@
 
 namespace App\Support\Master\Common\Company;
 
-use AllowDynamicProperties;
 use App\Models\Company;
-use Illuminate\Database\Eloquent\Builder;
 
-#[AllowDynamicProperties] class CompanyRepository
+class CompanyRepository
 {
-
-    public function __construct()
+    public function getCompanies()
     {
-        $this->company = new Company();
+        return Company::select('id', 'code', 'name');
     }
 
-    public function getCompanies(): Builder|Company
+    public function selectedCompany(int $companyId)
     {
-        return $this->company->query();
-    }
-
-    public function selectedCompany(int $companyId): Company
-    {
-        return $this->company->where('id', $companyId)->first();
+        return Company::where('id', $companyId)->first();
     }
 }

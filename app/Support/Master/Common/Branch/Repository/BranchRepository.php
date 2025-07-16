@@ -17,12 +17,11 @@ use Illuminate\Http\Request;
         $this->branch = new Branch();
     }
 
-    public function handle(Request $request): Builder
+    public function handle(): Builder
     {
         return $this->branch->query()
-            ->with(['children', 'company'])
+            ->with('children')
             ->whereNull('parent_id')
-            ->where('company_id', $request->session()->get('company_session'))
             ->orderBy('code');
     }
 
@@ -46,8 +45,8 @@ use Illuminate\Http\Request;
     {
         $search = $request->input('search');
 
-        return $this->branch->search($search)->query(function ($query) use ($mainBranchId, $request) {
-            $query->where('parent_id', $mainBranchId)->where('company_id', $request->session()->get('company_session'));
+        return $this->branch->search($search)->query(function ($query) use ($mainBranchId) {
+            $query->where('parent_id', $mainBranchId);
         })->get();
 
     }
@@ -64,10 +63,10 @@ use Illuminate\Http\Request;
         $search = $request->input('search');
         $branch = $this->branch->query()
             ->with('parent', 'children')
-            ->where('company_id', $request->session()->get('company_session'))
             ->when(!empty($request->user()->branch_id), function ($query) use ($request) {
                 $query->where('id', $request->user()->branch_id);
             })->whereNull('parent_id');
+
 
 
         if (!empty($search)) {

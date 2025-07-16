@@ -20,6 +20,10 @@
                                     </select>
                                 </div>
                                 <div class="d-flex align-items-center py-2">
+                                    <input type="number" name="year" id="year" class="form-control form-control-solid"
+                                           placeholder="Filter Berdasarkan Tahun">
+                                </div>
+                                <div class="d-flex align-items-center py-2">
                                     <select class="form-select form-select-solid"
                                             name="month" id="month" data-control="select2"
                                             data-placeholder="Pilih Bulan">
@@ -63,7 +67,6 @@
                                        id="kt_roles_view_table">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-50px text-center">No</th>
                                         <th class="min-w-125px text-center">Cabang</th>
                                         <th class="min-w-125px text-center">Tanggal</th>
                                         <th class="min-w-125px text-center">Akun</th>
@@ -72,16 +75,27 @@
                                         <th class="min-w-125px text-center">Kredit</th>
                                     </tr>
                                     </thead>
+                                    <tbody class="fw-bold">
                                     <template x-if="isLoading">
-                                        <x-table.loading colspan="7"/>
-                                    </template>
-                                    <template x-if="!isLoading && generalJournal.data?.length === 0">
-                                        <x-table.loading colspan="7"/>
-                                    </template>
-                                    <template x-for="(journal, index) in generalJournal.data" :key="index">
-                                        <tbody class="fw-bold">
                                         <tr>
-                                            <td class="text-center" x-text="startIndex + index++"></td>
+                                            <td colspan="5">
+                                                <div style="text-align: center;">
+                                                    <div class="spinner-border" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="!isLoading && generalJournal?.length === 0">
+                                        <tr>
+                                            <td colspan="9">
+                                                <center>Data Tidak Ditemukan</center>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template x-for="(journal, index) in generalJournal" :key="index">
+                                        <tr>
                                             <td class="text-center" x-text="journal.branch_name"></td>
                                             <td class="text-center" x-text="journal.date"></td>
                                             <td x-text="journal.account"></td>
@@ -91,18 +105,10 @@
                                             <td class="text-center"
                                                 x-text="journal.type === 'credit' ? journal.amount : '-'"></td>
                                         </tr>
-                                        </tbody>
                                     </template>
+                                    </tbody>
                                 </table>
                             </div>
-                            <template x-if="!isLoading && generalJournal.next_page_url !== null">
-                                <div class="d-grid gap-2 mt-4">
-                                    <button @click="seeMore(generalJournal.next_page_url)"
-                                            class="btn btn-sm btn-light-info fs-4 fw-bolder text-uppercase">
-                                        Lihat Lebih Banyak
-                                    </button>
-                                </div>
-                            </template>
                         </div>
                     </div>
                 </div>
@@ -120,9 +126,7 @@
                 search: '',
                 startIndex: null,
                 filterButton: false,
-                page: 1,
                 months: [],
-                startIndex: null,
                 async init() {
                     await this.getGeneralJournalData();
                     await this.getMainBranches();
@@ -140,26 +144,16 @@
                         this.isLoading = false;
                     }
                 },
-                async seeMore(url) {
-                    try {
-                        const resp = await axios.get(url, {
-                            params: {
-                                month: document.getElementById('month').value,
-                                branch_id: $(".main-branches-select2")?.val(),
-                            }
-                        });
-                        this.generalJournal.data.push(...resp.data.data);
-                    } catch (e) {
-                        console.log(e);
-                    }
-                },
                 async filter() {
+                    const year = document.getElementById('year')?.value ?? '';
+                    const month = document.getElementById('month')?.value ?? '';
                     try {
                         this.generalJournal = []
                         this.isLoading = true;
                         const resp = await axios.get('/journals/general-journal/filter', {
                             params: {
-                                month: document.getElementById('month').value,
+                                month: month,
+                                year: year,
                                 branch_id: $(".main-branches-select2")?.val(),
                             }
                         });

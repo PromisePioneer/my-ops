@@ -22,8 +22,11 @@
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-broadband-packet">
-                                    <x-icons.add-item/>
-                                    Tambah
+                                    <i class="ki-duotone ki-message-add fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> Tambah
                                 </button>
                             @endcan
                         </div>
@@ -37,7 +40,12 @@
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
-                            <x-icons.trash/>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
                             Hapus
                         </button>
                     </form>
@@ -62,10 +70,26 @@
                                 </template>
                             </thead>
                             <template x-if="isLoading">
-                                <x-table.loading colspan="5"/>
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="9">
+                                        <div style="text-align: center;">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
                             </template>
                             <template x-if="!isLoading && broadbandPackets.data?.length === 0">
-                                <x-table.empty colspan="5"/>
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="9">
+                                        <center>Data Tidak Ditemukan</center>
+                                    </td>
+                                </tr>
+                                </tbody>
                             </template>
                             <template x-for="broadbandPacket in broadbandPackets?.data" :key="broadbandPacket.id">
                                 <tbody class="fw-bold text-center">
@@ -86,7 +110,10 @@
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-broadband-packet"
                                                     @click="edit(broadbandPacket.id)">
-                                                <x-icons.edit/>
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
                                             </button>
                                         </template>
                                     </td>
@@ -108,6 +135,7 @@
             </div>
         </div>
     </div>
+    @include('components.toast')
 @endsection
 @push('script')
     @include('pages.master.common.broadband-packets.script')

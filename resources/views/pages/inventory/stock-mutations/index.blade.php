@@ -1,6 +1,5 @@
 @extends('layouts.template')
 @section('page-title', 'Mutasi Barang')
-@section('breadcrumbs', 'Inventory Controller - Mutasi Barang')
 @section('content')
     <div x-data="stockMutations()">
         @include('pages.inventory.stock-mutations.detail')
@@ -16,35 +15,31 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    @can('Tambah Data Mutasi Barang')
-                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                            <a href="{{ url('/inventory/stock-mutations/create') }}" type="button"
-                               class="btn btn-light-primary btn-sm">
-                                <x-icons.add-item/>
-                                Tambah
-                            </a>
-                        </div>
-                    @endcan
+                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                        <a href="{{ url('/inventory/stock-mutations/create') }}" type="button"
+                           class="btn btn-light-primary btn-sm">
+                            <x-icons.add-item/>
+                            Tambah
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="card-body py-3">
                 <div class="col-12 ">
-                    @can('Hapus Mutasi Barang')
-                        <form id="form-delete" @submit.prevent="destroy()">
-                            <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                            <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                    x-show="selectedCheckBox.length > 0"
-                                    x-transition x-cloak>
-                                <i class="ki-duotone ki-trash-square fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                </i>
-                                Hapus
-                            </button>
-                        </form>
-                    @endcan
+                    <form id="form-delete" @submit.prevent="destroy()">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                x-show="selectedCheckBox.length > 0"
+                                x-transition x-cloak>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                            Hapus
+                        </button>
+                    </form>
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
@@ -55,15 +50,32 @@
                                     #
                                 </th>
                                 <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Yg Terlibat</th>
+                                <th class="min-w-125px">Pengirim</th>
+                                <th class="min-w-125px">Penerima</th>
                                 <th class="min-w-125px">Actions</th>
                             </tr>
                             </thead>
                             <template x-if="isLoading">
-                                <x-table.loading colspan="5"/>
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="9">
+                                        <div style="text-align: center;">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
                             </template>
                             <template x-if="!isLoading && stockMutation.data?.length === 0">
-                                <x-table.empty colspan="5"/>
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="9">
+                                        <center>Data Tidak Ditemukan</center>
+                                    </td>
+                                </tr>
+                                </tbody>
                             </template>
                             <template x-for="(stock, index) in stockMutation?.data" :key="stock.id">
                                 <tbody class="fw-bold">
@@ -72,6 +84,7 @@
                                     <td class="text-center">
                                         <p x-text="stock.date"></p>
                                         <div class="mb-4">
+
                                             <template x-if="stock.status === 'Diterima'">
                                                 <span class="badge bg-light-success fs-6 text-success">Diterima</span>
                                             </template>
@@ -84,22 +97,8 @@
                                         </div>
                                         <p x-text="`Dari ${stock.old_branch_name} ke ${stock.new_branch_name}`"></p>
                                     </td>
-                                    <td>
-                                        <p class="text-center" x-text="`Pengirim : ${stock.sender_name}`"></p>
-                                        <p class="text-center" x-text="`Penerima : ${stock.receiver_name}`"></p>
-                                    </td>
-                                    <td>
-                                        <ul>
-                                            <template x-for="(item, index) in stock.items" :key="index">
-                                                <template x-if="!item.code">
-                                                    <li x-text="`${item.name} (${item.qty})`"></li>
-                                                </template>
-                                                <template x-if="item.code">
-                                                    <li x-text="`${item.code} ${item.name} (${item.qty})`"></li>
-                                                </template>
-                                            </template>
-                                        </ul>
-                                    </td>
+                                    <td class="text-center" x-text="stock.sender_name"></td>
+                                    <td class="text-center" x-text="stock.receiver_name"></td>
                                     <td class="text-center">
                                         <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-stock-mutations-detail"
@@ -125,6 +124,7 @@
             </div>
         </div>
     </div>
+    @include('components.toast')
 @endsection
 
 @push('script')
@@ -134,8 +134,6 @@
                 isLoading: false,
                 loggedUserId: "{{ Auth::id() }}",
                 stockMutation: [],
-                deletePermission: "{{ request()->user()->can('Hapus Data Mutasi Barang') }}",
-                receiveItemPermission: "{{ request()->user()->can('Terima Mutasi Barang') }}",
                 startIndex: null,
                 search: '',
                 editVal: {},

@@ -6,7 +6,6 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InitialInventoryBalanceRequest;
 use App\Models\Transaction;
-use App\Support\HelperService\FinancialClosePeriodService;
 use App\Support\Master\Operational\InitialInventoryBalance\Service\InitialInventoryBalanceService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +19,6 @@ use Throwable;
     public function __construct()
     {
         $this->initialInventoryBalanceService = new InitialInventoryBalanceService();
-        $this->financialClosePeriodService = new FinancialClosePeriodService();
     }
 
 
@@ -29,14 +27,8 @@ use Throwable;
      */
     public function index(): View
     {
-        $startDate = $this->financialClosePeriodService->startDate()->format('d/m/Y');
-        $endDate = $this->financialClosePeriodService->endDate()->format('d/m/Y');
-
-
         $this->authorize('viewInitialInventoryBalance', Transaction::class);
-        return view('pages.master.accounting.initial-inventory-balances.index', compact(
-            'startDate', 'endDate'
-        ));
+        return view('pages.master.accounting.initial-inventory-balances.index');
     }
 
 
@@ -133,9 +125,13 @@ use Throwable;
      */
     public function destroy(Request $request, Transaction $transaction): JsonResponse
     {
+
         $this->authorize('delete', $transaction);
         DB::transaction(function () use ($request, $transaction) {
-            $transaction->whereIn('id', $request->get('id'))->delete();
+            $implodeID = implode(',', $request->get('id'));
+            $explodeID = explode(',', $implodeID);
+
+            $transaction->whereIn('id', $explodeID)->delete();
         });
         return response()->json([
             'message' => 'data berhasil dihapus'

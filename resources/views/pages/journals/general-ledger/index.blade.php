@@ -54,7 +54,6 @@
     <script>
         function generalLedgerData() {
             return {
-                isLoading: false,
                 generalLedger: [],
                 startIndex: null,
                 async init() {

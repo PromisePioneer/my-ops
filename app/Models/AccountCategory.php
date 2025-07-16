@@ -9,6 +9,7 @@ use Laravel\Scout\Searchable;
 
 class AccountCategory extends Model
 {
+    use Searchable;
     protected $table = 'account_categories';
     protected $fillable = ['name', 'parent_id'];
 
