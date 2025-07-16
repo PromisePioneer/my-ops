@@ -1,4 +1,3 @@
-@php use function App\Helper\menus; @endphp
 <div id="kt_aside" class="aside" data-kt-drawer="true" data-kt-drawer-name="aside"
      data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true"
      data-kt-drawer-width="{default:'200px', '300px': '250px'}" data-kt-drawer-direction="start"
@@ -83,6 +82,7 @@
             <div
                 class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
                 id="#kt_aside_menu" data-kt-menu="true">
+
                 <x-menu-sections>Dashboard</x-menu-sections>
                 <x-single-menu-item :active="request()->segment(1) === 'home'"
                                     href="{{ url('home') }}">

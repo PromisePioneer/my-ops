@@ -4,6 +4,7 @@ namespace App\Http\Controllers\HRIS\Attendances;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
+use App\Models\FingerLog;
 use App\Support\Attendances\AttendanceSummary\IclockService;
 use Illuminate\Http\Request;
 use Throwable;
@@ -35,4 +36,12 @@ use Throwable;
     {
         return $this->iclockService->recieveRecords($request);
     }
+
+    public function test(Request $request): void
+    {
+        $log['data'] = $request->getContent();
+        FingerLog::create($log);
+    }
+
+
 }

@@ -147,6 +147,7 @@
             </form>
         </div>
     </div>
+    @include('components.toast')
     @include('components.select2.script')
     @include('components.input-mask')
 @endsection

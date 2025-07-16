@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Accounting\Journals;
 
 use App\Http\Controllers\Controller;
 use App\Models\Master\Common\Branch;
-use App\Support\Journal\GeneralJournal\Service\GeneralJournalService;
+use App\Support\Journal\GeneralJournalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -27,11 +27,15 @@ class GeneralJournalController extends Controller
         return view('pages.journals.general-journal.index');
     }
 
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
-        return response()->json($this->generalJournalService->data($request));
+        return response()->json($this->generalJournalService->data());
     }
 
+    public function getBranchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
+    }
 
     public function filter(Request $request): JsonResponse
     {

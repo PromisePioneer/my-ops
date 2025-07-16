@@ -7,6 +7,7 @@ use App\Models\BranchDefaultWorkTime;
 use App\Models\BranchRoleDefaultWorkTime;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
+use App\Models\FingerLog;
 use App\Models\FpDevice;
 use App\Models\RoleDefaultWorkTime;
 use App\Models\User;
@@ -58,6 +59,11 @@ class IclockService
         try {
             $processedCount = 0;
             DB::transaction(function () use ($processedCount, $request) {
+                $content['url'] = json_encode($request->all());
+                $content['data'] = $request->getContent();
+                FingerLog::create($content);
+
+
                 $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
 
                 if ($request->input('table') == 'OPERLOG') {
@@ -120,16 +126,6 @@ class IclockService
                 ->where('employee_id', $employeeId)
                 ->whereDate('start_date', $dateTime->format('Y-m-d'))
                 ->first();
-        }
-
-
-        if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '01:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '06:00:00'))) {
-
-            $userShift = EmployeeSchedule::with('workTime')
-                ->where('employee_id', $employeeId)
-                ->whereDate('end_date', $dateTime->format('Y-m-d'))
-                ->first();
-
         }
 
         if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '00:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '02:00:00'))) {
@@ -239,7 +235,7 @@ class IclockService
                             'Tanggal' => formatDate($date),
                             'Waktu' => $date->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y, h:i a'),
                             'Shift' => $shift->workTime?->name ?? $shift->name,
-//                            'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name . ' - ' . FpDevice::with('branch')->where('serial_number', $attendanceData['sn'])->first()->branch->name,
+                            'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name . ' - ' . FpDevice::with('branch')->where('serial_number', $attendanceData['sn'])->first()->branch->name,
                         ]
                     ])->log('Clock Out');
             }
@@ -260,8 +256,8 @@ class IclockService
                         'Batas Checkin' => $shift->time_to_checkin . ' - ' . $shift->end_time_to_checkin,
                         'Batas Checkout' => $shift->time_to_checkout . ' - ' . $shift->end_time_to_checkout,
                         'Shift Seharusnya' => "$shift->name ({$shift->clock_in} - {$shift->clock_out})",
-//                        'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name . ' - ' . FpDevice::with('branch')
-//                                ->where('serial_number', $attendanceData['sn'])->first()->branch->name,
+                        'Lokasi Absen' => FpDevice::where('serial_number', $attendanceData['sn'])->first()->name . ' - ' . FpDevice::with('branch')
+                                ->where('serial_number', $attendanceData['sn'])->first()->branch->name,
                     ]
                 ])->log('Absen dilewati karena tidak sesuai dengan jadwal');
         }
@@ -310,14 +306,6 @@ class IclockService
         $userShift = null;
 
         if ($timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:59:59'))) {
-            $userShift = EmployeeSchedule::with('workTime')
-                ->where('employee_id', $employeeId)
-                ->whereDate('start_date', $timestamp->format('Y-m-d'))
-                ->first()?->start_date;
-        }
-
-
-        if ($timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '01:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '05:00:00'))) {
             $userShift = EmployeeSchedule::with('workTime')
                 ->where('employee_id', $employeeId)
                 ->whereDate('start_date', $timestamp->format('Y-m-d'))

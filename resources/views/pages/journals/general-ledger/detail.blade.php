@@ -58,8 +58,8 @@
                                 <td x-text="1 + index++"></td>
                                 <td class="text-center" x-text="journal.date"></td>
                                 <td class="text-center" x-text="journal.description"></td>
-                                <td x-text="journal.entries_type === 'debit' ? formatNumber(journal.amount) : '-'"></td>
-                                <td x-text="journal.entries_type === 'credit' ? formatNumber(journal.amount) : '-'"></td>
+                                <td x-text="journal.type === 'debit' ? journal.amount : '-'"></td>
+                                <td x-text="journal.type === 'credit' ? journal.amount : '-'"></td>
                             </tr>
                             </tbody>
                         </template>

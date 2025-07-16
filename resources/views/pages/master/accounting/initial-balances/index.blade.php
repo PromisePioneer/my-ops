@@ -27,9 +27,10 @@
                                 <h2 class="mb-0">Filter</h2>
                             </div>
                         </div>
-                        <div class="card-body pt-0">
-                            <div class="d-flex flex-column text-gray-600">
-                                <div class="mb-4">
+
+                        <form id="form-filter" @submit.prevent="filter()">
+                            <div class="card-body pt-0">
+                                <div class="d-flex flex-column text-gray-600">
                                     <x-select2.index
                                         name="branch_id"
                                         id="branch-id-filter"
@@ -38,12 +39,12 @@
                                     />
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-footer pt-4 text-end">
-                            <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
-                                Filter
-                            </button>
-                        </div>
+                            <div class="card-footer pt-4 text-end">
+                                <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                    Filter
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             @endif
@@ -253,6 +254,7 @@
             </div>
         </div>
     </div>
+    @include('components.toast')
     @include('components.input-mask')
     @include('components.select2.script')
 @endsection
@@ -431,12 +433,7 @@
                     });
                 },
                 disabledAccountButton(branchId, account) {
-                    if (account?.sub_accounts === []) {
-                        return true;
-                    }
-
-
-                    if (account?.sub_accounts?.length > 0) {
+                    if (account?.sub_accounts?.length > 0 || account?.sub_accounts?.length === 0) {
                         return true;
                     }
 
@@ -447,6 +444,7 @@
                     if (!this.branchId) {
                         return true;
                     }
+
 
 
                     return null;
@@ -474,7 +472,7 @@
                     this.entriesType = null;
                     const resp = await axios.get(`${this.initialBalances.initial_balances.path}?page=${this.initialBalances.initial_balances.current_page}`, {
                         params: {
-                            branch_id: this.branchId,
+                            branch_id: this.branchId
                         }
                     });
                     this.initialBalances = resp.data

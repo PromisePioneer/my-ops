@@ -9,7 +9,7 @@ use App\Models\Area;
 use App\Models\User;
 use App\Models\UserHasArea;
 use App\Models\WeekHoliday;
-use App\Support\Master\Common\Area\Service\AreaDetailService;
+use App\Support\Master\Common\Area\AreaDetailService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

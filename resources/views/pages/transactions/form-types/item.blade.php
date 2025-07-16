@@ -1,21 +1,26 @@
 <div class="row mb-10">
-    <div class="col-md-4">
-        <label for="branch_id" class="required form-label">Cabang</label>
-        <x-select2.index name="branch_id" id="selected-branch" class="form-select form-select-solid"
-                         elementSelector="branches-select2"/>
-    </div>
-    <div class="col-md-4">
+        <div class="col-md-6">
+            <label for="branch_id" class="required form-label">Cabang</label>
+            <x-select2.index name="branch_id" id="selected-branch" class="form-select form-select-solid"
+                             elementSelector="branches-select2"/>
+        </div>
+</div>
+
+
+<div class="row mb-10">
+    <div class="col-md-6">
         <label for="date" class="required form-label">Tanggal</label>
         <input type="date" id="date" name="date" class="form-control-solid form-control date"
                placeholder="Tanggal Transaksi" value="{{ $transaction->date ?? '' }}">
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
         <label for="date" class="required form-label">Supplier</label>
         <x-select2.index name="supplier_id" id="selected-supplier" class="form-select form-select-solid"
                          elementSelector="suppliers-select2"
         />
     </div>
 </div>
+
 <div class="row mb-10">
     <label for="detail" class="required form-label">
         Detail Transaksi

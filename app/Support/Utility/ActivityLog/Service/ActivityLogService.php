@@ -60,7 +60,7 @@ use Spatie\Activitylog\Models\Activity;
 
             return [
                 'id' => $item->id,
-                'causer' => $item->causer?->name,
+                'causer' => $item->causer->name,
                 'event' => $item->event,
                 'description' => $item->description,
                 'before' => $old,

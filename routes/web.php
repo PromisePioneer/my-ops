@@ -20,7 +20,6 @@ use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\PurchaseOrder
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\BranchDefaultWorkTimeController;
 use App\Http\Controllers\HRIS\Attendances\BranchRoleDefaultWorkTimeController;
@@ -110,6 +109,19 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 */
 
 
+Route::get('/phpinfo', function () {
+    phpinfo();
+});
+
+
+Route::get('/test', function () {
+    ini_set('max_execution_time', 300);
+    $zk = new ZKTeco('103.211.160.26');
+    $connected = $zk->connect();
+    $attendanceLog = $zk->getAttendance();
+
+});
+
 Route::get('/', function () {
     return redirect('home');
 });
@@ -120,20 +132,14 @@ Auth::routes();
 Route::prefix('/iclock')->group(function () {
     Route::post('/cdata', [IclockController::class, 'receiveRecords']);
     Route::get('/cdata', [IclockController::class, 'handshake']);
+    Route::get('test', [IclockController::class, 'test']);
     Route::get('/getrequest', [IclockController::class, 'getRequest']);
 });
 
 
 Route::group(['middleware' => ['auth']], static function () {
     //dashboard
-    Route::get('home', [HomeController::class, 'index'])->name('home');
-    Route::get('/accounting-period-year', [HomeController::class, 'accountingPeriodData']);
-    Route::post('/accounting-period-year/update/', [HomeController::class, 'accountingPeriodUpdate']);
-
-    Route::prefix('company-session')->group(function () {
-        Route::get('/data', [CompanyController::class, 'getCompanySessions']);
-    });
-
+    Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     Route::prefix('/transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
@@ -498,8 +504,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [AssetController::class, 'index']);
                 Route::get('/data', [AssetController::class, 'data']);
                 Route::get('/create', [AssetController::class, 'create']);
-                Route::get('/filter', [AssetController::class, 'filter']);
-                Route::get('/edit/{asset}', [AssetController::class, 'edit']);
+                Route::get('/{asset}', [AssetController::class, 'edit']);
                 Route::get('/data', [AssetController::class, 'data']);
                 Route::get('/search', [AssetController::class, 'search']);
                 Route::get('/debit-account/data', [AssetController::class, 'getDebitAccount']);
@@ -517,7 +522,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [InitialInventoryBalanceController::class, 'index']);
                 Route::get('/data', [InitialInventoryBalanceController::class, 'data']);
                 Route::get('/create', [InitialInventoryBalanceController::class, 'create']);
-                Route::get('/filter', [InitialInventoryBalanceController::class, 'filter']);
                 Route::get('/edit/{transaction}', [InitialInventoryBalanceController::class, 'edit']);
                 Route::get('/search', [InitialInventoryBalanceController::class, 'search']);
                 Route::post('/', [InitialInventoryBalanceController::class, 'store']);
@@ -688,7 +692,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/get-stock-detail/{stock}', [StockController::class, 'showStock']);
             Route::get('/', [StockController::class, 'index']);
             Route::get('/data', [StockController::class, 'data']);
-            Route::get('/search', [StockController::class, 'search']);
             Route::get('/data/{itemCollection}', [StockController::class, 'findByItemId']);
             Route::get('/show/{itemCollection}', [StockController::class, 'show']);
             Route::get('/detail/{stock}', [StockController::class, 'detail']);
@@ -1237,10 +1240,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/companies-data', [CompanyController::class, 'getCompanies']);
         Route::get('/selected-company/{company}', [CompanyController::class, 'selectedCompany']);
 
-
-        Route::get('/account-categories-data', [AccountCategoryController::class, 'getAccountCategories']);
-        Route::get('/selected-account-category/{accountCategory}', [AccountCategoryController::class, 'selectedAccountCategory']);
-
         Route::get('/roles-data', [RoleController::class, 'getRoles']);
         Route::get('/selected-role/{role}', [RoleController::class, 'selectedRole']);
 
@@ -1286,11 +1285,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-item/{item}', [ItemCollectionController::class, 'selectedItem']);
         Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
 
-
-        Route::get('/permissions-data', [PermissionController::class, 'getPermissions']);
-
-        Route::get('/parent-accounts-data', [AccountController::class, 'parentAccounts']);
-        Route::get('/asset-accounts-data/{company?}', [AccountController::class, 'assetAccounts']);
+        Route::get('/asset-accounts-data', [AccountController::class, 'assetAccounts']);
         Route::get('/kas-and-leverages-accounts-data', [AccountController::class, 'kasAndLeverageAccounts']);
         Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);

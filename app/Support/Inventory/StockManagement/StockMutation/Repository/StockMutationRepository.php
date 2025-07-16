@@ -16,6 +16,6 @@ use Illuminate\Database\Eloquent\Builder;
 
     public function getData(): Builder
     {
-        return StockMutation::with(['oldBranch', 'newBranch', 'sender', 'receiver', 'stockMutationItems']);
+        return StockMutation::with('oldBranch', 'newBranch', 'sender', 'receiver');
     }
 }

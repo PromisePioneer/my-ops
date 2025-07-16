@@ -21,7 +21,6 @@ use Illuminate\Validation\Rule;
         parent::__construct();
         $this->contact = new Contact();
     }
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -43,7 +42,6 @@ use Illuminate\Validation\Rule;
         return [
             'branch_id' => [Rule::exists('branches', 'id')],
             'detail' => ['required'],
-            'company_id' => ['required', Rule::exists('companies', 'id')],
             'item_id' => [
                 Rule::requiredIf($request->type === 'Barang'),
                 Rule::exists('item_collections', 'id')],
@@ -83,8 +81,6 @@ use Illuminate\Validation\Rule;
             'attachment.max' => 'Ukuran Bukti Transaksi maksimal 2 Mb',
             'tax_invoice.required' => 'Faktur Pajak tidak boleh kosong',
             'tax_invoice.mimes' => 'Faktur Pajak harus berupa jpg,jpeg,png',
-            'company_id.exists' => 'Perusahaan tidak valid',
-            'company_id.required' => 'Perusahaan tidak boleh kosong',
         ];
     }
 
@@ -105,18 +101,12 @@ use Illuminate\Validation\Rule;
             $date = Carbon::now();
             $mainBranch = Branch::with('parent')->find($request->input('branch_id'));
             $accountTransactionDebit = AccountTransaction::where('account_id', $request->credit_account_id)
-                ->whereHas('account', function ($query) use ($request) {
-                    $query->where('company_id', $request->input('company_id'));
-                })->where('branch_id', $mainBranch->parent_id)
+                ->where('branch_id', $mainBranch->parent_id)
                 ->where('entries_type', 'debit')
                 ->whereBetween('date', [$date->copy()->subYear()->format('Y-m-d'), $date->format('Y-m-d')])
                 ->sum('amount');
 
-            $accountTransactionCredit = AccountTransaction::with('account')
-                ->whereHas('account', function ($query) use ($request) {
-                    $query->where('company_id', $request->input('company_id'));
-                })->where('account_id', $request->credit_account_id)
-                ->where('company_id')
+            $accountTransactionCredit = AccountTransaction::where('account_id', $request->credit_account_id)
                 ->where('branch_id', $mainBranch->parent_id)
                 ->where('entries_type', 'credit')
                 ->whereBetween('date', [$date->copy()->subYear()->format('Y-m-d'), $date->format('Y-m-d')])

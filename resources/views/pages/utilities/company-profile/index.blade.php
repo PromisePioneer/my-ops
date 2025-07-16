@@ -103,6 +103,7 @@
             </div>
         </div>
     </div>
+    @include('components.toast')
 @endsection
 @push('script')
     <script>

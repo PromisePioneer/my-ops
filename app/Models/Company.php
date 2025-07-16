@@ -9,15 +9,12 @@ use Laravel\Scout\Searchable;
 
 class Company extends Model
 {
-    use Searchable;
+    use HasFactory, Searchable;
 
     protected $table = 'companies';
     protected $fillable = [
         'code',
         'name',
-        'address',
-        'phone',
-        'image'
     ];
 
 
@@ -26,8 +23,6 @@ class Company extends Model
         return [
             'code' => $this->code,
             'name' => $this->name,
-            'address' => $this->address,
-            'phone' => $this->phone,
         ];
     }
 
@@ -38,7 +33,7 @@ class Company extends Model
         $query = self::orderby('name')->select('id', 'name', 'code');
 
         if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%'.$search.'%');
         }
 
         $company = $query->get();
