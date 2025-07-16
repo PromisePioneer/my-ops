@@ -112,12 +112,11 @@ class ItemCollectionRequest extends FormRequest
     public function ifHasTransaction(Request $request): Closure
     {
         return static function ($attribute, $value, $fail) use ($request) {
-            $initialInventoryBalance = InitialInventoryBalance::where('item_id', $request->route('itemCollection')?->id)->first();
             $transaction = Transaction::where('item_id', $request->route('itemCollection')?->id)
                 ->where('status', 'Diterima')
                 ->first();
 
-            if ($initialInventoryBalance || $transaction) {
+            if ($transaction) {
                 return $fail('Item ini sudah memiliki transaksi, tidak bisa di ubah!');
             }
 

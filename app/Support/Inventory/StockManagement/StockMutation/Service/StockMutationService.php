@@ -12,7 +12,7 @@ use App\Models\Stock;
 use App\Models\StockMutation;
 use App\Models\StockMutationItem;
 use App\Models\Transaction;
-use App\Support\AccountTransactions\AccountTransactionService;
+use App\Support\AccountTransactions\Service\AccountTransactionService;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\ItemCatalogRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Inventory\StockManagement\StockMutation\Repository\StockMutationItemRepository;
@@ -90,6 +90,15 @@ use function App\Helper\formatDate;
                 'receiver_name' => $query->receiver->name,
                 'sender_signature' => $query->sender_signature,
                 'status' => $query->status,
+                'items' => $query->stockMutationItems->map(function ($item) {
+                    $item->load('stock.transaction.item', 'itemCatalog');
+                    return [
+                        'id' => $item->id,
+                        'code' => $item->itemCatalog?->code ?? null,
+                        'name' => $item->stock->transaction->item->name,
+                        'qty' => "$item->qty {$item->stock->transaction->item->unitType->name}",
+                    ];
+                })
             ];
         });
 

@@ -16,14 +16,14 @@ class InitialBalanceSeeder extends Seeder
      */
     public function run(): void
     {
-        AccountTransaction::create([
-            'branch_id' => Branch::where('name', 'Dumai')->first()->id,
-            'date' => Carbon::now()->subYear()->endOfYear(),
-            'account_id' => Account::where('name', 'Kas Tunai')->first()->id,
-            'description' => 'SA',
-            'transaction_type' => 'SA',
-            'entries_type' => 'debit',
-            'amount' => 1000000000,
-        ]);
+//        AccountTransaction::create([
+//            'branch_id' => Branch::where('name', 'Dumai')->first()->id,
+//            'date' => Carbon::now()->subYear()->endOfYear(),
+//            'account_id' => Account::where('name', 'Kas Tunai')->first()->id,
+//            'description' => 'SA',
+//            'transaction_type' => 'SA',
+//            'entries_type' => 'debit',
+//            'amount' => 1000000000,
+//        ]);
     }
 }

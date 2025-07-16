@@ -9,7 +9,7 @@ use App\Models\FabHasSKL;
 use App\Models\FabServiceCategory;
 use App\Models\Master\Common\Contact;
 use App\Models\PurchaseOrder;
-use App\Support\AccountTransactions\AccountTransactionService;
+use App\Support\AccountTransactions\Service\AccountTransactionService;
 use App\Support\HelperService\CompanyNameService;
 use App\Support\HelperService\HandleFileUploadService;
 use Carbon\Carbon;

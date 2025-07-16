@@ -15,7 +15,14 @@ class CreateBranches extends Migration
     {
         Schema::create('branches', static function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable()->unique();
+            $table->foreignId('company_id')
+                ->nullable()
+                ->constrained('companies')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->string('code')
+                ->nullable()
+                ->unique();
             $table->string('name');
             $table->text('address');
             $table->timestamps();
@@ -29,7 +36,9 @@ class CreateBranches extends Migration
      */
     public function down(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('branches');
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

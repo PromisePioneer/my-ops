@@ -45,8 +45,8 @@ class Transaction extends Model
             'transaction_number' => $this->transaction_number,
             'contacts.name' => '',
             'item_collections.name' => '',
-            'branches.name' => '',
-            'parent_branches.name' => '',
+            'qty' => $this->qty,
+            'qty_in_meter' => $this->qty_in_meter
         ];
     }
 
@@ -55,7 +55,6 @@ class Transaction extends Model
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
-
 
 
     public function debitAccount(): BelongsTo

@@ -57,19 +57,7 @@
                             <input type="text" id="name" name="name" class="form-control form-control-solid"
                                    placeholder="Nama Barang" :value="editVal?.name"/>
                         </div>
-                        <div class="col-md-6"
-                             x-show="itemMustHaveCode && !hasSNOnItem" x-transition x-cloak>
-                            <label for="name" class="form-label">
-                                Kode (Jika Barang memiliki kode)
-                            </label>
-                            <input type="text" id="code"
-                                   :name="`${itemMustHaveCode && !hasSNOnItem ? 'code' : ''}`"
-                                   class="form-control form-control-solid"
-                                   placeholder="Kode Barang" :value="editVal?.code"/>
-                        </div>
-                    </div>
-                    <div class="row mb-10">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-10">
                             <label for="type" class="required form-label">Tipe</label>
                             <select name="type"
                                     class="form-select form-select-solid" data-dropdown-parent="#item-drawer-action"
@@ -79,7 +67,17 @@
                                 <option value="ASET" :selected="editVal.type === 'ASET'">Aset</option>
                             </select>
                         </div>
-                        <div class="col-md-6" x-show="isAset === 'ASET' && !isLandAsset" x-transition x-cloak>
+                        <div class="col-md-6 mb-10"
+                             x-show="itemMustHaveCode && !hasSNOnItem" x-transition x-cloak>
+                            <label for="name" class="form-label">
+                                Kode (Jika Barang memiliki kode)
+                            </label>
+                            <input type="text" id="code"
+                                   :name="`${itemMustHaveCode && !hasSNOnItem ? 'code' : ''}`"
+                                   class="form-control form-control-solid"
+                                   placeholder="Kode Barang" :value="editVal?.code"/>
+                        </div>
+                        <div class="col-md-6 mb-10" x-show="isAset === 'ASET' && !isLandAsset" x-transition x-cloak>
                             <label for="tangible_assets_type" class="required form-label">
                                 Kelompok Harta Berwujud
                             </label>
@@ -101,10 +99,6 @@
                                 </option>
                             </select>
                         </div>
-                    </div>
-
-
-                    <div class="row mb-10">
                         <div class="col-md-6" x-show="tangibleAsset === 'Bangunan'
                         &&
                         isAset === 'ASET' && !isLandAsset" x-cloak x-transition>
@@ -131,7 +125,8 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="col-md-6">
+
+                        <div class="col-md-6 mb-10">
                             <label for="unit_type_id" class="required form-label">Satuan</label>
                             <x-select2.index
                                 name="unit_type_id"
@@ -141,7 +136,7 @@
                                 parentElementIfExist="#modal-item"
                             />
                         </div>
-                        <div class="col-md-6" x-show="tangibleAsset === 'Tanah'">
+                        <div class="col-md-6 mb-10" x-show="tangibleAsset === 'Tanah'">
                             <label for="" class="form-label required">Akun Aset</label>
                             <input type="text" class="form-control form-control-solid" value="Tanah" disabled>
                         </div>
@@ -180,7 +175,7 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="col-md-6"
+                        <div class="col-md-6 mb-10"
                              x-show="(tangibleAsset === 'Bukan Bangunan' && !isVehicleAsset)  || isAset === 'JUAL'"
                              x-transition x-cloak>
                             <div class="d-flex align-items-center mb-1">
@@ -199,9 +194,7 @@
                                 parentElementIfExist="#modal-item"
                             />
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6"
+                        <div class="col-md-6 mb-10"
                              x-show="tangibleAsset === 'Bukan Bangunan' && !isVehicleAsset"
                              x-transition x-cloak>
                             <label for="unit_type_id" class="required form-label">Reorder Level</label>
@@ -209,7 +202,7 @@
                                    :name="`${tangibleAsset === 'Bukan Bangunan' && !isVehicleAsset ? 'reorder_level' : ''}`"
                                    id="reorder_level" placeholder="Reorder Level" :value="editVal.reorder_level">
                         </div>
-                        <div class="col-md-6"
+                        <div class="col-md-6 mb-10"
                              x-show="isAset === 'ASET' && tangibleAsset !== 'Tanah' && !isVehicleAsset"
                              x-transition
                              x-cloak>

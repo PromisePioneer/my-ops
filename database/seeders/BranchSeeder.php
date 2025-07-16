@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\Master\Common\Branch;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
@@ -38,8 +39,8 @@ class BranchSeeder extends Seeder
 
     public function dumai()
     {
-
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '101',
             'name' => 'Dumai',
             'address' => 'Jalan Sultan Hasanuddin No. 8A Kelurahan Rimba Sekampung Kecamatan Dumai, Barat, Rimba Sekampung, Kec. Dumai Kota, Kota Dumai',
@@ -78,12 +79,19 @@ class BranchSeeder extends Seeder
             'parent_id' => $mainBranch->id,
         ]);
 
+        Branch::create([
+            'name' => 'Pop Babe',
+            'address' => '-',
+            'parent_id' => $mainBranch->id,
+        ]);
+
     }
 
 
     public function duri(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '102',
             'name' => 'Duri',
             'address' => 'Jalan Desa Harapan No. 25 , Kelurahan Air Jamban , Kecamatan Mandau Duri.',
@@ -91,6 +99,7 @@ class BranchSeeder extends Seeder
 
 
         Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'name' => 'Kantor',
             'address' => '-',
             'parent_id' => $mainBranch->id,
@@ -98,6 +107,7 @@ class BranchSeeder extends Seeder
 
 
         Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'name' => 'Pop Duri13',
             'address' => '-',
             'parent_id' => $mainBranch->id,
@@ -114,6 +124,7 @@ class BranchSeeder extends Seeder
     public function pkuArifin()
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '103',
             'name' => 'Pekanbaru Arifin',
             'address' => 'Jalan Arifin Ahmad No. 113 E, Kelurahan Sidomulyo Timur Kecamatan Marpoyan Damai.',
@@ -155,6 +166,7 @@ class BranchSeeder extends Seeder
     public function rohul(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '104',
             'name' => 'Rohul',
             'address' => 'Jalan Tuanku Tambusai, Desa Pematang Barangan, Kecamatan Rambah / Jalan Durian Sebatang, Depan SDN 003.',
@@ -189,6 +201,7 @@ class BranchSeeder extends Seeder
     {
 
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '105',
             'name' => 'Kampar',
             'address' => 'Jalan Sisingamangaraja No.23 Kelurahan Langgini, Kecamatan Bangkinang.',
@@ -223,6 +236,7 @@ class BranchSeeder extends Seeder
     private function sawahlunto()
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '106',
             'name' => 'Sawahlunto',
             'address' => 'Jl. Ahmad yani Kec. Ahmad Yani, Kota Sawahlunto, Sumatera Barat',
@@ -245,8 +259,9 @@ class BranchSeeder extends Seeder
     private function baturaja(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '107',
-            'name' => 'Oku baturaja',
+            'name' => 'Oku Baturaja',
             'address' => 'Jalan Jendral Ahmad YanI Kelurahan Baturaja Lama Kecamatan Baturaja Timur.',
         ]);
 
@@ -260,6 +275,7 @@ class BranchSeeder extends Seeder
     private function karimun(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '108',
             'name' => 'Karimun',
             'address' => 'Jalan Ahmad Yani No. 17, Kelurahan Baran Timur, Kecamatan Meral.',
@@ -275,6 +291,7 @@ class BranchSeeder extends Seeder
     private function payakumbuh(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '110',
             'name' => 'Payakumbuh',
             'address' => 'JL. Veteran Parak NO. 15 c kelurahan batung kecamatan, Payakumbuh barat.',
@@ -290,6 +307,7 @@ class BranchSeeder extends Seeder
     private function siak(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '111',
             'name' => 'Siak',
             'address' => 'Jalan. Tengku buang asmara, Kelurahan Suak merambai, Kecamatan Bunga raya, Kabupaten Siak.',
@@ -311,6 +329,7 @@ class BranchSeeder extends Seeder
     private function rohil(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '112',
             'name' => 'Rohil',
             'address' => 'Jalan Kecamatan No 5, Kelurahan Bagan punak, Kecamatan Bangko, Kabupaten Rokan hilir',
@@ -327,6 +346,7 @@ class BranchSeeder extends Seeder
     private function kuansing(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '113',
             'name' => 'Kuansing',
             'address' => 'Jalan Kecamatan No 5, Kelurahan Bagan punak, Kecamatan Bangko, Kabupaten Rokan hilir',
@@ -343,6 +363,7 @@ class BranchSeeder extends Seeder
     private function solok(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '114',
             'name' => 'Solok',
             'address' => 'Jl. Syeck Kukut (Belakang Terminal Lama) No. 8A, Kelurahan Tanjung Paku, Kecamatan Tanjung Harapan – Solok',
@@ -359,6 +380,7 @@ class BranchSeeder extends Seeder
     private function pkuHangtuah(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '115',
             'name' => 'Pekanbaru Hangtuah',
             'address' => 'Jl. Hangtuah, Ujung, Kec. Tenayan Raya, Kota Pekanbaru',
@@ -374,6 +396,7 @@ class BranchSeeder extends Seeder
     private function bengkalis()
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '116',
             'name' => 'Bengkalis',
             'address' => 'Gg. Sahabat, Rimba Sekampung, Kec. Bengkalis, Kabupaten Bengkalis',
@@ -389,8 +412,9 @@ class BranchSeeder extends Seeder
     private function kualaTungkal(): void
     {
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '117',
-            'name' => 'Kuala tungkal',
+            'name' => 'Kuala Tungkal',
             'address' => 'Jl. Diponegoro RT 015 Kel. Tungkal Harapan, Kec. Tungkal Hilir',
         ]);
         Branch::create([
@@ -404,6 +428,7 @@ class BranchSeeder extends Seeder
     {
 
         $mainBranch = Branch::create([
+            'company_id' => Company::where('code', '001')->first()->id,
             'code' => '118',
             'name' => 'Bogor Ciomas',
             'address' => 'Jl. Villa Ciomas, Ciomas Rahayu, Kec. Ciomas, Kabupaten Bogor, Jawa Barat',

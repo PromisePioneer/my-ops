@@ -19,10 +19,6 @@
                                     </select>
                                 </div>
                                 <div class="d-flex align-items-center py-2">
-                                    <input type="number" name="year" id="year" class="form-control form-control-solid"
-                                           placeholder="Filter Berdasarkan Tahun">
-                                </div>
-                                <div class="d-flex align-items-center py-2">
                                     <select class="form-select form-select-solid"
                                             name="month" id="month" data-control="select2"
                                             data-placeholder="Pilih Bulan">
@@ -115,7 +111,6 @@
                     await this.getMainBranches();
                 },
                 async getTrialBalance() {
-
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/journals/trial-balance/data')
@@ -127,16 +122,13 @@
                     }
                 },
                 async filter() {
-                    const year = document.getElementById('year')?.value ?? '';
                     const month = document.getElementById('month')?.value ?? '';
                     const branch_id = $(".branch-select2")?.val();
-                    const active = document.getElementById('active')?.value;
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/journals/trial-balance/filter', {
                             params: {
                                 month: month,
-                                year: year,
                                 branch_id: branch_id,
                             }
                         });

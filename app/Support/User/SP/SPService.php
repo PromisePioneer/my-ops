@@ -232,7 +232,7 @@ use function App\Helper\convertToRoman;
 
         if ($request->user()->branch_id === null || $request->user()->branch_id === 1) {
             $query->whereHas('roles', function ($q) {
-                $q->where('name', 'Operational Manager');
+                $q->whereIn('name', ['Operational Manager', 'Customer Service Supervisor']);
             });
         }
 

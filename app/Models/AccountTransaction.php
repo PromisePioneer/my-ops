@@ -10,7 +10,7 @@ use Laravel\Scout\Searchable;
 
 class AccountTransaction extends Model
 {
-    use HasFactory, Searchable;
+    use  Searchable;
 
     protected $table = 'account_transactions';
     protected $fillable = [
@@ -24,6 +24,7 @@ class AccountTransaction extends Model
         'entries_type',
         'amount',
     ];
+
 
     public function account(): BelongsTo
     {

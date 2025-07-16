@@ -8,7 +8,7 @@ use App\Models\AccountTransaction;
 use App\Models\Invoice;
 use App\Models\InvoiceProductService;
 use App\Models\Master\Common\Contact;
-use App\Support\AccountTransactions\AccountTransactionService;
+use App\Support\AccountTransactions\Service\AccountTransactionService;
 use App\Support\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
