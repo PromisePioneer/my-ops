@@ -46,8 +46,8 @@ use Illuminate\Http\Request;
     {
         $search = $request->input('search');
 
-        return $this->branch->search($search)->query(function ($query) use ($mainBranchId) {
-            $query->where('parent_id', $mainBranchId);
+        return $this->branch->search($search)->query(function ($query) use ($mainBranchId, $request) {
+            $query->where('parent_id', $mainBranchId)->where('company_id', $request->session()->get('company_session'));
         })->get();
 
     }
@@ -64,6 +64,7 @@ use Illuminate\Http\Request;
         $search = $request->input('search');
         $branch = $this->branch->query()
             ->with('parent', 'children')
+            ->where('company_id', $request->session()->get('company_session'))
             ->when(!empty($request->user()->branch_id), function ($query) use ($request) {
                 $query->where('id', $request->user()->branch_id);
             })->whereNull('parent_id');
