@@ -36,7 +36,9 @@ class CreateBranches extends Migration
      */
     public function down(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('branches');
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }
