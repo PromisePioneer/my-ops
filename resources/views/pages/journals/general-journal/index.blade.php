@@ -122,7 +122,6 @@
                 filterButton: false,
                 page: 1,
                 months: [],
-                startIndex: null,
                 async init() {
                     await this.getGeneralJournalData();
                     await this.getMainBranches();
