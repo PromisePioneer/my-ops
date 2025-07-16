@@ -107,9 +107,9 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <template x-if="generalJournal.last_page >= page">
+                            <template x-if="generalJournal.next_page_url !== null">
                                 <div class="d-grid gap-2 mt-4">
-                                    <button @click="seeMore(generalJournal.path)"
+                                    <button @click="seeMore(generalJournal.next_page_url)"
                                             class="btn btn-sm btn-light-info fs-4 fw-bolder text-uppercase">
                                         Lihat Lebih Banyak
                                     </button>
@@ -153,9 +153,8 @@
                     }
                 },
                 async seeMore(url) {
-                    this.page++;
                     try {
-                        const resp = await axios.get(`${url}?=page${this.page}`, {
+                        const resp = await axios.get(url, {
                             params: {
                                 month: document.getElementById('month').value,
                                 branch_id: $(".main-branches-select2")?.val(),

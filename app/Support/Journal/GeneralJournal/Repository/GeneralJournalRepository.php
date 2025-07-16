@@ -27,7 +27,7 @@ use Illuminate\Http\Request;
             })
             ->where('transaction_type', 'TR')
             ->whereYear('date', $this->accountingPeriod->query()->first()->year)
-            ->orderBy('date');
+            ->orderBy('id');
     }
 
 }
