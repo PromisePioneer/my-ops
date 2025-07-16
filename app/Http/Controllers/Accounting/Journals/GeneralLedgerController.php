@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Accounting\Journals;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use App\Models\AccountingPeriod;
+use App\Models\AccountTransaction;
 use App\Support\Journal\GeneralLedgerService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -24,9 +26,11 @@ class GeneralLedgerController extends Controller
         return view('pages.journals.general-ledger.index');
     }
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        return response()->json($this->generalLedgerService->getAccountData());
+
+        $data = $this->generalLedgerService->getAccountData($request)->get();
+        return response()->json($data);
     }
 
     public function detail(Account $account): View
@@ -38,16 +42,8 @@ class GeneralLedgerController extends Controller
     {
         $accountTransaction = $this->generalLedgerService
             ->getDetailGeneralLedger($account)
-            ->get()
-            ->map(function ($query) {
-                return [
-                    'id' => $query->id,
-                    'date' => Carbon::parse($query->date)->format('d/m/Y'),
-                    'description' => $query->description,
-                    'type' => $query->entries_type,
-                    'amount' => number_format($query->amount, 2),
-                ];
-            });
+            ->get();
+
 
         $totalDebit = $this->generalLedgerService->getDetailGeneralLedger($account)
             ->where('entries_type', 'debit')
@@ -87,30 +83,21 @@ class GeneralLedgerController extends Controller
     {
         $accountTransaction = $this->generalLedgerService
             ->getDetailGeneralLedger($account)
-            ->whereMonth('account_transactions.date', (int)$request->month)
-            ->whereYear('account_transactions.date', (int)$request->year)
-            ->get()
-            ->map(function ($query) {
-                return [
-                    'id' => $query->id,
-                    'date' => Carbon::parse($query->date)->format('d/m/Y'),
-                    'description' => $query->description,
-                    'type' => $query->entries_type,
-                    'amount' => number_format($query->amount, 2),
-                ];
-            });
+            ->whereMonth('date', $request->month)
+            ->get();
+
+
         $totalDebit = $this->generalLedgerService->getDetailGeneralLedger($account)
-            ->whereMonth('account_transactions.date', (int)$request->month)
-            ->whereYear('account_transactions.date', (int)$request->year)
-            ->where('account_transactions.entries_type', 'debit')
+            ->whereMonth('date', $request->month)
+            ->where('entries_type', 'debit')
             ->sum('amount');
 
 
         $totalCredit = $this->generalLedgerService->getDetailGeneralLedger($account)
-            ->whereMonth('account_transactions.date', (int)$request->month)
-            ->whereYear('account_transactions.date', (int)$request->year)
-            ->where('account_transactions.entries_type', 'debit')
+            ->whereMonth('date', $request->month)
+            ->where('entries_type', 'credit')
             ->sum('amount');
+
 
         return response()->json([
             'account_transaction' => $accountTransaction,

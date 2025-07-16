@@ -3,36 +3,10 @@
 @section('content')
     <div x-data="fpDevicesData()">
         <div class="d-flex flex-column flex-xl-row">
-            @can('Filter Data Mesin Absen Berdasarkan Cabang')
-                <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
-                    <div class="card card-flush">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <h2 class="mb-0">Filter</h2>
-                            </div>
-                        </div>
-                        <form id="form-filter" @submit.prevent="filter()">
-                            <div class="card-body pt-0">
-                                <div class="d-flex flex-column text-gray-600">
-                                    <div class="d-flex align-items-center py-2">
-                                        <select class="form-select form-select-solid main-branches-select2"
-                                                name="branch_id" id="branch-id-filter">
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer pt-4 text-end">
-                                <button type="submit" class="btn btn-light btn-active-primary btn-sm">
-                                    Filter
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            @endcan
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush">
                     @include('pages.adms.fp-devices.form')
+                    @include('pages.adms.fp-devices.filter')
                     @include('pages.adms.fp-devices.query-attlog')
                     <div class="card-header border-0 pt-6">
                         <div class="card-title">
@@ -48,14 +22,16 @@
                         <div class="card-toolbar">
                             <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                                 @can('Tambah Menu Mesin Absen')
-                                    <button type="button" class="btn btn-light-primary btn-sm"
+                                    <button type="button" class="btn btn-light-primary btn-sm me-2"
                                             data-bs-toggle="modal"
                                             data-bs-target="#modal-fp-device">
-                                        <i class="ki-duotone ki-message-add fs-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i> Tambah
+                                        <x-icons.add-item/>
+                                        Tambah
+                                    </button>
+
+                                    <button id="kt_drawer_example_basic_button" class="btn btn-light-info btn-sm">
+                                        <x-icons.filter/>
+                                        Filter
                                     </button>
                                 @endcan
                             </div>
@@ -91,32 +67,20 @@
                                             </div>
                                         </th>
                                         <th class="min-w-125px text-center">Cabang</th>
-                                        <th class="min-w-125px text-center">Nama Mesin</th>
                                         <th class="min-w-125px text-center">IP Address</th>
                                         <th class="min-w-125px text-center">Realtime Status</th>
                                         <th class="min-w-125px text-center">Last Download</th>
                                         <th class="min-w-250px text-center">Actions</th>
                                     </thead>
-                                    <tbody class="fw-bold">
+
                                     <template x-if="isLoading">
-                                        <tr>
-                                            <td colspan="9">
-                                                <div style="text-align: center;">
-                                                    <div class="spinner-border" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <x-table.loading colspan="6"/>
                                     </template>
                                     <template x-if="!isLoading && devices.data?.length === 0">
-                                        <tr>
-                                            <td colspan="9">
-                                                <center>Data Tidak Ditemukan</center>
-                                            </td>
-                                        </tr>
+                                        <x-table.empty colspan="6"/>
                                     </template>
                                     <template x-for="(device, index) in devices?.data" :key="device.id">
+                                        <tbody class="fw-bold">
                                         <tr>
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -126,9 +90,7 @@
                                                            :id="'checkbox-' + device.id"/>
                                                 </div>
                                             </td>
-                                            <td class="text-center"
-                                                x-text="device.branch_name ?? 'Belum Diset'"></td>
-                                            <td class="text-center" x-text="device.name"></td>
+                                            <td class="text-center" x-text="device.branch_name ?? 'Belum Diset'"></td>
                                             <td class="text-center" x-text="device.ip_address"></td>
                                             <td class="text-center">
                                         <span
@@ -172,8 +134,8 @@
                                                 </button>
                                             </td>
                                         </tr>
+                                        </tbody>
                                     </template>
-                                    </tbody>
                                 </table>
                             </div>
                             <ul class="pagination float-end mb-4 mt-4">
@@ -191,14 +153,12 @@
             </div>
         </div>
     </div>
-
-
-
-    @include('components.toast')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script defer>
         $('.date').flatpickr();
+
         function fpDevicesData() {
             return {
                 createPermission: "{{ request()->user()->can('Tambah Menu Mesin Absen') }}",
@@ -224,11 +184,22 @@
                 filterForm: document.getElementById('form-filter'),
                 jobStatuses: null,
                 async init() {
-                    const resp = await axios.get('/adms/fp-devices/data');
-                    this.devices = resp.data
-                    this.startIndex = this.devices.from;
-                    this.isLoading = false;
+                    await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
+                    await this.getFpDevices();
                     await this.getMainBranches();
+                },
+                async getFpDevices() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/adms/fp-devices/data');
+                        this.devices = resp.data
+                        this.startIndex = this.devices.from;
+                        this.isLoading = false;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async paginationEndPoint(url) {
                     try {

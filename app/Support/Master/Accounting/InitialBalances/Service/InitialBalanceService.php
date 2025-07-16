@@ -4,7 +4,9 @@ namespace App\Support\Master\Accounting\InitialBalances\Service;
 
 use AllowDynamicProperties;
 use App\Models\Account;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
+use App\Support\AccountTransactions\Repository\AccountTransactionRepository;
 use App\Support\Master\Accounting\InitialBalances\Repositories\InitialBalanceRepository;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,11 +21,13 @@ use function App\Helper\currencyFormat;
     public function __construct()
     {
         $this->initialBalanceRepository = new InitialBalanceRepository();
+        $this->accountTransactionRepository = new AccountTransactionRepository();
+        $this->accountingPeriod = new AccountingPeriod();
     }
 
     public function data(Request $request)
     {
-        $data = $this->initialBalanceRepository->handle()->paginate(self::$perPage);
+        $data = $this->initialBalanceRepository->handle($request)->paginate(self::$perPage);
         return $this->formattedData($data, $request);
     }
 
@@ -31,7 +35,7 @@ use function App\Helper\currencyFormat;
     public function search(Request $request)
     {
         $search = $request->input('search');
-        $query = Account::with('accountTransaction', 'children', 'parent')->whereNull('parent_id');
+        $query = $this->initialBalanceRepository->handle($request);
         if (!empty($search)) {
             $query->where('name', 'like', '%' . $search . '%')
                 ->orWhere('code', 'like', '%' . $search . '%');
@@ -45,18 +49,8 @@ use function App\Helper\currencyFormat;
     public function formattedTotalInitialBalanceData($account, $request = null)
     {
         return $account->get()->map(function ($account) use ($request) {
-            if ($account->children->count() > 0) {
-                $initialBalanceDebit = $account->children->sum(function ($transaction) use ($request) {
-                    return $this->getFilteredTransactionSum($transaction, 'SA', $request, 'debit');
-                });
-
-                $initialBalanceCredit = $account->children->sum(function ($transaction) use ($request) {
-                    return $this->getFilteredTransactionSum($transaction, 'SA', $request, 'credit');
-                });
-            } else {
-                $initialBalanceDebit = $this->getFilteredTransactionSum($account, 'SA', $request, 'debit');
-                $initialBalanceCredit = $this->getFilteredTransactionSum($account, 'SA', $request, 'credit');
-            }
+            $initialBalanceDebit = $this->sumAccountTransactions($account, $request)['initial_balance_debit'];
+            $initialBalanceCredit = $this->sumAccountTransactions($account, $request)['initial_balance_credit'];
 
             return [
                 'id' => $account->id,
@@ -69,21 +63,33 @@ use function App\Helper\currencyFormat;
 
     }
 
+
+    public function sumAccountTransactions(Account $account, ?Request $request): array
+    {
+        if ($account->children->count() > 0) {
+            $initialBalanceDebit = $account->children->sum(function ($transaction) use ($request) {
+                return $this->getFilteredTransactionSum($transaction, 'SA', $request, 'debit');
+            });
+
+            $initialBalanceCredit = $account->children->sum(function ($transaction) use ($request) {
+                return $this->getFilteredTransactionSum($transaction, 'SA', $request, 'credit');
+            });
+        } else {
+            $initialBalanceDebit = $this->getFilteredTransactionSum($account, 'SA', $request, 'debit');
+            $initialBalanceCredit = $this->getFilteredTransactionSum($account, 'SA', $request, 'credit');
+        }
+
+        return [
+            'initial_balance_debit' => $initialBalanceDebit,
+            'initial_balance_credit' => $initialBalanceCredit
+        ];
+    }
+
     public function formattedData($account, ?Request $request = null)
     {
         $data = $account->getCollection()->map(function ($account) use ($request) {
-            if ($account->children->count() > 0) {
-                $initialBalanceDebit = $account->children->sum(function ($transaction) use ($request) {
-                    return $this->getFilteredTransactionSum($transaction, 'SA', $request, 'debit');
-                });
-
-                $initialBalanceCredit = $account->children->sum(function ($transaction) use ($request) {
-                    return $this->getFilteredTransactionSum($transaction, 'SA', $request, 'credit');
-                });
-            } else {
-                $initialBalanceDebit = $this->getFilteredTransactionSum($account, 'SA', $request, 'debit');
-                $initialBalanceCredit = $this->getFilteredTransactionSum($account, 'SA', $request, 'credit');
-            }
+            $initialBalanceDebit = $this->sumAccountTransactions($account, $request)['initial_balance_debit'];
+            $initialBalanceCredit = $this->sumAccountTransactions($account, $request)['initial_balance_credit'];
 
             return [
                 'id' => $account->id,
@@ -120,63 +126,48 @@ use function App\Helper\currencyFormat;
     public function getFilteredTransactionSum($account, $type, ?Request $request, $entriesType = null): float
     {
         $transactions = $account->accountTransaction()
-            ->whereYear('date', Carbon::now()->subYear())
             ->where('transaction_type', $type)
-            ->where('entries_type', $entriesType);
+            ->where('entries_type', $entriesType)
+            ->whereYear('date', AccountingPeriod::first()->year);
+
 
         if ($request?->branch_id || $request?->user()->branch_id) {
             $transactions->where('branch_id', $request->branch_id ?? $request->user()->branch_id);
         }
+
+
         return $transactions->sum('amount');
     }
 
 
-    public function filter(Request $request)
+    public function filter(Request $request): array
     {
-        $branch = $request->input('branch_id');
-
-        $query = $this->initialBalanceRepository->handle();
-
-        if ($branch) {
-            $query->orWhereHas('accountTransaction', function (Builder $query) use ($branch) {
-                $query->where('branch_id', $branch ?? null);
-            });
-        }
+        $query = $this->initialBalanceRepository->handle($request);
 
 
         return [
             'initial_balances' => $this->formattedData($query->paginate(self::$perPage), $request),
-            'total_debit' => currencyFormat($this->getTotalDebit($request)->sum('amount')),
-            'total_credit' => currencyFormat($this->getTotalCredit($request)->sum('amount')),
+            'total_debit' => currencyFormat($this->getTotalDebitConsistent($request)),
+            'total_credit' => currencyFormat($this->getTotalCreditConsistent($request)),
         ];
     }
 
 
-    private function getFilteredTotal(string $type, Request $request): Builder
+    private function getTotalDebitConsistent(Request $request): float
     {
-        $query = AccountTransaction::with('account')
-            ->whereHas('account', function ($query) use ($type) {
-                $query->where('trial_balance_type', $type);
-            })->where('entries_type', $type)
-            ->whereYear('date', Carbon::now()->subYear())
-            ->where('transaction_type', 'SA');
+        $accounts = $this->initialBalanceRepository->handle($request)->get();
 
-        if ($request->branch_id) {
-            $query->where('branch_id', $request->branch_id);
-        }
-
-
-        return $query;
+        return $accounts->sum(function ($account) use ($request) {
+            return $this->sumAccountTransactions($account, $request)['initial_balance_debit'];
+        });
     }
 
-
-    public function getTotalDebit(Request $request): Builder
+    private function getTotalCreditConsistent(Request $request): float
     {
-        return $this->getFilteredTotal('debit', $request);
-    }
+        $accounts = $this->initialBalanceRepository->handle($request)->get();
 
-    public function getTotalCredit(Request $request): Builder
-    {
-        return $this->getFilteredTotal('credit', $request);
+        return $accounts->sum(function ($account) use ($request) {
+            return $this->sumAccountTransactions($account, $request)['initial_balance_credit'];
+        });
     }
 }

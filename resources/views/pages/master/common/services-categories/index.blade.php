@@ -119,7 +119,6 @@
             </div>
         </div>
     </div>
-    @include('components.toast')
 @endsection
 @push('script')
     @include('pages.master.common.services-categories.script')

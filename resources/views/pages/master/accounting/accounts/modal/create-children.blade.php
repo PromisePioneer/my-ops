@@ -26,6 +26,8 @@
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama akun"/>
                     </div>
+
+
                     <div class="mb-10">
                         <label for="name" class="required form-label">Parent Account</label>
                         <select name="parent_id" class="form-select form-select-solid">
@@ -33,12 +35,34 @@
                         </select>
                     </div>
 
+
                     <div class="mb-10">
                         <label for="name" class="required form-label">Tipe Saldo Awal / Neraca Saldo</label>
                         <select name="trial_balance_type" id="" class="form-select form-select-solid">
                             <option value="" selected>Pilih</option>
                             <option value="debit" :selected="editVal.trial_balance_type ==='debit'">Debit</option>
                             <option value="credit" :selected="editVal.trial_balance_type ==='credit'">Kredit</option>
+                        </select>
+                    </div>
+
+
+                    <div class="mb-10">
+                        <div class="form-check form-switch form-check-custom form-check-solid">
+                            <input class="form-check-input" type="checkbox" x-model="toggleAccountCategory" value=""
+                                   id="flexSwitchDefault"/>
+                            <label class="form-check-label" for="flexSwitchDefault">
+                                Kategori Akun (Akan Masuk di laporan keuangan) ?
+                            </label>
+                        </div>
+                    </div>
+
+
+                    <div class="mb-10" x-show="toggleAccountCategory" x-transition x-cloak>
+                        <label for="" class="form-label required">Kategori Akun</label>
+                        <select :name="`${toggleAccountCategory ? 'category_id' : '' }`" id=""
+                                class="form-select form-select-solid account-categories-select2"
+                                data-dropdown-parent="#modal-create-children">
+                            <option value=""></option>
                         </select>
                     </div>
                 </div>

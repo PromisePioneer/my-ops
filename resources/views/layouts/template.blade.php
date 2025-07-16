@@ -1,4 +1,4 @@
-﻿@php use Carbon\Carbon; @endphp
+﻿@php use Carbon\Carbon;use function App\Helper\companiesImg; @endphp
     <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,12 +42,13 @@
 <div class="d-flex flex-column flex-root">
 
     <div class="page d-flex flex-row flex-column-fluid">
+        @include('layouts.modal.accounting-period')
         @include('layouts.partials.aside')
         <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
             <div id="kt_header" style="" class="header align-items-stretch">
                 <div class="header-brand">
                     <a href="{{ url()->current() }}">
-                        <img alt="Logo" src="{{ asset('assets/media/logos/mayatama-logo-full.png')}}"
+                        <img alt="Logo" src="{{ companiesImg() }}"
                              width="150px"/>
                     </a>
                     <div id="kt_aside_toggle"
@@ -112,83 +113,34 @@
                             </ul>
                             <!--end::Breadcrumb-->
                         </div>
-                        <div class="d-flex align-items-center pt-lg-0">
-                            <div class="d-flex align-items-center">
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div class="d-flex">
-                                    <div class="d-flex align-items-center">
-                                        <a href="#"
-                                           class="btn btn-sm btn-icon btn-icon-muted btn-active-icon-primary"
-                                           data-kt-menu-trigger="click" data-kt-menu-attach="parent"
-                                           data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
-                                            <i class="bi bi-bell-fill fs-1 position-relative">
-                                                   <span
-                                                       class="badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                                       x-text="notifications.length"></span>
-
-                                            </i>
-                                        </a>
-                                        <div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-800px"
-                                             data-kt-menu="true">
-                                            <div class="d-flex flex-column bgi-no-repeat rounded-top overflow"
-                                                 style="background-image:url('{{ asset('assets/media/misc/pattern-1.jpg')}}'); background-size: cover">
-                                                <h3 class="text-white fw-bold px-9 mt-10 mb-6">
-                                                    <span class="fs-8 opacity-75 ps-3"
-                                                          x-text="`${notifications.length} notifikasi yang belum dibaca`"></span>
-                                                </h3>
-                                                <ul class="nav nav-line-tabs nav-line-tabs-2x nav-stretch fw-bold px-9">
-                                                    <li class="nav-item">
-                                                        <a class="nav-link text-white opacity-75 opacity-state-100 pb-4 active"
-                                                           data-bs-toggle="tab"
-                                                           href="#kt_topbar_notifications_3">Notifikasi</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="tab-content">
-                                                <div class="tab-pane fade show active"
-                                                     id="kt_topbar_notifications_3"
-                                                     role="tabpanel">
-                                                    <div class="scroll-y mh-325px my-5 px-8">
-                                                        <template x-for="row in notifications">
-                                                            <div class="d-flex flex-stack py-4">
-                                                                    <span class="w-100px badge badge-light-danger mr-4"
-                                                                          x-html="differenceBetweenDate(row.data.due_date)">
-
-                                                                    </span>
-                                                                <a :href="`/transaction/invoice/preview/${row.data.invoice_id}`"
-                                                                   class="text-gray-800 text-hover-primary fw-bold mr-100"
-                                                                   x-html="row.data.message"></a>
-                                                                <span
-                                                                    class="badge badge-light fs-8 float-end"
-                                                                    x-text="formatDate(row.created_at)"></span>
-                                                            </div>
-                                                        </template>
-                                                    </div>
-                                                    <div class="py-3 text-center border-top">
-                                                        <a href="{{ url('/utility/user-profile/notification-detail')}}"
-                                                           class="btn btn-color-gray-600 btn-active-color-primary">View
-                                                            All
-                                                            <span class="svg-icon svg-icon-5">
-																	<svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                         height="24" viewBox="0 0 24 24" fill="none">
-																		<rect opacity="0.5" x="18" y="13" width="13"
-                                                                              height="2" rx="1"
-                                                                              transform="rotate(-180 18 13)"
-                                                                              fill="black"/>
-																		<path
-                                                                            d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z"
-                                                                            fill="black"/>
-																	</svg>
-                                                            </span>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
+                        <div class="d-flex align-items-center">
+                            @if(Auth::user()->can('Ubah Periode Pembukuan'))
+                                <button class="btn btn-info btn-sm" data-bs-toggle="modal" :disabled="accountingPeriodLoading"
+                                        data-bs-target="#modal-accounting-period"
+                                >
+                                    <template x-if="accountingPeriodLoading">
+                                        <div class="spinner-border" role="status">
+                                            <span class="sr-only">Loading...</span>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
+                                    </template>
+                                    <template x-if="accountingPeriod !== null">
+                                        <span
+                                            x-text="`Periode Pembukuan : ${accountingPeriod} (${companyName})`"></span>
+                                    </template>
+                                </button>
+                            @else
+                                <button class="btn btn-info btn-sm" :disabled="accountingPeriodLoading"
+                                >
+                                    <template x-if="accountingPeriodLoading">
+                                        <div class="spinner-border" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </template>
+                                    <template x-if="accountingPeriod !== null">
+                                        <span x-text="`Periode Pembukuan : ${accountingPeriod}`"></span>
+                                    </template>
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -218,7 +170,7 @@
         </div>
     </div>
 </div>
-
+@include('components.select2.script')
 <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.js')}}"></script>
 
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
@@ -228,10 +180,39 @@
 <script>
     function notifications() {
         return {
+            accountingPeriodLoading: false,
+            buttonLoading: false,
             notifications: [],
+            companyName: null,
+            accountingPeriod: null,
+            companyId: "{{ request()->session()->get('company_session') }}",
+            formAccountingPeriod: document.getElementById('form-accounting-period'),
+            modalAccountingPeriod: new bootstrap.Modal(document.getElementById('modal-accounting-period')),
             async init() {
                 const notifications = await axios.get('/notifications');
                 this.notifications = notifications.data;
+                await select2('.companies-select2', 'Pilih Perusahaan', '/select2/companies-data');
+                await this.getCurrentAccountingPeriod();
+                await this.getCurrentCompanySession();
+                await selectedValue('current_company_session', `/select2/selected-company/${this.companyId}`);
+            },
+            async getCurrentCompanySession() {
+                this.accountingPeriodLoading = true;
+                try {
+                    const resp = await axios.get('/company-session/data');
+                    this.companyName = resp.data;
+                } catch (error) {
+                    console.log(error);
+                } finally {
+                    this.accountingPeriodLoading = false;
+                }
+            },
+            setCompanySession() {
+                try {
+
+                } catch (e) {
+                    console.error(e);
+                }
             },
             differenceBetweenDate(dueDate) {
                 let dateNow = "{{ Carbon::now()->format('Y-m-d') }}"
@@ -247,6 +228,17 @@
                 let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                 return `${diffDays} Hari`
             },
+            async getCurrentAccountingPeriod() {
+                this.accountingPeriodLoading = true;
+                try {
+                    const resp = await axios.get('/accounting-period-year');
+                    this.accountingPeriod = resp.data;
+                } catch (error) {
+                    console.log(error)
+                } finally {
+                    this.accountingPeriodLoading = false;
+                }
+            },
             formatDate(val) {
                 if (val) {
                     const date = new Date(val);
@@ -258,12 +250,27 @@
                     return formatter.format(date);
                 }
             },
+            async saveAccountingPeriod() {
+                this.buttonLoading = true;
+                try {
+                    await axios.post('/accounting-period-year/update', new FormData(this.formAccountingPeriod));
+                    await showAlert('success', 'Data berhasil disimpan')
+                    this.formAccountingPeriod.reset();
+                    this.modalAccountingPeriod.hide();
+                    window.location.reload();
+                } catch (error) {
+                    const respError = error.response.data.errors;
+                    Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                } finally {
+                    this.buttonLoading = false;
+                }
+            }
         }
     }
 </script>
 <script>
-    var defaultThemeMode = "light";
-    var themeMode;
+    const defaultThemeMode = "light";
+    let themeMode;
 
     if (document.documentElement) {
         if (document.documentElement.hasAttribute("data-bs-theme-mode")) {

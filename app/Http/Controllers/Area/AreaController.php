@@ -8,7 +8,7 @@ use App\Http\Requests\Master\Common\Area\AreaFilterRequest;
 use App\Http\Requests\Master\Common\Area\AreaRequest;
 use App\Models\Area;
 use App\Models\Department;
-use App\Support\Master\Common\Area\AreaService;
+use App\Support\Master\Common\Area\Service\AreaService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

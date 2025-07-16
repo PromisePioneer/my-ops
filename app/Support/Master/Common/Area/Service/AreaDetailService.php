@@ -1,23 +1,28 @@
 <?php
 
-namespace App\Support\Master\Common\Area;
+namespace App\Support\Master\Common\Area\Service;
 
+use AllowDynamicProperties;
 use App\Models\Area;
 use App\Models\User;
+use App\Support\User\User\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class AreaDetailService
+#[AllowDynamicProperties] class AreaDetailService
 {
     private static int $perPage = 10;
 
+
+    public function __construct()
+    {
+        $this->userRepository = new UserRepository();
+        $this->user = new User();
+    }
+
     public function data(Area $area): LengthAwarePaginator
     {
-        $userHasAreaQuery = User::with('roles', 'jobInformation', 'userHasArea', 'weekHoliday')
-            ->whereHas('userHasArea', function ($query) use ($area) {
-                $query->where('area_id', $area->id);
-            })->paginate(self::$perPage);
-
+        $userHasAreaQuery = $this->userRepository->getUserHasArea($area)->paginate(self::$perPage);
         return self::formattedData($userHasAreaQuery);
     }
 
@@ -25,7 +30,7 @@ class AreaDetailService
     public function search(Request $request, Area $area): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $searchQuery = User::search($search)->query(callback: function ($query) use ($area) {
+        $searchQuery = $this->user->search($search)->query(callback: function ($query) use ($area) {
             $query->whereHas('userHasArea', function ($query) use ($area) {
                 $query->where('area_id', $area->id);
             });
@@ -52,8 +57,8 @@ class AreaDetailService
 
     public function getUser(Request $request, Area $area): array
     {
-        $search = $request->search;
-        $query = User::with('roles')->whereDoesntHave('userHasArea')
+        $search = $request->input('search');
+        $query = $this->user->with('roles')->whereDoesntHave('userHasArea')
             ->whereHas('roles', function ($query) use ($area) {
                 $query->whereIn('name', ['Head Engineer', 'Engineer', 'Senior Engineer', 'Vendor', 'KU Head Engineer', 'KU Engineer']);
             })

@@ -2,7 +2,13 @@
 
 namespace App\Helper;
 
+use App\Models\Company;
+use App\Models\Menu;
+use App\Models\MenuSection;
+use Auth;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 function convertToRoman(int $number): string
 {
@@ -72,3 +78,12 @@ function currencyFormat($currency): string
 {
     return 'Rp ' . number_format($currency, 2, ',', '.');
 }
+
+
+function companiesImg(): string
+{
+    $company = Company::where('id', request()->session()->get('company_session'))->first();
+    return \Storage::url($company?->image);
+}
+
+

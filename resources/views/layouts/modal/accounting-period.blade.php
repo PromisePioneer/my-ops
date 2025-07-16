@@ -1,8 +1,8 @@
-<div class="modal fade" tabindex="-1" id="modal-edit">
+<div class="modal fade" tabindex="-1" id="modal-accounting-period">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Saldo Awal</h5>
+                <h5 class="modal-title">Form Akun</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -14,28 +14,20 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="update(editVal.id)">
+            <form id="form-accounting-period" @submit.prevent="saveAccountingPeriod()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Cabang</label>
-                        <select name="branch_id" id="selectedBranch"
-                                class="form-select form-select-solid main-branches-select2"
-                                data-dropdown-parent="#modal-edit">
-                            <option></option>
-                        </select>
+                        <label for="name" class="required form-label">Nama</label>
+                        <input type="number" name="year" class="form-control form-control-solid"
+                               :value="accountingPeriod"/>
                     </div>
+                </div>
+                <div class="modal-body">
                     <div class="mb-10">
-                        <label for="account_id" class="required form-label">Akun</label>
-                        <select name="account_id" id="selectedAccount"
-                                class="form-select form-select-solid accounts-select2"
-                                data-dropdown-parent="#modal-edit">
-                            <option></option>
-                        </select>
-                    </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Saldo</label>
-                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
-                               placeholder="Saldo" :value="editVal.amount"/>
+                        <label for="current_company_session" class="required form-label">Perusahaan</label>
+                        <select name="current_company_session" id="current_company_session"
+                                class="form-select form-select-solid companies-select2"
+                                data-dropdown-parent="#modal-accounting-period"></select>
                     </div>
                 </div>
 

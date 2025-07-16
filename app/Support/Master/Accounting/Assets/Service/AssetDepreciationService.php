@@ -2,23 +2,24 @@
 
 namespace App\Support\Master\Accounting\Assets\Service;
 
+use AllowDynamicProperties;
 use App\Models\Asset;
-use App\Models\AssetDepreciation;
+use App\Support\Master\Accounting\Assets\Repositories\AssetDepreciationRepository;
 use Carbon\Carbon;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use function App\Helper\currencyFormat;
 
-class AssetDepreciationService
+#[AllowDynamicProperties] class AssetDepreciationService
 {
-    private static int $perPage = 10;
+    public function __construct()
+    {
+        $this->assetDepreciationRepository = new AssetDepreciationRepository();
+    }
 
     public function data(Asset $asset): Collection
     {
-        $depreciations = AssetDepreciation::with('asset')
-            ->where('asset_id', $asset->id)
-            ->get();
-        return self::formattedData($depreciations, $asset);
+        $depreciation = $this->assetDepreciationRepository->findByAssetId($asset->id)->get();
+        return self::formattedData($depreciation, $asset);
     }
 
 

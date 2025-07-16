@@ -12,7 +12,7 @@
                                    role="tab">
                                     <span class="nav-text text-gray-800 fw-bold fs-6 mb-3">Informasi</span>
                                     <span
-                                            class="bullet-custom position-absolute z-index-2 bottom-0 w-100 h-4px bg-primary rounded"></span>
+                                        class="bullet-custom position-absolute z-index-2 bottom-0 w-100 h-4px bg-primary rounded"></span>
                                 </a>
                             </li>
                         </ul>
@@ -20,7 +20,7 @@
                             <div class="tab-pane fade show active" id="kt_list_widget_10_tab_1" role="tabpanel">
                                 <div class="mb-4 border border-dashed border-gray-400 p-5">
                                     <div
-                                            class="d-flex align-items-center flex-row-fluid justify-content-between">
+                                        class="d-flex align-items-center flex-row-fluid justify-content-between">
                                         <a :href="`/inventory/draft-stocks`"
                                            class="fs-6 fw-bolder btn-link"
                                         >
@@ -31,20 +31,20 @@
                                     </div>
                                 </div>
                                 @can('Lihat Menu Stok Yang Harus Di Order')
-                                <div class="mb-4 border border-dashed border-gray-400 p-5">
-                                    <div
+                                    <div class="mb-4 border border-dashed border-gray-400 p-5">
+                                        <div
                                             class="d-flex align-items-center flex-row-fluid justify-content-between">
-                                        <a href="{{ url('inventory/must-reorder-stocks') }}"
-                                           class="fs-6 fw-bolder btn-link"
-                                        >Harus Reorder Ulang</a>
-                                        <span class="text-gray-800 fw-bold d-block fs-4"
-                                              x-text="mustReorderStock"></span>
+                                            <a href="{{ url('inventory/must-reorder-stocks') }}"
+                                               class="fs-6 fw-bolder btn-link"
+                                            >Harus Reorder Ulang</a>
+                                            <span class="text-gray-800 fw-bold d-block fs-4"
+                                                  x-text="mustReorderStock"></span>
+                                        </div>
                                     </div>
-                                </div>
                                 @endcan
                                 <div class="mb-4 border border-dashed border-gray-400 p-5">
                                     <div
-                                            class="d-flex align-items-center flex-row-fluid justify-content-between">
+                                        class="d-flex align-items-center flex-row-fluid justify-content-between">
                                         <a href="{{ url('inventory/stock-withdrawal-items/') }}"
                                            class="fs-6 fw-bolder btn-link"
                                         >Barang belum dikembalikan</a>
@@ -74,27 +74,20 @@
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex align-items-center justify-content-center">
-                                <a href="{{ url('inventory/stock-withdrawals') }}" target="_blank"
-                                   class="btn btn-light-primary btn-sm me-2">
-                                    <i class="ki-duotone ki-package fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i>
-                                    Pemakaian Barang
-                                </a>
-                                <a href="{{ url('inventory/stock-mutations') }}" target="_blank"
-                                   class="btn btn-light-primary btn-sm">
-                                    <i class="ki-duotone ki-basket-ok fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
-
-
-                                    Mutasi Barang
-                                </a>
+                                @can('Lihat Menu Pemakaian Barang')
+                                    <a href="{{ url('inventory/stock-withdrawals') }}" target="_blank"
+                                       class="btn btn-light-primary btn-sm me-2">
+                                        <x-icons.package/>
+                                        Pemakaian Barang
+                                    </a>
+                                @endcan
+                                @can('Lihat Menu Mutasi Barang')
+                                    <a href="{{ url('inventory/stock-mutations') }}" target="_blank"
+                                       class="btn btn-light-primary btn-sm">
+                                        <x-icons.basket/>
+                                        Mutasi Barang
+                                    </a>
+                                @endcan
                             </div>
                         </div>
                     </div>
@@ -145,7 +138,7 @@
                                                     :class="stock.type === 'ASET'
                                                          ? 'badge badge top-100 start-0 badge-warning ms-2'
                                                          : 'badge badge top-100 start-0 badge-danger ms-2'"
-                                                        x-text="stock.type"></span>
+                                                    x-text="stock.type"></span>
                                             </td>
                                             <td class="text-center" x-text="stock.category_name"></td>
                                             <td class="text-center" x-text="stock.total_stock"></td>
@@ -170,7 +163,6 @@
                 </div>
             </div>
         </div>
-        @include('components.toast')
     </div>
 @endsection
 @push('script')

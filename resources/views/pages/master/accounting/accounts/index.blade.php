@@ -21,25 +21,13 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         @can('Tambah Data Akun')
-                            <button type="button" class="btn btn-light-primary btn-sm"
+                            <button type="button" class="btn btn-light-primary btn-sm me-2"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
+                                    data-bs-target="#modal-create" @click="add()">
+                                <x-icons.add-item/>
+                                Tambah
                             </button>
                         @endcan
-                    </div>
-                    <div class="d-flex justify-content-end align-items-center d-none"
-                         data-kt-user-table-toolbar="selected">
-                        <div class="fw-bolder me-5">
-                            <span class="me-2" data-kt-user-table-select="selected_count"></span>Selected
-                        </div>
-                        <button type="button" class="btn btn-danger" data-kt-user-table-select="delete_selected">Delete
-                            Selected
-                        </button>
                     </div>
                 </div>
             </div>
@@ -63,9 +51,9 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-bordered">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input"
@@ -80,29 +68,13 @@
                             </tr>
                             </thead>
                             <template x-if="isLoading">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="9">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.loading colspan="4"/>
                             </template>
                             <template x-if="!isLoading && accounts.data?.length === 0">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="9">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.empty colspan="4"/>
                             </template>
                             <template x-for="(account, index) in accounts.data" :key="account.account_id">
-                                <tbody style="cursor:pointer" class="fw-bold">
+                                <tbody style="cursor:pointer" class="fw-bold text-center">
                                 <tr :id="account.account_id" @click="expand($event)">
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -180,7 +152,7 @@
             </div>
         </div>
     </div>
-    @include('components.toast')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script>
@@ -190,6 +162,7 @@
                 deletePermission: "{{ request()->user()->can('Hapus Data Akun') }}",
                 accounts: [],
                 buttonLoading: false,
+                toggleAccountCategory: false,
                 isLoading: true,
                 startIndex: null,
                 search: '',
@@ -211,9 +184,16 @@
                 modalEditChildren: new bootstrap.Modal(document.getElementById('modal-edit-children')),
                 async init() {
                     await this.getAccountData();
+                    await select2('.companies-select2', 'Pilih Perusahaan', '/select2/companies-data');
+                    await select2('.parent-account-select2', 'Pilih Akun Induk', '/select2/parent-accounts-data');
+                    await select2('.account-categories-select2', 'Pilih Kategori Akun', '/select2/account-categories-data');
+                },
+                add() {
+                    this.editVal = '';
+                    this.toggleAccountCategory = false;
                 },
                 toggleAllCheckBox() {
-                    this.selectAll = true;
+                    this.selectAll = !this.selectAll;
                     this.singleChecked = false;
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                     this.selectedCheckBox = [];
@@ -240,7 +220,9 @@
                     this.isLoading = true;
                     try {
                         const response = await axios.get('/master/accounting/accounts/search', {
-                            params: {search: this.search},
+                            params: {
+                                search: this.search,
+                            },
                             headers: {'Content-Type': 'application/json'}
                         });
                         this.accounts = response.data;
@@ -250,9 +232,28 @@
                         this.isLoading = false;
                     }
                 },
+                async filter() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/master/accounting/accounts/filter', {
+                            params: {
+                                search: this.search,
+                            }
+                        });
+                        this.accounts = resp.data;
+                    } catch (error) {
+                        console.log(error);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
                 async paginationEndPoint(url) {
                     if (url) {
-                        const resp = await axios.get(`${url}`);
+                        const resp = await axios.get(`${url}`, {
+                            params: {
+                                search: this.search,
+                            }
+                        });
                         this.accounts = resp.data
                     }
                 },
@@ -268,7 +269,7 @@
                         await showAlert('success', 'Data berhasil disimpan');
                         this.formCreate.reset();
                         this.modalCreate.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -284,7 +285,7 @@
                         await showAlert('success', 'Data berhasil disimpan');
                         this.formCreateChildren.reset();
                         this.modalCreateChildren.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -293,9 +294,19 @@
                     }
                 },
                 async edit(id) {
-                    console.log(id)
                     const resp = await axios.get(`/master/accounting/accounts/edit/${id}`);
                     this.editVal = resp.data;
+                    this.toggleAccountCategory = resp.data.category_id !== null;
+                    if (this.toggleAccountCategory) {
+                        await selectedValue('selected-account-category', `/select2/selected-account-category/${this.editVal.category_id}`);
+                        await selectedValue('selected-account-categorys', `/select2/selected-account-category/${this.editVal.category_id}`);
+                    }
+                    if (this.editVal.company_id) {
+                        await selectedValue('selected-company', `/select2/selected-company/${this.editVal.company_id}`);
+                    }
+                    if (this.editVal.parent_id) {
+                        await selectedValue('parent_id', `/select2/selected-account/${this.editVal.parent_id}`);
+                    }
                 },
                 async update(id) {
                     this.buttonLoading = true;
@@ -305,7 +316,7 @@
                         await showAlert('success', 'Data berhasil diubah')
                         this.formEditChildren.reset();
                         this.modalEditChildren.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]));
@@ -322,7 +333,7 @@
                         await showAlert('success', 'Data berhasil diubah')
                         this.formEdit.reset();
                         this.modalEdit.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]));
@@ -335,7 +346,7 @@
                         try {
                             await axios.post(`/master/accounting/accounts/destroy`, new FormData(this.deleteForm));
                             await showAlert('success', 'Data sukses dihapus');
-                            await this.init();
+                            await this.successResponse();
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
@@ -349,7 +360,7 @@
                         await showAlert('success', 'Data berhasil disimpan');
                         this.formImport.reset();
                         this.modalImport.hide();
-                        await this.init();
+                        await this.successResponse();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]));
@@ -369,6 +380,15 @@
                         this.isLoading = false;
                     }
                 },
+                async successResponse() {
+                    this.editVal = '';
+                    const resp = await axios.get(`${this.accounts.path}?page=${this.accounts.current_page}`, {
+                        params: {
+                            search: this.search,
+                        }
+                    });
+                    this.accounts = resp.data
+                }
             }
         }
     </script>

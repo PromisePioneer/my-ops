@@ -31,11 +31,6 @@
                         <th>{{ currencyFormat($asset->depreciation) }}</th>
                     </tr>
                     <tr>
-                        <th>Harga perolehan</th>
-                        <th>:</th>
-                        <th>Rp {{ number_format($asset->total_price, 2, '.', '.')  }}</th>
-                    </tr>
-                    <tr>
                         <th>Tahun Perolehan</th>
                         <th>:</th>
                         <th>{{ formatDate($asset->date_received)  }}</th>

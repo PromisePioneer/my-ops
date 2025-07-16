@@ -8,11 +8,13 @@ use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Asset;
 use App\Models\AssetDepreciation;
-use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
-use App\Support\AccountTransactions\AccountTransactionService;
+use App\Support\AccountTransactions\Service\AccountTransactionService;
 use App\Support\HelperService\UsefulLifeService;
+use App\Support\Master\Accounting\Accounts\Repositories\AccountRepository;
 use App\Support\Master\Accounting\Assets\Repositories\AssetRepository;
+use App\Support\Master\Common\Branch\Repository\BranchRepository;
+use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -33,6 +35,11 @@ use function App\Helper\currencyFormat;
     {
         $this->accountTransactionService = new AccountTransactionService();
         $this->assetRepository = new AssetRepository();
+        $this->itemCollectionRepository = new ItemCollectionRepository();
+        $this->accountRepository = new AccountRepository();
+        $this->asset = new Asset();
+        $this->branch = new Branch();
+        $this->branchRepository = new BranchRepository();
     }
 
     public function data(): LengthAwarePaginator
@@ -71,7 +78,8 @@ use function App\Helper\currencyFormat;
             $query->where(function ($query) use ($search) {
                 $query->whereHas('item', function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%');
-                })->orWhere('useful_life', 'like', '%' . $search . '%');
+                })->orWhere('useful_life', 'like', '%' . $search . '%')
+                    ->orWhere('code', 'like', '%' . $search . '%');
             });
         }
 
@@ -99,16 +107,20 @@ use function App\Helper\currencyFormat;
         $unitPrice = (float)$unitPriceformattedValue;
 
 
-        $itemCollection = ItemCollection::find($request->item_id);
-        $assetAccount = Account::find($itemCollection->asset_account_id);
+        $itemCollection = $this->itemCollectionRepository->findById($request->input('item_id'));
+        $assetAccount = $this->accountRepository->findById($itemCollection->asset_account_id);
 
 
-        Asset::create([
+        $this->asset->create([
             'branch_id' => $request->branch_id,
             'code' => $request->code,
             'date' => $request->date,
             'item_id' => $request->item_id,
-            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->non_building_group, $itemCollection->building_type),
+            'useful_life' => UsefulLifeService::getUsefulLife(
+                $assetAccount->code,
+                $itemCollection->non_building_group,
+                $itemCollection->building_type
+            ),
             'price' => $unitPrice,
         ]);
     }
@@ -121,15 +133,19 @@ use function App\Helper\currencyFormat;
         $unitPrice = (float)$unitPriceformattedValue;
 
 
-        $itemCollection = ItemCollection::find($request->item_id);
-        $assetAccount = Account::find($itemCollection->asset_account_id);
+        $itemCollection = $this->itemCollectionRepository->findById($request->input('item_id'));
+        $assetAccount = $this->accountRepository->findById($itemCollection->asset_account_id);
 
         $asset->update([
             'branch_id' => $request->branch_id,
             'code' => $request->code,
             'date' => $request->date,
             'item_id' => $request->item_id,
-            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->non_building_group, $itemCollection->building_type),
+            'useful_life' => UsefulLifeService::getUsefulLife(
+                $assetAccount->code,
+                $itemCollection->non_building_group,
+                $itemCollection->building_type
+            ),
             'price' => $unitPrice,
         ]);
     }
@@ -139,47 +155,80 @@ use function App\Helper\currencyFormat;
      */
     public function confirm(Asset $asset, string $date): void
     {
-        $asset->load('item', 'branch');
-        $branch = Branch::with('parent')->find($asset->branch_id);
-        $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->item->name, $branch->parent->name, $branch->name);
-        DB::transaction(function () use ($description, $asset, $date) {
+        $asset->load('item', 'branch.parent');
+        DB::transaction(function () use ($asset, $date) {
             $this->depreciation($asset, $date);
             $asset->status = 1;
             $asset->save();
+
+            if (empty($asset->stock_id)) {
+                AccountTransaction::create([
+                    'branch_id' => $asset->branch->parent_id,
+                    'date' => $asset->date,
+                    'account_id' => $asset->item->asset_account_id,
+                    'description' => sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $asset->item->name),
+                    'transaction_type' => 'SA',
+                    'entries_type' => 'Debit',
+                    'amount' => $asset->price,
+                ]);
+            } else {
+                $this->accountTransactionService->createDebitTransaction(
+                    $asset->branch->parent_id,
+                    sprintf(
+                        self::PURCHASE_ASSET_DESCRIPTION,
+                        $asset->item->name,
+                        $asset->branch->parent->name,
+                        $asset->branch->name
+                    ),
+                    $asset->item->asset_account_id,
+                    $asset->price,
+                );
+            }
         });
-
-
-        if (empty($asset->stock_id)) {
-            AccountTransaction::create([
-                'branch_id' => $asset->branch->parent_id,
-                'date' => $asset->date,
-                'account_id' => $asset->item->asset_account_id,
-                'description' => sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $asset->item->name),
-                'transaction_type' => 'SA',
-                'entries_type' => 'Debit',
-                'amount' => $asset->price,
-            ]);
-        } else {
-            $this->accountTransactionService->createDebitTransaction(
-                $asset->branch->parent_id,
-                $description,
-                $asset->item->asset_account_id,
-                $asset->price,
-            );
-        }
     }
 
+
+    public function confirm2(Asset $asset, string $date): void
+    {
+        $asset->load('item', 'branch.parent');
+        DB::transaction(function () use ($asset, $date) {
+            $this->depreciation($asset, $date);
+            $asset->status = 1;
+            $asset->save();
+
+            if (empty($asset->stock_id)) {
+                AccountTransaction::create([
+                    'branch_id' => $asset->branch->parent_id,
+                    'date' => $asset->date,
+                    'account_id' => $asset->item->asset_account_id,
+                    'description' => sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $asset->item->name),
+                    'transaction_type' => 'SA',
+                    'entries_type' => 'debit',
+                    'amount' => $asset->price,
+                ]);
+            } else {
+                $this->accountTransactionService->createDebitTransaction(
+                    $asset->branch->parent_id,
+                    sprintf(
+                        self::PURCHASE_ASSET_DESCRIPTION,
+                        $asset->item->name,
+                        $asset->branch->parent->name,
+                        $asset->branch->name
+                    ),
+                    $asset->item->asset_account_id,
+                    $asset->price,
+                );
+            }
+        });
+    }
 
     /**
      * @throws Throwable
      */
     public function depreciation(Asset $asset, ?string $date): void
     {
-        $yearsStart = Carbon::parse($date ?? $asset->date)
-            ->startOfMonth();
-        $yearsEnd = Carbon::parse($date ?? $asset->date)
-            ->startOfMonth()
-            ->addYears($asset->useful_life);
+        $yearsStart = Carbon::parse($date ?? $asset->date)->startOfMonth();
+        $yearsEnd = Carbon::parse($date ?? $asset->date)->startOfMonth()->addYears($asset->useful_life);
         $diffInMonth = $yearsStart->diffInMonths($yearsEnd);
 
 
@@ -205,13 +254,13 @@ use function App\Helper\currencyFormat;
                     'depreciation_amount' => $depreciation,
                 ]);
 
-                $branch = Branch::with('parent')->find($asset->branch_id);
+                $branch = $this->branchRepository->findById($asset->branch_id);
 
                 $account = Account::where('code', '130')->first();
                 $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->name, $branch->parent->name, $branch->name, $i);
 
                 $this->accountTransactionService->createCreditTransaction(
-                    Branch::find($asset->branch_id)->parent_id,
+                    $branch->parent_id,
                     $description,
                     $account->id,
                     $depreciation,

@@ -13,7 +13,6 @@ class WorkTimeSeeder extends Seeder
     public function run(): void
     {
         WorkTime::create([
-            'id' => 1,
             'name' => 'Pagi',
             'clock_in' => '08:00',
             'clock_out' => '17:00',

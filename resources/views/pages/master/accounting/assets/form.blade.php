@@ -92,7 +92,7 @@
             </div>
         </div>
     </div>
-    @include('components.toast')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script>
@@ -120,13 +120,12 @@
                 form: document.getElementById('form'),
                 async init() {
                     this.inputMask('price');
-                    await this.getBranches();
-                    await this.getAssetItemCollections()
-                    await this.getUnitTypes();
-                    await this.getAssetAccounts();
-                    await this.selectedItemCollection();
-                    await this.getItemCategories();
-                    await this.getSuppliers();
+                    await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
+                    await select2('.asset-items-select2', 'Pilih Barang', '/select2/asset-items-data', true, false, 'modal-item');
+                    await select2('.unit-types-select2', 'Pilih Satuan', '/select2/unit-types-data', true, true);
+                    await select2('.asset-accounts-select2', 'Pilih Akun', '/select2/asset-accounts-data');
+                    await select2('.item-category-select2', 'Pilih Kategori', '/select2/item-categories-data');
+                    await select2('.stock-accounts-select2', 'Pilih Akun ', '/select2/stock-accounts-data');
                     await this.getStockAccounts();
                     await this.selectedBranch();
                     await this.selectedItemCollection();

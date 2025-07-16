@@ -35,27 +35,8 @@ class FinancialClosePeriodService
         if ($monthNow === $startDate) {
             $month = Carbon::now()->addMonthNoOverflow()->month;
 
-            return Carbon::parse($year . '-' . $month . '-' . $date);
+        return Carbon::parse($year . '-' . $month . '-' . $date);
         }
-
-        return Carbon::parse($year . '-' . $month . '-' . $date);
-    }
-
-
-    public function vendorPayrollPeriodStartDate(): Carbon
-    {
-        $year = Carbon::now()->year;
-        $month = Carbon::now()->month;
-        $date = Carbon::now()->startOfMonth()->format('d');
-
-        return Carbon::parse($year . '-' . $month . '-' . $date);
-    }
-
-    public function vendorPayrollPeriodEndDate(): Carbon
-    {
-        $year = Carbon::now()->year;
-        $month = Carbon::now()->month;
-        $date = Carbon::now()->endOfMonth()->format('d');
 
         return Carbon::parse($year . '-' . $month . '-' . $date);
     }

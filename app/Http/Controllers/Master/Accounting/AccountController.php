@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Accounting\Account\AccountRequest;
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\Master\Common\Branch;
 use App\Support\Master\Accounting\Accounts\Service\AccountService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -39,6 +40,7 @@ use Illuminate\View\View;
             'name' => $request->name,
             'code' => $request->code,
             'parent_id' => $account->id,
+            'category_id' => $request->category_id,
         ]);
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
@@ -46,10 +48,10 @@ use Illuminate\View\View;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', Account::class);
-        $accounts = $this->accountService->data();
+        $accounts = $this->accountService->data($request);
         return response()->json($accounts);
     }
 
@@ -69,7 +71,15 @@ use Illuminate\View\View;
     public function store(AccountRequest $request): JsonResponse
     {
         $this->authorize('create', Account::class);
-        Account::create($request->validated());
+
+        Account::create([
+            'company_id' => $request->session()->get('company_session'),
+            'name' => $request->name,
+            'code' => $request->code,
+            'parent_id' => $request->parent_id,
+            'category_id' => $request->category_id,
+            'trial_balance_type' => $request->trial_balance_type,
+        ]);
 
         return response()->json([
             'message' => 'Data berhasil disimpan',
@@ -92,7 +102,14 @@ use Illuminate\View\View;
     public function update(AccountRequest $request, Account $account): JsonResponse
     {
         $this->authorize('update', $account);
-        $account->update($request->validated());
+        $account->update([
+            'company_id' => $request->session()->get('company_session'),
+            'name' => $request->name,
+            'code' => $request->code,
+            'parent_id' => $request->parent_id,
+            'category_id' => $request->category_id,
+            'trial_balance_type' => $request->trial_balance_type,
+        ]);
 
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -139,9 +156,9 @@ use Illuminate\View\View;
     }
 
 
-    public function assetAccounts(Request $request): JsonResponse
+    public function assetAccounts(Request $request, ?Company $company): JsonResponse
     {
-        return response()->json($this->accountService->getAssetAccounts($request));
+        return response()->json($this->accountService->getAssetAccounts($request, $company));
     }
 
 
@@ -150,10 +167,14 @@ use Illuminate\View\View;
         return response()->json($this->accountService->kasAndLeverageAccounts($request));
     }
 
-
     public function kasAccounts(Request $request): JsonResponse
     {
         return response()->json($this->accountService->kasAccounts($request));
+    }
+
+    public function parentAccounts(Request $request)
+    {
+        return response()->json($this->accountService->parentAccount($request));
     }
 
 }

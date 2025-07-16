@@ -28,8 +28,8 @@
                             @endcan
                             @can('Filter Data Aset Berdasarkan Cabang')
                                 <button
-                                        class="btn btn-light-info btn-sm"
-                                        id="assets-filter">
+                                    class="btn btn-light-info btn-sm"
+                                    id="assets-filter">
                                     <x-icons.filter/>
                                     Filter
                                 </button>
@@ -130,9 +130,9 @@
                                         </template>
                                         <template x-if="!asset.stock_id">
                                             <button
-                                                :class="`${asset.status  === 1  ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'}`"
-                                                @click="asset.status === 0 ? check(asset.id) : ''"
-                                                :disabled="asset.status === 1">
+                                                :class="`${asset.status  === true  ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'}`"
+                                                @click="asset.status === false ? check(asset.id) : ''"
+                                                :disabled="asset.status === true">
                                                 <i class="ki-duotone ki-check-square">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
@@ -158,8 +158,8 @@
             </div>
         </div>
     </div>
-    @include('components.toast')
     @include('components.select2.script')
+
 @endsection
 @push('script')
     <script defer>
@@ -180,6 +180,7 @@
                 async init() {
                     await this.getAssetsData();
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
+                    await select2('.items-select2', 'Pilih Barang', '/select2/goods-data');
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -261,6 +262,7 @@
                             params: {
                                 search: this.search,
                                 branch_id: $('#branch_id').val(),
+                                item_id: $('#item_id').val(),
                             },
                             headers: {'Content-Type': 'application/json'}
                         });

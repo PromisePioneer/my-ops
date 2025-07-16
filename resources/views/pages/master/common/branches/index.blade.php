@@ -66,26 +66,10 @@
                                 </template>
                             </thead>
                             <template x-if="isLoading">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="6">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.loading colspan="5"/>
                             </template>
                             <template x-if="!isLoading && branches.data?.length === 0">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="6">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
-                                </tbody>
+                                <x-table.empty colspan="5"/>
                             </template>
                             <template x-for="branch in branches?.data" :key="branch.id">
                                 <tbody class="fw-bold">
@@ -105,7 +89,7 @@
                                     <td class="text-start">
                                         <div x-data="{ expanded: false }">
                                             <template x-if="branch.address.length > 100">
-                                                <p  x-text="expanded ? branch.address : branch.address.slice(0, 100) + '...'"
+                                                <p x-text="expanded ? branch.address : branch.address.slice(0, 100) + '...'"
                                                    class="d-inline lh-base"></p>
                                             </template>
                                             <template x-if="branch.address.length <= 100">
@@ -164,7 +148,6 @@
             </div>
         </div>
     </div>
-    @include('components.toast')
 @endsection
 @push('script')
     <script defer>

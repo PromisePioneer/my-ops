@@ -13,6 +13,7 @@ use Illuminate\View\View;
 class PermissionController extends Controller
 {
     public static int $perPage = 10;
+
     /**
      * @throws AuthorizationException
      */
@@ -89,6 +90,7 @@ class PermissionController extends Controller
         ]);
     }
 
+
     /**
      * @throws AuthorizationException
      */
@@ -99,5 +101,20 @@ class PermissionController extends Controller
         $explodeID = explode(',', $implodeID);
         $permission->whereIn('id', $explodeID)->delete();
         return response()->json(['message' => 'data sukses dihapus!']);
+    }
+
+    public function getPermissions(Request $request)
+    {
+        $search = $request->input('search');
+        $permissions = Permission::search($search)->query(function ($query) use ($search) {
+            $query->orderBy('name');
+        })->get();
+
+        return $permissions->map(function ($permission) {
+            return [
+                'id' => $permission->id,
+                'text' => $permission->name,
+            ];
+        });
     }
 }

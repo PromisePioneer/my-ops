@@ -29,10 +29,10 @@ use Throwable;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', ItemCollection::class);
-        return response()->json($this->itemCollectionService->data());
+        return response()->json($this->itemCollectionService->data($request));
     }
 
     /**
@@ -144,27 +144,6 @@ use Throwable;
     }
 
 
-    public function getAssetItem(Request $request)
-    {
-        $search = $request->input('search');
-        $goods = ItemCollection::with('unitType')
-            ->where('type', 'ASET')
-            ->when(!empty($search), function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-            });
-
-        return $goods->get()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'asset_account_id' => $item->asset_account_id,
-                'must_have_code' => $item->must_have_code,
-                'unit_type_name' => $item->unitType->name,
-                'text' => $item->name,
-            ];
-        });
-    }
-
-
     public function selectedItem(ItemCollection $item): array
     {
         $item->load('unitType');
@@ -194,9 +173,9 @@ use Throwable;
     }
 
 
-    public function getAssetData(): JsonResponse
+    public function getAssetData(Request $request): JsonResponse
     {
-        return response()->json($this->itemCollectionService->assetData());
+        return response()->json($this->itemCollectionService->assetData($request));
     }
 
 

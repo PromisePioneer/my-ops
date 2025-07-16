@@ -87,6 +87,10 @@ class LoginController extends Controller
         if ($user->hasAnyRole('Technichian', 'Accounting', 'Stocker', 'WKCA', 'KCA', 'NOC')) {
             return redirect('/utility/user-profile/profile-detail');
         }
+
+
+        $request->session()->put('company_session', $request->user()->company_id);
+
         activity()->causedBy(Auth::user())->log(Auth::user()->nip . ' ' . Auth::user()->name . ' Melakukan Login');
         return redirect()->intended($this->redirectTo);
     }
