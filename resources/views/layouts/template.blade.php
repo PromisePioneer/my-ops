@@ -170,7 +170,6 @@
         </div>
     </div>
 </div>
-@include('components.toast')
 @include('components.select2.script')
 <script src="{{ asset('assets/plugins/custom/fslightbox/fslightbox.js')}}"></script>
 

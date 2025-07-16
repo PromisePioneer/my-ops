@@ -44,5 +44,4 @@
         </div>
     </div>
     @include('components.select2.script')
-    @include('components.toast')
 @endsection
