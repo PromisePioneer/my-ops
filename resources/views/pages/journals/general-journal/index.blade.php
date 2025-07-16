@@ -76,7 +76,7 @@
                                         <x-table.loading colspan="7"/>
                                     </template>
                                     <template x-if="!isLoading && generalJournal.data?.length === 0">
-                                        <x-table.loading colspan="7"/>
+                                        <x-table.empty colspan="7"/>
                                     </template>
                                     <template x-for="(journal, index) in generalJournal.data" :key="index">
                                         <tbody class="fw-bold">
