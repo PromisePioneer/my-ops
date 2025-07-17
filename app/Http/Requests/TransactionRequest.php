@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use AllowDynamicProperties;
 use App\Enum\Contact\TaxType;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use App\Models\Master\Common\Branch;
 use App\Models\Master\Common\Contact;
@@ -99,31 +100,25 @@ use Illuminate\Validation\Rule;
     public function accountBalanceCheck(Request $request): Closure
     {
         return static function ($value, $attribute, $fail) use ($request) {
-            $date = Carbon::now();
             $mainBranch = Branch::with('parent')->find($request->input('branch_id'));
-            $accountTransactionDebit = AccountTransaction::where('account_id', $request->credit_account_id)
+
+            $creditTransaction = AccountTransaction::with('account')
+                ->where('account_id', $request->input('credit_account_id'))
                 ->where('branch_id', $mainBranch->parent_id)
                 ->where('entries_type', 'debit')
-                ->whereBetween('date', [$date->copy()->subYear()->format('Y-m-d'), $date->format('Y-m-d')])
+                ->whereYear('date', AccountingPeriod::first()->year)
                 ->sum('amount');
 
-            $accountTransactionCredit = AccountTransaction::with('account')
-                ->where('account_id', $request->credit_account_id)
-                ->where('branch_id', $mainBranch->parent_id)
-                ->where('entries_type', 'credit')
-                ->whereBetween('date', [$date->copy()->subYear()->format('Y-m-d'), $date->format('Y-m-d')])
-                ->sum('amount');
 
             $formattedValue = str_replace('.', '', $request->input('unit_price'));
             $formattedValue = str_replace(',', '.', $formattedValue);
             $unitPrice = (float)$formattedValue;
 
-            $subtractBetweenDebitAndCreditTransaction = (float)$accountTransactionDebit - (float)$accountTransactionCredit;
 
             $totalTransaction = $request->input('qty') * $unitPrice;
 
-            if ($totalTransaction > $subtractBetweenDebitAndCreditTransaction) {
-                $fail('Saldo Kurang!,' . '<br>' . 'Saldo sisa : ' . 'Rp.' . number_format($subtractBetweenDebitAndCreditTransaction, 2, '.', '.') . '<br>' . 'Total Transaksi : ' . number_format($totalTransaction, 2, '.', '.'));
+            if ($totalTransaction > $creditTransaction) {
+                $fail('Saldo Kurang!,' . '<br>' . 'Saldo sisa : ' . 'Rp.' . number_format($creditTransaction, 2, '.', '.') . '<br>' . 'Total Transaksi : ' . number_format($totalTransaction, 2, '.', '.'));
             }
 
             return true;

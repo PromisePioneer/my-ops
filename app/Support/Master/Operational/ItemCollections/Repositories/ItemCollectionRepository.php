@@ -51,10 +51,9 @@ use Illuminate\Http\Request;
     }
 
 
-    public function getAssetData($query, Request $request)
+    public function getAssetData($query)
     {
-        return $query->with(['category', 'unitType', 'assetAccount'])
-            ->where('company_id', $request->session()->get('company_session'))->where('type', 'ASET');
+        return $query->with(['category', 'unitType', 'assetAccount'])->where('type', 'ASET');
     }
 
 

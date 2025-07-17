@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             FpDeviceSeeder::class,
             AccountCategorySeeder::class,
             AccountSeeder::class,
-//            AccountMayatamaSeeder::class,
+            AccountMayatamaSeeder::class,
 //            AccountPSGSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
             RoleHierarchySeeder::class,
 //            InitialBalanceSeeder::class,
             TransactionSeeder::class,
-            AccountTransactionSeeder::class,
+//            AccountTransactionSeeder::class,
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Account;
+use App\Models\AccountingPeriod;
 use App\Models\AccountTransaction;
 use Carbon\Carbon;
 use Closure;
@@ -85,7 +86,7 @@ class InitialBalanceRequest extends FormRequest
                 'accounts.id'
             )->where('account_transactions.branch_id', $request->user()->branch_id ?? $request->branch_id)
                 ->where('account_transactions.transaction_type', 'TR')
-                ->whereYear('account_transactions.date', Carbon::parse($request->date)->year)
+                ->whereYear('account_transactions.date', AccountingPeriod::first()->year)
                 ->where('accounts.id', $account->id)
                 ->select('account_transactions.id as account_transaction_id')
                 ->first();

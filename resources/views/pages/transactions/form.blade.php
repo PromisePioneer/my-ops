@@ -1,3 +1,4 @@
+@php use App\Models\AccountingPeriod;use Carbon\Carbon; @endphp
 @extends('layouts.template')
 @section('page-title', 'Form Transaksi')
 @section('breadcrumbs', 'Transaksi - Tambah Transaksi')
@@ -73,8 +74,17 @@
 @endsection
 @push('script')
     <script>
+        const date = "{{Carbon::parse($year . '-01-01')->startOfYear()->format('Y-m-d') }}"
+
+
+        console.log(date);
+
         function generateTransactions() {
-            $('.date').flatpickr();
+            $('.date').flatpickr({
+                dateFormat: "Y-m-d",
+                minDate: date,
+                maxDate: "{{ Carbon::parse($year . '-01-01')->endOfYear()->format('Y-m-d') }}",
+            });
             return {
                 buttonLoading: false,
                 isAset: null,

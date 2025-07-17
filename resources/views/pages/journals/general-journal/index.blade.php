@@ -154,7 +154,6 @@
                 },
                 async filter() {
                     try {
-                        this.generalJournal = []
                         this.isLoading = true;
                         const resp = await axios.get('/journals/general-journal/filter', {
                             params: {

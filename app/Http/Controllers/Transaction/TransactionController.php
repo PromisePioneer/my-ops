@@ -6,8 +6,10 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
+use App\Models\AccountingPeriod;
 use App\Models\Transaction;
 use App\Support\Transactions\Services\TransactionService;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -61,7 +63,8 @@ use Throwable;
 
     public function create(): View
     {
-        return view('pages.transactions.form');
+        $year = (string)AccountingPeriod::first()->year;
+        return view('pages.transactions.form', compact('year'));
     }
 
     /**
@@ -81,8 +84,9 @@ use Throwable;
     public function edit(Transaction $transaction): View
     {
         $transaction->load('branch', 'supplier');
+        $year = (string)AccountingPeriod::first()->year;
         $this->authorize('edit', Transaction::class);
-        return view('pages.transactions.form', compact('transaction'));
+        return view('pages.transactions.form', compact('transaction', 'year'));
     }
 
     /**

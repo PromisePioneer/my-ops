@@ -21,16 +21,19 @@ use Illuminate\Http\Request;
     public function getTransactions(Request $request): Builder
     {
         return $this->transaction->with([
+            'company',
             'branch',
             'item.unitType',
             'debitAccount',
             'creditAccount'
-        ])->where('type', '!=', TransactionType::INITIAL_INVENTORY_BALANCE->value);
+        ])->where('company_id', $request->session()->get('company_session'))
+            ->where('type', '!=', TransactionType::INITIAL_INVENTORY_BALANCE->value);
     }
 
     public function getInitialInventoryBalance(Request $request): Builder
     {
         return $this->transaction->with(['branch', 'item.unitType', 'stockAccount'])
+            ->where('company_id', $request->session()->get('company_session'))
             ->where('type', TransactionType::INITIAL_INVENTORY_BALANCE->value)
             ->when(!empty($request->user()->branch_id), function (Builder $query) use ($request) {
                 $branch = $this->branchRepository->findById($request->user()->branch_id)->children->pluck('id')->toArray();

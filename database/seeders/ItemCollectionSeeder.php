@@ -16,10 +16,8 @@ class ItemCollectionSeeder extends Seeder
      */
     public function run(): void
     {
-        $mayatama = Company::where('code', "001")->first()->id;
-        $psg = Company::where('code', "001")->first()->id;
-        $linkkita = Company::where('code', "001")->first()->id;
 
+        $mayatama = Company::where('code', '001')->first()->code;
 
         //kategori 1 aset
         ItemCollection::create([
@@ -29,7 +27,8 @@ class ItemCollectionSeeder extends Seeder
             'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
             'type' => 'ASET',
             'category_id' => ItemCategory::where('name', 'Kategori 1')->first()->id,
-            'asset_account_id' => Account::where('code', '126')->first()->id,
+            'asset_account_id' => Account::where('code', '126')
+                ->where('company_id', $mayatama)->first()->id,
             'tangible_assets_type' => 'Bukan Bangunan',
             'non_building_group' => 'Kelompok I',
             'reorder_level' => 100,
@@ -38,13 +37,14 @@ class ItemCollectionSeeder extends Seeder
 
 
         ItemCollection::create([
-            'name' => 'KU 96 Core',
             'company_id' => $mayatama,
+            'name' => 'KU 96 Core',
             'code' => 'KU96',
             'category_id' => ItemCategory::where('name', 'Kategori 1')->first()->id,
             'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
             'type' => 'ASET',
-            'asset_account_id' => Account::where('code', '126')->first()->id,
+            'asset_account_id' => Account::where('code', '126')
+                ->where('company_id', $mayatama)->first()->id,
             'tangible_assets_type' => 'Bukan Bangunan',
             'non_building_group' => 'Kelompok I',
             'reorder_level' => 100,
@@ -61,13 +61,17 @@ class ItemCollectionSeeder extends Seeder
             'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
             'type' => 'JUAL',
             'tangible_assets_type' => null,
+            'asset_account_id' => Account::where('code', '126')
+                ->where('company_id', $mayatama)->first()->id,
             'reorder_level' => 100,
             'must_have_code' => true,
         ]);
 
+
         //kategori 2 aset
         ItemCollection::create([
             'company_id' => $mayatama,
+
             'name' => 'Box ODC',
             'code' => 'ODC',
             'category_id' => ItemCategory::where('name', 'Kategori 2')->first()->id,
@@ -76,13 +80,15 @@ class ItemCollectionSeeder extends Seeder
             'tangible_assets_type' => 'Bukan Bangunan',
             'reorder_level' => 100,
             'non_building_group' => 'Kelompok I',
-            'asset_account_id' => Account::where('code', '126')->first()->id,
+            'asset_account_id' => Account::where('code', '126')
+                ->where('company_id', $mayatama)->first()->id,
             'must_have_code' => true,
         ]);
 
         //kategori 2 ASET
         ItemCollection::create([
             'company_id' => $mayatama,
+
             'name' => 'GPON',
             'code' => 'GPON',
             'category_id' => ItemCategory::where('name', 'Kategori 2')->first()->id,
@@ -91,7 +97,8 @@ class ItemCollectionSeeder extends Seeder
             'tangible_assets_type' => 'Bukan Bangunan',
             'non_building_group' => 'Kelompok I',
             'reorder_level' => 100,
-            'asset_account_id' => Account::where('code', '126')->first()->id,
+            'asset_account_id' => Account::where('code', '126')
+                ->where('company_id', $mayatama)->first()->id,
             'must_have_code' => true,
             'is_code_listed' => true,
         ]);
@@ -99,11 +106,13 @@ class ItemCollectionSeeder extends Seeder
 
         ItemCollection::create([
             'company_id' => $mayatama,
+
             'name' => 'TANAH',
             'code' => 'TNH',
             'type' => 'ASET',
             'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
-            'asset_account_id' => Account::where('code', '121')->first()->id,
+            'asset_account_id' => Account::where('code', '121')
+                ->where('company_id', $mayatama)->first()->id,
             'tangible_assets_type' => 'Tanah',
         ]);
 
@@ -111,6 +120,7 @@ class ItemCollectionSeeder extends Seeder
         //kategori 3 aset
         ItemCollection::create([
             'company_id' => $mayatama,
+
             'name' => 'Splicer',
             'code' => 'SPLICER',
             'category_id' => ItemCategory::where('name', 'Kategori 3')->first()->id,
@@ -119,7 +129,8 @@ class ItemCollectionSeeder extends Seeder
             'tangible_assets_type' => 'Bukan Bangunan',
             'non_building_group' => 'Kelompok I',
             'reorder_level' => 100,
-            'asset_account_id' => Account::where('code', '126')->first()->id,
+            'asset_account_id' => Account::where('code', '126')
+                ->where('company_id', $mayatama)->first()->id,
             'must_have_code' => true,
             'is_code_listed' => true,
         ]);
@@ -128,6 +139,7 @@ class ItemCollectionSeeder extends Seeder
         //kategori 4 aset
         ItemCollection::create([
             'company_id' => $mayatama,
+
             'name' => 'Pathcord',
             'code' => 'PATHCORD',
             'category_id' => ItemCategory::where('name', 'Kategori 4')->first()->id,
@@ -140,6 +152,7 @@ class ItemCollectionSeeder extends Seeder
         //kategori 4 jual
         ItemCollection::create([
             'company_id' => $mayatama,
+
             'name' => 'Pigtail',
             'category_id' => ItemCategory::where('name', 'Kategori 4')->first()->id,
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,

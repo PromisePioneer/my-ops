@@ -134,7 +134,9 @@ use function App\Helper\formatDate;
         $formattedValue = str_replace(',', '.', $formattedValue);
         $unitPrice = (float)$formattedValue;
 
+
         Transaction::create([
+            'company_id' => $request->session()->get('company_session'),
             'type' => $request->input('type'),
             'transaction_number' => $this->generateTransactionNumber($request),
             'branch_id' => $request->input('branch_id'),
@@ -220,10 +222,18 @@ use function App\Helper\formatDate;
             $explodeID = explode(',', $implodeID);
             $transaction->whereIn('id', $explodeID)->update([
                 'status' => $request->status,
-                'locked_status' => $request->status === 'Revisi' ? 0 : 1,
                 'approved_by' => $request->status === 'Diterima' ?: $request->user()->id,
                 'final_notes' => $request->input('final_notes'),
             ]);
+
+
+            if ($request->status === 'Ditolak' || $request->status === 'Direvisi') {
+                $transaction->whereIn('id', $explodeID)->update([
+                    'locked_status' => false,
+                ]);
+            }
+
+
             $ppnAccount = Account::where('code', '115-01')->first();
             $taxSetting = TaxSetting::where('name', 'PPN')->first();
 
@@ -270,6 +280,7 @@ use function App\Helper\formatDate;
             $transaction->debit_account_id,
             $transaction->total_price,
             $transaction->id,
+            $transaction->date
         );
 
         $this->accountTransactionService->createCreditTransaction(
@@ -277,7 +288,8 @@ use function App\Helper\formatDate;
             $transaction->detail,
             $transaction->credit_account_id,
             $transaction->supplier->tax_type === 'PKP' ? $transaction->total_price + $ppnTotal : $transaction->total_price,
-            $transaction->id
+            $transaction->id,
+            $transaction->date
         );
 
 

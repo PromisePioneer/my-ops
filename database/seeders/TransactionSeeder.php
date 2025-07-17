@@ -26,8 +26,12 @@ class TransactionSeeder extends Seeder
         $qty1 = 300;
         $unitPrice1 = 300000;
         Transaction::create([
+            'company_id' => $linkkita,
             'transaction_number' => '12345435',
-            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
+            'branch_id' => Branch::where('name', 'Kantor')
+                ->whereHas('parent', function ($query) use ($linkkita) {
+                    $query->where('company_id', $linkkita)->where('code', '001');
+                })->first()->id,
             'contact_id' => Contact::where('tax_type', 'PKP')->first()->id,
             'date' => Carbon::now()->format('Y-m-d'),
             'item_id' => ItemCollection::where('name', 'Box ODC')->first()->id,

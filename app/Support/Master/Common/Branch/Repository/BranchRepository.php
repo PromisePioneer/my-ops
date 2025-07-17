@@ -36,8 +36,8 @@ use Illuminate\Http\Request;
     public function getMainBranches(Request $request): Collection
     {
         $search = $request->input('search');
-        return $this->branch->search($search)->query(function ($query) {
-            $query->whereNull('parent_id');
+        return $this->branch->search($search)->query(function ($query) use ($request) {
+            $query->where('company_id', $request->session()->get('company_session'))->whereNull('parent_id');
         })->get();
     }
 

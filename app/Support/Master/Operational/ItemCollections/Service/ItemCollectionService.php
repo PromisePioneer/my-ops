@@ -124,8 +124,8 @@ use Throwable;
             $assetAccount = $this->ifSpecificAssetAccount($request);
 
             ItemCollection::create([
-                'name' => $request->input('name'),
                 'company_id' => $request->session()->get('company_session'),
+                'name' => $request->input('name'),
                 'is_vehicle' => $request->input('is_vehicle') === 'on',
                 'category_id' => $request->input('category_id'),
                 'unit_type_id' => $unitTypeId->id ?? $request->input('unit_type_id'),
@@ -178,8 +178,8 @@ use Throwable;
         $assetAccount = $this->ifSpecificAssetAccount($request);
 
         return $itemCollection->update([
-            'name' => $request->input('name'),
             'company_id' => $request->session()->get('company_session'),
+            'name' => $request->input('name'),
             'is_vehicle' => $request->input('is_vehicle') === 'on',
             'category_id' => $request->input('category_id'),
             'unit_type_id' => $unitTypeId->id ?? $request->input('unit_type_id'),

@@ -20,11 +20,12 @@ use Carbon\Carbon;
         string    $description,
         ?int      $accountId,
         float|int $amount,
-                  $transactionId = null
+                  $transactionId = null,
+                  $date = null,
     ): void
     {
         $this->accountTransaction->create([
-            'date' => date('Y-m-d'),
+            'date' => $date ?? date('Y-m-d'),
             'branch_id' => $branchId ?? null,
             'account_id' => $accountId,
             'description' => $description,

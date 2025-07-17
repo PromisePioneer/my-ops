@@ -34,6 +34,7 @@
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                 </i> Tambah
+
                             </a>
                         @endcan
                     </div>

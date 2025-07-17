@@ -626,17 +626,10 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
     Route::prefix('/journals')->group(function () {
-        Route::controller(GeneralJournalController::class)
-            ->prefix('general-journal')->group(function () {
-                Route::get('/', 'index');
-                Route::get('/data', 'data');
-                Route::get('/search', 'search');
-            });
 
         Route::prefix('general-journal')->group(function () {
             Route::get('/', [GeneralJournalController::class, 'index']);
             Route::get('/data', [GeneralJournalController::class, 'data']);
-            Route::get('/branch/data', [GeneralJournalController::class, 'getBranchData']);
             Route::get('/filter', [GeneralJournalController::class, 'filter']);
         });
 

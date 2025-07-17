@@ -182,9 +182,5 @@ use Illuminate\Http\Request;
                 'text' => $c->code . ' ' . $c->name,
             ];
         })->toArray();
-
-
     }
-
-
 }

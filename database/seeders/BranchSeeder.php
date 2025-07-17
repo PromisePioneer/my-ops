@@ -14,7 +14,6 @@ class BranchSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create('id_ID');
         $this->dumai();
         $this->duri();
         $this->pkuArifin();
@@ -32,6 +31,7 @@ class BranchSeeder extends Seeder
         $this->bengkalis();
         $this->kualaTungkal();
         $this->bogorCiomas();
+        $this->linkkita();
 
 
     }
@@ -125,7 +125,7 @@ class BranchSeeder extends Seeder
     {
         $mainBranch = Branch::create([
             'company_id' => Company::where('code', '001')->first()->id,
-            'code' => '103',
+            'code' => '1297',
             'name' => 'Pekanbaru Arifin',
             'address' => 'Jalan Arifin Ahmad No. 113 E, Kelurahan Sidomulyo Timur Kecamatan Marpoyan Damai.',
         ]);
@@ -439,6 +439,40 @@ class BranchSeeder extends Seeder
             'name' => 'Kantor',
             'address' => '-',
             'parent_id' => $mainBranch->id,
+        ]);
+    }
+
+
+    public function linkkita(): void
+    {
+        $parentId1 = Branch::create([
+            'company_id' => Company::where('code', '003')->first()->id,
+            'code' => '001',
+            'name' => 'Pekanbaru Arifin',
+            'address' => 'Jl. Arifin Achmad',
+        ]);
+
+
+        Branch::create([
+            'parent_id' => $parentId1->id,
+            'name' => 'Kantor',
+            'address' => 'Jl. Arifin Achmad',
+        ]);
+
+
+       $parentId2 =  Branch::create([
+            'company_id' => Company::where('code', '003')->first()->id,
+            'code' => '002',
+            'name' => 'Sawahlunto',
+            'address' => 'Jl. Arifin Achmad',
+        ]);
+
+
+
+        Branch::create([
+            'parent_id' => $parentId2->id,
+            'name' => 'Kantor',
+            'address' => 'Jl. Arifin Achmad',
         ]);
     }
 

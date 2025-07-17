@@ -24,8 +24,24 @@ use function App\Helper\formatDate;
 
     public function data(Request $request)
     {
-        $generalJournal = $this->generalJournalRepository->data($request)->paginate(self::$perPage);
+        $generalJournal = $this->generalJournalRepository
+            ->data($request)
+            ->paginate(self::$perPage);
         return self::formattedData($generalJournal);
+    }
+
+
+    public function filter(Request $request)
+    {
+
+        $query = $this->generalJournalRepository->data($request);
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->input('branch_id'));
+        }
+
+
+        $data = $query->paginate(self::$perPage);
+        return self::formattedData($data);
     }
 
 
@@ -48,31 +64,5 @@ use function App\Helper\formatDate;
         return $generalJournal;
     }
 
-
-    public function filter(Request $request)
-    {
-
-        $branch = $request->input('branch_id');
-        $month = $request->input('month');
-
-        $query = AccountTransaction::with('account.parent')
-            ->whereHas('account', function ($query) use ($request) {
-                $query->where('company_id', $request->session()->get('company_session'));
-            })
-            ->where('transaction_type', 'TR')
-            ->whereYear('date', $this->accountingPeriod->query()->first()->year)
-            ->orderBy('date');
-
-        if ($branch) {
-            $query->where('branch_id', $branch);
-        }
-        if ($month) {
-            $query->whereMonth('date', $month);
-        }
-
-
-        $data = $query->paginate(self::$perPage);
-        return self::formattedData($data);
-    }
 
 }

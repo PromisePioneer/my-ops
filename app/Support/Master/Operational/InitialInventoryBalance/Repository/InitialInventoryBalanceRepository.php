@@ -11,7 +11,7 @@ class InitialInventoryBalanceRepository
 {
     public function data(): Builder
     {
-        return InitialInventoryBalance::with('branch', 'supplier', 'item', 'branch.parent', 'stockAccount');
+        return InitialInventoryBalance::with(['branch', 'supplier', 'item', 'branch.parent', 'stockAccount']);
     }
 
 
@@ -27,6 +27,7 @@ class InitialInventoryBalanceRepository
             ->join('branches as parent_branches', 'parent_branches.id', '=', 'branches.parent_id')
             ->join('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->join('item_collections', 'transactions.item_id', '=', 'item_collections.id')
+            ->where('transactions.company_id', $request->session()->get('company_session'))
             ->select('transactions.*', 'parent_branches.name', 'item_collections.name');
     }
 }

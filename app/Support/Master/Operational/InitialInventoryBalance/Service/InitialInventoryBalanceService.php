@@ -68,9 +68,10 @@ use function App\Helper\formatDate;
                 ->toArray();
         }
 
-        $itemCollections = Transaction::search($search)->query(function ($query) use ($search, $request, $branch) {
-            $this->initialInventoryBalanceRepository->search($request, $query, $branch);
-        })->paginate(self::$perPage);
+        $itemCollections = Transaction::search($search)
+            ->query(function ($query) use ($search, $request, $branch) {
+                $this->initialInventoryBalanceRepository->search($request, $query, $branch);
+            })->paginate(self::$perPage);
 
         return self::formattedData($itemCollections);
     }
@@ -112,6 +113,7 @@ use function App\Helper\formatDate;
 
 
         $this->transaction->create([
+            'company_id' => $request->session()->get('company_session'),
             'branch_id' => $request->branch_id,
             'date' => $request->input('date'),
             'contact_id' => $request->input('supplier_id'),
@@ -142,6 +144,7 @@ use function App\Helper\formatDate;
 
 
         $transaction->update([
+            'company_id' => $request->session()->get('company_session'),
             'branch_id' => $request->input('branch_id'),
             'date' => $request->input('date'),
             'contact_id' => $request->input('supplier_id'),

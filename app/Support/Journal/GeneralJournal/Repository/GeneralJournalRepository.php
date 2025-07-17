@@ -22,8 +22,12 @@ use Illuminate\Http\Request;
     public function data(Request $request)
     {
         return AccountTransaction::with('account.parent')
-            ->whereHas('account', function ($query) use ($request) {
-                $query->where('company_id', $request->session()->get('company_session'));
+            ->where(function ($query) use ($request) {
+                $query->whereHas('account', function ($query) use ($request) {
+                    $query->where('company_id', $request->session()->get('company_session'));
+                })->orwhereHas('account.parent', function ($query) use ($request) {
+                    $query->where('company_id', $request->session()->get('company_session'));
+                });
             })
             ->where('transaction_type', 'TR')
             ->whereYear('date', $this->accountingPeriod->query()->first()->year)

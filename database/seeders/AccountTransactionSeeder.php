@@ -9,6 +9,7 @@ use App\Models\Master\Common\Branch;
 use App\Support\AccountTransactions\Service\AccountTransactionService;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Random\RandomException;
 
 #[AllowDynamicProperties] class AccountTransactionSeeder extends Seeder
 {
@@ -21,12 +22,17 @@ use Illuminate\Database\Seeder;
 
     /**
      * Run the database seeds.
+     * @throws RandomException
      */
     public function run(): void
     {
         for ($i = 1; $i <= 100000; $i++) {
             $this->accountTransactionService->createDebitTransaction(
-                Branch::whereNull('parent_id')->inRandomOrder()->first()->id,
+                Branch::whereNull('parent_id')
+                    ->where('company_id', 3)
+                    ->inRandomOrder()
+                    ->first()
+                    ->id,
                 'test data',
                 Account::inRandomOrder()->first()->id,
                 random_int(1000000, 9999999),
@@ -34,7 +40,11 @@ use Illuminate\Database\Seeder;
 
 
             $this->accountTransactionService->createCreditTransaction(
-                Branch::whereNull('parent_id')->inRandomOrder()->first()->id,
+                Branch::whereNull('parent_id')
+                    ->where('company_id', 3)
+                    ->inRandomOrder()
+                    ->first()
+                    ->id,
                 'test data',
                 Account::inRandomOrder()->first()->id,
                 random_int(1000000, 9999999),

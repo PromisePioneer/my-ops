@@ -39,10 +39,6 @@
                                placeholder="Saldo" :value="editVal.amount"/>
                     </div>
 
-
-                    <div class="mb-10">
-                        <input type="hidden" :value="year" name="year">
-                    </div>
                 </div>
 
                 <div class="modal-footer">
