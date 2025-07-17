@@ -19,7 +19,7 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->string('name');
             $table->integer('capacity');
-            $table->double('price');
+            $table->decimal('price', 15, 4);
             $table->timestamps();
         });
     }

@@ -29,8 +29,8 @@
 
                     <div class="mb-10">
                         <label for="name" class="required form-label">Harga</label>
-                        <input type="number" id="price" name="price" class="form-control form-control-solid"
-                               placeholder="Harga (Rp)" :value="editVal?.price"/>
+                        <input type="text" id="price" name="price" class="form-control form-control-solid"
+                               placeholder="Harga (Rp)" :value="parseFloat(editVal?.price)"/>
                     </div>
                 </div>
 

@@ -108,6 +108,7 @@
             </div>
         </div>
     </div>
+    @include('components.input-mask')
 @endsection
 @push('script')
     <script>
@@ -130,6 +131,7 @@
                 formFilter: document.getElementById('form-filter'),
                 async init() {
                     await this.getBroadbandPacketData();
+                    inputMask('price', 'decimal')
                 },
                 async getBroadbandPacketData() {
                     this.isLoading = true;

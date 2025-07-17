@@ -55,12 +55,18 @@ use Illuminate\View\View;
      */
     public function store(InternetPackageRequest $request): JsonResponse
     {
+
+        $formattedValue = str_replace('.', '', $request->input('price'));
+        $formattedValue = str_replace(',', '.', $formattedValue);
+        $price = (float)$formattedValue;
+
+
         $this->authorize('create', InternetPackage::class);
         $this->internetPackage->query()->create([
             'company_id' => $request->session()->get('company_session'),
             'name' => $request->name,
             'capacity' => $request->capacity,
-            'price' => $request->price,
+            'price' => $price,
         ]);
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -83,12 +89,18 @@ use Illuminate\View\View;
      */
     public function update(InternetPackageRequest $request, InternetPackage $internetPackage): JsonResponse
     {
+
+        $formattedValue = str_replace('.', '', $request->input('price'));
+        $formattedValue = str_replace(',', '.', $formattedValue);
+        $price = (float)$formattedValue;
+
+
         $this->authorize('update', $internetPackage);
         $internetPackage->update([
             'company_id' => $request->session()->get('company_session'),
             'name' => $request->name,
             'capacity' => $request->capacity,
-            'price' => $request->price,
+            'price' => $price,
         ]);
         return response()->json([
             'message' => 'data berhasil disimpan',
