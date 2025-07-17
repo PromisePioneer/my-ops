@@ -4,7 +4,6 @@ namespace App\Support\Transactions\Repositories;
 
 use AllowDynamicProperties;
 use App\Enum\Transaction\TransactionType;
-use App\Models\Master\Common\Branch;
 use App\Models\Transaction;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,9 +42,8 @@ use Illuminate\Http\Request;
     {
         return $query->leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
             ->leftJoin('item_collections', 'transactions.item_id', '=', 'item_collections.id')
-            ->leftJoin('companies', 'transactions.company_id', '=', 'companies.id')
             ->where('transactions.type', '!=', TransactionType::INITIAL_INVENTORY_BALANCE->value)
-            ->select('transactions.*', 'item_collections.name as collection_name', 'companies.name as company_name');
+            ->select('transactions.*', 'item_collections.name as collection_name');
     }
 
 }
