@@ -131,7 +131,8 @@ use Illuminate\Support\Collection;
         return $suppliers->map(function ($supplier) {
             return [
                 'id' => $supplier->id,
-                'text' => "$supplier->code - $supplier->name ($supplier->tax_type)"
+                'text' => "$supplier->code - $supplier->name ($supplier->tax_type)",
+                'tax_type' => "$supplier->tax_type"
             ];
         });
     }
@@ -157,7 +158,8 @@ use Illuminate\Support\Collection;
         $contactTaxType = $contact->type === ContactType::SUPPLIER->value ? "($contact->tax_type)" : '';
         return [
             'id' => $contact->id,
-            'name' => "$contact->code - $contact->name $contactTaxType"
+            'name' => "$contact->code - $contact->name $contactTaxType",
+            'tax_type' => $contact->tax_type,
         ];
     }
 

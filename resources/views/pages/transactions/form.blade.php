@@ -141,13 +141,14 @@
                     await selectedValue('selected-debit-account', `/select2/selected-account/${this.debitAccountId}`);
                     await selectedValue('selected-credit-account', `/select2/selected-account/${this.creditAccountId}`);
                     await selectedValue('selected-supplier', `/select2/selected-contact/${this.supplierId}`);
-                    await selectedValue('selected-company', `/select2/selected-company/${this.companyId}`);
-                    const getSuppliers = await axios.get(`/select2/selected-supplier/${this.supplierId}`);
-                    this.PKP = getSuppliers.data.tax_type === 'PKP';
-
+                    await this.getSuppliers();
                     const getItem = await axios.get(`/select2/selected-item/${this.itemId}`);
 
                     this.qtyInMeter = getItem.data.unit_type_name === 'Meter';
+                },
+                async getSuppliers() {
+                    const resp = await axios.get(`/select2/selected-contact/${this.supplierId}`);
+                    this.PKP = resp.data.tax_type === 'PKP';
                 },
                 previewAttachmentFile() {
                     let files = this.$refs.attachmentFile.files;
