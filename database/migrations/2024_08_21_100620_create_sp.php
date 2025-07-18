@@ -12,6 +12,7 @@ return new class () extends Migration {
     {
         Schema::create('sp', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('letter_head_id')->constrained('letter_head')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('users');
             $table->string('sp_number');
             $table->date('start_date');

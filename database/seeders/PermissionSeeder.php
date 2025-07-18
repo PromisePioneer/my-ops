@@ -29,6 +29,7 @@ class PermissionSeeder extends Seeder
         $this->companyData();
         $this->area();
         $this->unitType();
+        $this->letterHead();
 
 
         //accounting master data
@@ -1116,5 +1117,23 @@ class PermissionSeeder extends Seeder
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
+    }
+
+    private function letterHead(): void
+    {
+        $permissions = [
+            'Lihat Menu Kop Surat',
+            'Tambah Data Kop Surat',
+            'Edit Data Kop Surat',
+            'Aktivasi  Kop Surat',
+            'Hapus Kop Surat',
+            'Pulihkan Data Kop Surat',
+        ];
+
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
     }
 }

@@ -318,6 +318,18 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/save-week-holiday/{user}', [AreaDetailController::class, 'assignWeekHoliday']);
             });
 
+
+            Route::prefix('letter-head')->group(function () {
+                Route::get('/', [LetterHeadController::class, 'index']);
+                Route::get('/data', [LetterHeadController::class, 'data']);
+                Route::post('/store', [LetterHeadController::class, 'store']);
+                Route::get('/edit/{letterHead}', [LetterHeadController::class, 'edit']);
+                Route::post('/update/{letterHead}', [LetterHeadController::class, 'update']);
+                Route::post('/destroy', [LetterHeadController::class, 'destroy']);
+                Route::post('/set-active/{letterHead}', [LetterHeadController::class, 'setActive']);
+            });
+
+
             Route::prefix('branch')->group(function () {
                 Route::get('/', [BranchController::class, 'index']);
                 Route::get('/data', [BranchController::class, 'data']);
@@ -575,10 +587,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
     //utility
     Route::prefix('utility')->group(function () {
-        Route::prefix('letter-head')->group(function () {
-            Route::get('/', [LetterHeadController::class, 'index']);
-            Route::post('/update/{letterHead}', [LetterHeadController::class, 'update']);
-        });
+
 
         Route::prefix('company-profile')->group(function () {
             Route::get('/', [CompanyProfileController::class, 'index']);

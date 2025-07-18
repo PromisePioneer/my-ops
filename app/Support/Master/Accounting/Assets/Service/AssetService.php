@@ -112,6 +112,7 @@ use function App\Helper\currencyFormat;
 
 
         $this->asset->create([
+            'company_id' => $request->session()->get('company_session'),
             'branch_id' => $request->branch_id,
             'code' => $request->code,
             'date' => $request->date,
@@ -137,6 +138,7 @@ use function App\Helper\currencyFormat;
         $assetAccount = $this->accountRepository->findById($itemCollection->asset_account_id);
 
         $asset->update([
+            'company_id' => $request->session()->get('company_session'),
             'branch_id' => $request->branch_id,
             'code' => $request->code,
             'date' => $request->date,

@@ -14,9 +14,9 @@ class LetterHeadSeeder extends Seeder
      */
     public function run()
     {
-        LetterHead::create([
-            'header' => null,
-            'footer' => null,
-        ]);
+//        LetterHead::create([
+//            'header' => null,
+//            'footer' => null,
+//        ]);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Support\User\SP;
 use AllowDynamicProperties;
 use App\Http\Requests\ADMS\AttendancesSummaryAssignSPRequest;
 use App\Http\Requests\SPRequest;
+use App\Models\LetterHead;
 use App\Models\SP;
 use App\Models\User;
 use Carbon\Carbon;
@@ -56,9 +57,9 @@ use function App\Helper\convertToRoman;
         $query = $this->SPRepository->mainQuery();
 
 
-        if(!empty($search)){
-            $query->whereHas('user', function($query) use($search) {
-                $query->where('name', 'like' , '%' . $search . '%' );
+        if (!empty($search)) {
+            $query->whereHas('user', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
             });
         }
 
@@ -115,7 +116,9 @@ use function App\Helper\convertToRoman;
 
         $endDate = Carbon::parse($request->start_date)->addMonths(6);
         DB::transaction(function () use ($request, $currentSP, $endDate, $punishedBy, $knownBy) {
+
             $sp = SP::create([
+                'letter_head_id' => LetterHead::where('is_active', true)->first()->id,
                 'start_date' => $request->start_date,
                 'end_date' => $endDate,
                 'user_id' => $request->user_id,
@@ -170,7 +173,9 @@ use function App\Helper\convertToRoman;
             'branch_name' => $spData->branch->name ?? null,
             'user_id' => "({$spData->user->nip}) {$spData->user->name}",
             'sp_number' => $spData->sp_number,
-            'date' => Carbon::parse($spData->start_date)->format('d/m/Y') . ' - ' . Carbon::parse($spData->end_date)->format('d/m/Y'),
+            'date' => Carbon::parse($spData->start_date)
+                    ->format('d/m/Y') . ' - ' . Carbon::parse($spData->end_date)
+                    ->format('d/m/Y'),
             'sp_type' => $spData->sp_type,
             'punished_by' => $spData->punishedBy?->name,
             'created_by' => $spData->createdBy->name,
@@ -178,7 +183,7 @@ use function App\Helper\convertToRoman;
     }
 
 
-    public function getEmployeeData(Request $request)
+    public function getEmployeeData(Request $request): array
     {
         $search = $request->input('search');
 
@@ -214,7 +219,7 @@ use function App\Helper\convertToRoman;
 
     }
 
-    public function getSPPic(Request $request)
+    public function getSPPic(Request $request): array
     {
         $search = $request->input('search');
 

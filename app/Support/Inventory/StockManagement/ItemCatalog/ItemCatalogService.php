@@ -102,6 +102,7 @@ use Throwable;
     private function insertAsset(Request $request, DraftStock $draftStock, Stock $stock)
     {
         return Asset::create([
+            'company_id' => $request->session()->get('company_session'),
             'branch_id' => $draftStock->transaction?->branch_id,
             'code' => $request->code,
             'stock_id' => $stock->id,

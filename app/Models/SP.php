@@ -12,11 +12,12 @@ use Laravel\Scout\Searchable;
 
 class SP extends Model
 {
-    use HasFactory, Searchable;
+    use Searchable;
 
     protected $table = 'sp';
 
     protected $fillable = [
+        'letter_head_id',
         'branch_id',
         'user_id',
         'sp_number',
@@ -33,6 +34,12 @@ class SP extends Model
         'known_by_user_id',
         'known_by_role_id'
     ];
+
+
+    public function letterHead(): BelongsTo
+    {
+        return $this->belongsTo(LetterHead::class, 'letter_head_id');
+    }
 
     public function createdBy(): BelongsTo
     {

@@ -121,8 +121,8 @@
                                                 <span class="path2"></span>
                                             </i>
                                         </button>
-                                        <button id="item_category_description_drawer" class="btn btn-light-info btn-sm">
-                                            <i class="ki-duotone ki-information fs-2" @click="edit(category.id)">
+                                        <button id="item_category_description_drawer" class="btn btn-light-info btn-sm" @click="viewDescription(category.id)">
+                                            <i class="ki-duotone ki-information fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
                                                 <span class="path3"></span>
@@ -236,6 +236,10 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/operational/item-categories/${id}`);
                     this.editVal = resp.data;
+                    this.itemCategoryDescription = resp.data;
+                },
+                async viewDescription(id) {
+                    const resp = await axios.get(`/master/operational/item-categories/${id}`);
                     this.itemCategoryDescription = resp.data;
                 },
                 async destroy() {

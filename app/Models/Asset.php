@@ -13,6 +13,7 @@ class Asset extends Model
 
     protected $table = 'assets';
     protected $fillable = [
+        'company_id',
         'branch_id',
         'code',
         'date',
@@ -24,6 +25,12 @@ class Asset extends Model
         'qty',
         'depreciation',
     ];
+
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 
 
     public function branch(): BelongsTo

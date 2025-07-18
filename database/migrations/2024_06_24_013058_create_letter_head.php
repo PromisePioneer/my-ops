@@ -17,7 +17,13 @@ class CreateLetterHead extends Migration
             $table->id();
             $table->string('header')->nullable();
             $table->string('footer')->nullable();
+            $table->foreignId('company_id')
+                ->constrained()
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

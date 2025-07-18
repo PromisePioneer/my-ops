@@ -178,6 +178,8 @@ use Throwable;
      */
     public function exportToPDF(SP $sp): Response
     {
+
+        $sp->load('letterHead');
         $operationalManager = User::role('Operational Manager')->with('roles')->first();
 
         $spReasonList = json_decode($sp?->list_of_reason);
@@ -187,14 +189,14 @@ use Throwable;
 
 
         $pdf = Browsershot::html($view)
-        ->setChromePath('/usr/bin/chromium')
-        ->noSandbox()
-        ->waitUntilNetworkIdle()
-        ->ignoreHttpsErrors()
-        ->format('A4')
-        ->setEnvironmentOptions([
-            'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
-        ])->pdf();
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->format('A4')
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
 
 
         return new Response($pdf, 200, [

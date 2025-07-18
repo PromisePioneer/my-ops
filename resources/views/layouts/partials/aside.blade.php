@@ -186,6 +186,13 @@
                                     Area
                                 </x-dropdown-menu-item>
                             @endcan
+                            @can('Lihat Menu Area')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(3) === 'letter-head'"
+                                    href="{{ url('master/common/letter-head  ') }}">
+                                    Kop Surat
+                                </x-dropdown-menu-item>
+                            @endcan
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
