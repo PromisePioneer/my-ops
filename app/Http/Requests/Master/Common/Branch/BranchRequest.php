@@ -22,7 +22,7 @@ class BranchRequest extends FormRequest
             'name' => [
                 'required',
                 Rule::unique('branches', 'name')
-                    ->ignore($this->route('branch')),
+                    ->ignore($this->route('branch') === null),
             ],
             'address' => ['required'],
         ];
