@@ -67,8 +67,8 @@ use function App\Helper\formatDate;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $data = Transaction::search($search)->query(function ($query) use ($search) {
-            $this->transactionRepository->searchQuery($query);
+        $data = Transaction::search($search)->query(function ($query) use ($request, $search) {
+            $this->transactionRepository->searchQuery($request, $query);
         });
         $filter = TransactionACLFilter::apply($data, $request)->paginate(self::$perPage);
         return self::formattedData($filter);

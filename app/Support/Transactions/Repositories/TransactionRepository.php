@@ -41,9 +41,10 @@ use Illuminate\Http\Request;
             })->orderBy('created_at');
     }
 
-    public function searchQuery($query)
+    public function searchQuery(Request $request, $query)
     {
         return $query->leftJoin('contacts', 'transactions.contact_id', '=', 'contacts.id')
+            ->where('transactions.company_id', $request->session()->get('company_session'))
             ->leftJoin('item_collections', 'transactions.item_id', '=', 'item_collections.id')
             ->where('transactions.type', '!=', TransactionType::INITIAL_INVENTORY_BALANCE->value)
             ->select('transactions.*', 'item_collections.name as collection_name');
