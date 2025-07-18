@@ -73,7 +73,6 @@ class PermissionSeeder extends Seeder
 
 
         //utility
-        $this->companyProfile();
         $this->activityLog();
 
 

@@ -454,9 +454,6 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-                @canany('Lihat Menu Profil Perusahaan')
-                    <x-menu-sections>Utilitas</x-menu-sections>
-                @endcanany
 
                 @canany(['Lihat Menu Profil Perusahaan', 'Lihat Menu Riwayat Aktifitas User'])
                     <x-dropdown-menu :active="request()->segment(1) === 'utility'">

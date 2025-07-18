@@ -589,12 +589,6 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('utility')->group(function () {
 
 
-        Route::prefix('company-profile')->group(function () {
-            Route::get('/', [CompanyProfileController::class, 'index']);
-            Route::post('/update/{companyProfile}', [CompanyProfileController::class, 'update']);
-        });
-
-
         Route::prefix('/activity-log')->group(function () {
             Route::get('/', [ActivityLogController::class, 'index']);
             Route::get('/data', [ActivityLogController::class, 'data']);

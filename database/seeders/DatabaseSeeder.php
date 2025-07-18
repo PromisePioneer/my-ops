@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PermissionSeeder::class,
             ServicesCategoriesSeeder::class,
-            CompanyProfileSeeder::class,
             LetterHeadSeeder::class,
             UnitTypesSeeder::class,
             WorkTimeSeeder::class,
